@@ -1,4 +1,4 @@
-// Vercel serverless function — DeepSeek chatbot
+// Vercel serverless function — Groq chatbot (Llama 3)
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -6,8 +6,8 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') { res.status(204).end(); return; }
   if (req.method !== 'POST')    { res.status(405).json({ error: 'Method not allowed' }); return; }
 
-  const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
-  if (!DEEPSEEK_API_KEY) { res.status(500).json({ error: 'Clé API manquante' }); return; }
+  const GROQ_API_KEY = process.env.GROQ_API_KEY;
+  if (!GROQ_API_KEY) { res.status(500).json({ error: 'Clé API manquante' }); return; }
 
   try {
     const { question, context } = req.body || {};
@@ -24,7 +24,7 @@ ${context || 'Aucune donnée disponible.'}
 === FIN DES DONNÉES ===`;
 
     const body = {
-      model: 'deepseek-chat',
+      model: 'llama-3.3-70b-versatile',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user',   content: question }
@@ -33,18 +33,18 @@ ${context || 'Aucune donnée disponible.'}
       max_tokens: 1024,
     };
 
-    const response = await fetch('https://api.deepseek.com/chat/completions', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+        'Authorization': `Bearer ${GROQ_API_KEY}`
       },
       body: JSON.stringify(body)
     });
 
     if (!response.ok) {
       const err = await response.text();
-      res.status(response.status).json({ error: 'Erreur DeepSeek: ' + err });
+      res.status(response.status).json({ error: 'Erreur Groq: ' + err });
       return;
     }
 
