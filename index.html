@@ -412,14 +412,16 @@ td { padding: 9px 14px; vertical-align: middle; }
   #chart-arrets-real { max-height: 140px !important; }
 
   /* ── Calendar ultra-compact ── */
-  .cal-cell { padding: 1px 2px !important; min-width: 70px !important; }
-  .cal-tag { font-size: 7px !important; padding: 1px 3px !important; margin: 0px !important; max-width: 80px !important; }
-  .cal-week-hdr { font-size: 8px !important; padding: 3px 4px !important; }
-  .cal-day-hdr { font-size: 7px !important; padding: 2px 3px !important; min-width: 70px !important; }
-  .cal-day-date { font-size: 7px !important; padding: 1px 2px !important; }
-  #cal-table { font-size: 8px !important; }
-  #cal-container .chart-card { padding: 4px 6px !important; }
-  #cal-container .chart-card-hdr { margin-bottom: 2px !important; }
+  .cal-cell { padding: 1px 2px !important; min-width: 56px !important; }
+  .cal-tag { font-size: 6px !important; padding: 1px 2px !important; margin: 0px !important; max-width: 68px !important; }
+  .cal-week-hdr { font-size: 7px !important; padding: 2px 3px !important; }
+  .cal-day-hdr { font-size: 6px !important; padding: 1px 2px !important; min-width: 56px !important; }
+  .cal-day-date { font-size: 6px !important; padding: 1px 2px !important; }
+  #cal-table { font-size: 7px !important; }
+  #cal-container .chart-card { padding: 3px 4px !important; }
+  #cal-container .chart-card-hdr { margin-bottom: 1px !important; }
+  #cal-container .chart-card-title { font-size: 10px !important; }
+  #cal-container .chart-card-sub { display: none !important; }
 
   /* ── Réalisation par poste compact ── */
   .real-row { padding: 3px 0 !important; gap: 6px !important; }
@@ -443,6 +445,9 @@ td { padding: 9px 14px; vertical-align: middle; }
   #avis-content .chart-card canvas { max-height: 120px !important; }
   #avis-content .kpi-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 4px !important; }
   #avis-no-data { display: none !important; }
+  #card-type-ordre { display: none !important; }
+  #avis-grid-3col { grid-template-columns: 1fr !important; }
+  #avis-grid-2col { grid-template-columns: 1fr !important; }
 }
 
 /* ── PLAN DE CHARGE MODAL ── */
@@ -2787,10 +2792,6 @@ td { padding: 9px 14px; vertical-align: middle; }
       <div class="chart-card-hdr">
         <div>
           <div class="chart-card-title">Taux de réalisation des arrêts préventifs</div>
-          <div class="chart-card-sub">
-            <span style="display:inline-flex;align-items:center;gap:5px;margin-right:14px;"><span style="display:inline-block;width:12px;height:3px;background:#059669;border-radius:2px;"></span> Réalisé global (Oui + Oui imprévu) / total</span>
-            <span style="display:inline-flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:3px;background:#1d4ed8;border-radius:2px;"></span> Réalisé à temps (Oui uniquement) / total</span>
-          </div>
         </div>
         <div id="cal-chart-badge" style="font-family:var(--mono);font-size:11px;color:var(--muted);"></div>
       </div>
@@ -2871,7 +2872,7 @@ td { padding: 9px 14px; vertical-align: middle; }
           </div>
           <div class="kpi-value" id="kpi-taux-prev">—</div>
           <div class="kpi-label">Taux réalisation préventif</div>
-          <div class="kpi-sub">CONF+TCLO / total ZCON+ZEST+ZETL</div>
+          <div class="kpi-sub">CONF+TCLO+CLOT / total ZCON+ZEST+ZETL</div>
         </div>
       </div>
     </div>
@@ -2896,7 +2897,7 @@ td { padding: 9px 14px; vertical-align: middle; }
           </div>
           <div class="kpi-value" id="kpi-taux-cor">—</div>
           <div class="kpi-label">Taux réalisation correctif</div>
-          <div class="kpi-sub">CONF+TCLO / total ZCOR</div>
+          <div class="kpi-sub">CONF+TCLO+CLOT / total ZCOR</div>
         </div>
       </div>
     </div>
@@ -2910,7 +2911,7 @@ td { padding: 9px 14px; vertical-align: middle; }
     <!-- Répartition -->
     <div class="section-label">Répartition des ordres de travail</div>
     <div class="chart-grid-2 no-break">
-      <div class="chart-card">
+      <div class="chart-card" id="card-type-ordre">
         <div class="chart-card-hdr">
           <div><div class="chart-card-title">Répartition par type d'ordre</div><div class="chart-card-sub">ZCOR · ZCON · ZEST · ZETL — mois sélectionné</div></div>
         </div>
@@ -2928,7 +2929,7 @@ td { padding: 9px 14px; vertical-align: middle; }
     <div class="section-label">Taux de réalisation par corps de métier</div>
     <div class="chart-card no-break">
       <div class="chart-card-hdr">
-        <div><div class="chart-card-title">Taux de réalisation — mois sélectionné</div><div class="chart-card-sub">OT confirmés ou techniquement clos (CONF + TCLO) / total · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
+        <div><div class="chart-card-title">Taux de réalisation — mois sélectionné</div><div class="chart-card-sub">OT confirmés ou techniquement clos (CONF + TCLO + CLOT) / total · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
       </div>
       <div id="realisation-poste-list"></div>
     </div>
@@ -2943,7 +2944,7 @@ td { padding: 9px 14px; vertical-align: middle; }
     <div class="chart-grid-2 no-break">
       <div class="chart-card">
         <div class="chart-card-hdr">
-          <div><div class="chart-card-title">Taux de réalisation mensuel</div><div class="chart-card-sub">CONF + TCLO / total</div></div>
+          <div><div class="chart-card-title">Taux de réalisation mensuel</div><div class="chart-card-sub">CONF + TCLO + CLOT / total</div></div>
         </div>
         <div style="height:180px;"><canvas id="chart-realisation-mois"></canvas></div>
       </div>
@@ -3059,7 +3060,7 @@ td { padding: 9px 14px; vertical-align: middle; }
           </div>
           <div class="kpi-value" id="ann-taux-prev">—</div>
           <div class="kpi-label">Taux réalisation préventif</div>
-          <div class="kpi-sub">CONF+TCLO / total ZCON+ZEST+ZETL</div>
+          <div class="kpi-sub">CONF+TCLO+CLOT / total ZCON+ZEST+ZETL</div>
         </div>
       </div>
     </div>
@@ -3084,7 +3085,7 @@ td { padding: 9px 14px; vertical-align: middle; }
           </div>
           <div class="kpi-value" id="ann-taux-cor">—</div>
           <div class="kpi-label">Taux réalisation correctif</div>
-          <div class="kpi-sub">CONF+TCLO / total ZCOR</div>
+          <div class="kpi-sub">CONF+TCLO+CLOT / total ZCOR</div>
         </div>
       </div>
     </div>
@@ -3112,7 +3113,7 @@ td { padding: 9px 14px; vertical-align: middle; }
     <div class="section-label">Taux de réalisation mois par mois</div>
     <div class="chart-card no-break">
       <div class="chart-card-hdr">
-        <div><div class="chart-card-title">Taux de réalisation mensuel</div><div class="chart-card-sub" id="ann-real-sub">CONF + TCLO / total — 12 mois de l'année</div></div>
+        <div><div class="chart-card-title">Taux de réalisation mensuel</div><div class="chart-card-sub" id="ann-real-sub">CONF + TCLO + CLOT / total — 12 mois de l'année</div></div>
       </div>
       <div style="height:220px;"><canvas id="ann-chart-realisation"></canvas></div>
     </div>
@@ -3137,7 +3138,7 @@ td { padding: 9px 14px; vertical-align: middle; }
     <div class="section-label">Taux de réalisation par corps de métier — année</div>
     <div class="chart-card no-break">
       <div class="chart-card-hdr">
-        <div><div class="chart-card-title">Taux de réalisation — année sélectionnée</div><div class="chart-card-sub">OT confirmés ou techniquement clos (CONF + TCLO) / total · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
+        <div><div class="chart-card-title">Taux de réalisation — année sélectionnée</div><div class="chart-card-sub">OT confirmés ou techniquement clos (CONF + TCLO + CLOT) / total · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
       </div>
       <div id="ann-realisation-poste-list"></div>
     </div>
@@ -3183,7 +3184,7 @@ td { padding: 9px 14px; vertical-align: middle; }
             <div class="kpi-sub">Taux de conversion : <b id="avis-kpi-ot-pct">—</b></div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-label">Avis Ouverts</div>
+            <div class="kpi-label">Avis en attente OT</div>
             <div class="kpi-value" style="color:var(--amber);" id="avis-kpi-ouverts">—</div>
             <div class="kpi-sub">En cours (AOUV + AENC)</div>
           </div>
@@ -3206,7 +3207,7 @@ td { padding: 9px 14px; vertical-align: middle; }
       </div>
 
       <!-- RÉPARTITION PAR STATUT + SECTEUR — 3 colonnes -->
-      <div class="chart-grid no-break" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div class="chart-grid no-break" id="avis-grid-3col" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
         <div class="chart-card">
           <div class="chart-card-hdr"><div>
             <div class="chart-card-title">Statut des Avis</div>
@@ -3243,7 +3244,7 @@ td { padding: 9px 14px; vertical-align: middle; }
     <!-- ═══════ REPORT PAGE 5 : TOP INSTALLATIONS + OUVERTS + TABLEAU ═══════ -->
     <div class="report-page">
       <div class="section-label" style="margin-top:0;">Top installations & Avis non clôturés</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;" class="no-break">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;" class="no-break" id="avis-grid-2col">
         <div class="chart-card">
           <div class="chart-card-hdr"><div>
             <div class="chart-card-title">Top Installations</div>
@@ -3470,7 +3471,7 @@ function parseDate(val) {
   if (typeof val==='number') return new Date(Math.round((val-25569)*86400*1000));
   const d=new Date(val); return isNaN(d)?null:d;
 }
-function isRealise(r) { return r.statutSys.includes('CONF')||r.statutSys.includes('TCLO'); }
+function isRealise(r) { return r.statutSys.includes('CONF')||r.statutSys.includes('TCLO')||r.statutSys.includes('CLOT'); }
 function isSys(r)     { return ['ZCON','ZEST','ZETL'].includes(r.type); }
 function isCur(r)     { return r.type==='ZCOR'; }
 function pct(n,t)     { return t?((n/t)*100).toFixed(1)+'%':'0.0%'; }
@@ -3725,7 +3726,7 @@ function generateAnnualReport() {
   const moLbls = MONTHS_FR.map(m=>m.slice(0,3));
   const getGrpAnn = (key)=>{const[y,m]=key.split('-').map(Number);return filtered.filter(r=>r.debut&&r.debut.getMonth()===(m-1));};
   const moData = moKeys.map(k=>{const g=getGrpAnn(k);return g.length?pctN(g.filter(isRealise).length,g.length):null;});
-  set('ann-real-sub', `CONF + TCLO / total — 12 mois de ${yr}`);
+  set('ann-real-sub', `CONF + TCLO + CLOT / total — 12 mois de ${yr}`);
   buildVBar('ann-chart-realisation', moLbls, moData.map(v=>v??0));
 
   // Réalisation par poste annuelle
@@ -4903,7 +4904,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
   <div class="grid2" style="gap:8px;margin-bottom:10px;">
     <div class="card" style="padding:8px 10px;">
       <div class="chart-title">Taux de réalisation mensuel</div>
-      <div class="chart-sub">CONF + TCLO / total</div>
+      <div class="chart-sub">CONF + TCLO + CLOT / total</div>
       ${buildBarSVG(moLbls, moDataReal)}
     </div>
     <div class="card" style="padding:8px 10px;">
