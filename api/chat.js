@@ -1,4 +1,4 @@
-// Vercel serverless function — Gemini chatbot
+// Vercel serverless function — DeepSeek chatbot
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -6,8 +6,8 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') { res.status(204).end(); return; }
   if (req.method !== 'POST')    { res.status(405).json({ error: 'Method not allowed' }); return; }
 
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-  if (!GEMINI_API_KEY) { res.status(500).json({ error: 'Clé API manquante' }); return; }
+  const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
+  if (!DEEPSEEK_API_KEY) { res.status(500).json({ error: 'Clé API manquante' }); return; }
 
   try {
     const { question, context } = req.body || {};
@@ -24,28 +24,32 @@ ${context || 'Aucune donnée disponible.'}
 === FIN DES DONNÉES ===`;
 
     const body = {
-      contents: [
-        { role: 'user', parts: [{ text: systemPrompt + '\n\nQuestion : ' + question }] }
+      model: 'deepseek-chat',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user',   content: question }
       ],
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: 1024,
-      }
+      temperature: 0.2,
+      max_tokens: 1024,
     };
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
-    );
+    const response = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+      },
+      body: JSON.stringify(body)
+    });
 
     if (!response.ok) {
       const err = await response.text();
-      res.status(response.status).json({ error: 'Erreur Gemini: ' + err });
+      res.status(response.status).json({ error: 'Erreur DeepSeek: ' + err });
       return;
     }
 
     const data = await response.json();
-    const answer = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'Pas de réponse.';
+    const answer = data?.choices?.[0]?.message?.content || 'Pas de réponse.';
     res.status(200).json({ answer });
   } catch (err) {
     res.status(500).json({ error: err.message });
