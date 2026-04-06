@@ -8410,6 +8410,272 @@ function startNotifPolling() {
 }
 </script>
 
+<!-- ══ CHATBOT WIDGET ══ -->
+<style>
+#chat-fab {
+  position: fixed; bottom: 24px; right: 20px; z-index: 9000;
+  width: 54px; height: 54px; border-radius: 50%;
+  background: var(--blue); color: #fff; border: none; cursor: pointer;
+  box-shadow: 0 4px 18px rgba(37,99,235,.45);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .2s, box-shadow .2s;
+}
+#chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(37,99,235,.55); }
+#chat-fab svg { width: 24px; height: 24px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+#chat-fab .chat-badge {
+  position: absolute; top: -3px; right: -3px;
+  background: #ef4444; color: #fff; border-radius: 50%;
+  width: 18px; height: 18px; font-size: 10px; font-weight: 700;
+  display: none; align-items: center; justify-content: center;
+  border: 2px solid #fff;
+}
+#chat-window {
+  position: fixed; bottom: 88px; right: 20px; z-index: 9001;
+  width: 360px; max-width: calc(100vw - 32px);
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,.18);
+  display: none; flex-direction: column; overflow: hidden;
+  font-family: var(--font);
+}
+#chat-window.open { display: flex; }
+.chat-header {
+  background: var(--blue); color: #fff;
+  padding: 14px 16px; display: flex; align-items: center; gap: 10px;
+}
+.chat-header-icon { width: 32px; height: 32px; background: rgba(255,255,255,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.chat-header-icon svg { width: 17px; height: 17px; stroke: #fff; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.chat-header-title { font-weight: 700; font-size: 14px; }
+.chat-header-sub { font-size: 11px; opacity: .8; }
+.chat-close { margin-left: auto; background: none; border: none; color: #fff; cursor: pointer; padding: 4px; opacity: .8; }
+.chat-close:hover { opacity: 1; }
+.chat-close svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 2.2; }
+#chat-messages {
+  flex: 1; overflow-y: auto; padding: 14px 14px 8px;
+  display: flex; flex-direction: column; gap: 10px;
+  min-height: 280px; max-height: 380px;
+  scrollbar-width: thin; scrollbar-color: var(--border2) transparent;
+}
+.chat-msg { display: flex; gap: 8px; align-items: flex-end; }
+.chat-msg.user { flex-direction: row-reverse; }
+.chat-bubble {
+  max-width: 80%; padding: 9px 13px; border-radius: 14px;
+  font-size: 13px; line-height: 1.5; white-space: pre-wrap; word-break: break-word;
+}
+.chat-msg.bot .chat-bubble  { background: #f1f5f9; color: var(--text); border-bottom-left-radius: 4px; }
+.chat-msg.user .chat-bubble { background: var(--blue); color: #fff; border-bottom-right-radius: 4px; }
+.chat-avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; font-weight: 700; }
+.chat-msg.bot .chat-avatar  { background: #dbeafe; color: var(--blue); }
+.chat-msg.user .chat-avatar { background: #bfdbfe; color: #1d4ed8; }
+.chat-typing { display: flex; gap: 4px; align-items: center; padding: 10px 13px; }
+.chat-typing span { width: 7px; height: 7px; background: #94a3b8; border-radius: 50%; animation: chat-bounce .9s infinite; }
+.chat-typing span:nth-child(2) { animation-delay: .15s; }
+.chat-typing span:nth-child(3) { animation-delay: .30s; }
+@keyframes chat-bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+.chat-suggestions { padding: 6px 10px 8px; display: flex; flex-wrap: wrap; gap: 5px; }
+.chat-suggestion {
+  font-size: 11px; padding: 4px 10px; border-radius: 20px;
+  border: 1px solid var(--blue-mid); background: #eff6ff; color: var(--blue);
+  cursor: pointer; font-family: var(--font); white-space: nowrap;
+  transition: background .15s;
+}
+.chat-suggestion:hover { background: #dbeafe; }
+.chat-input-row {
+  display: flex; gap: 8px; padding: 10px 12px 12px;
+  border-top: 1px solid var(--border);
+}
+#chat-input {
+  flex: 1; border: 1px solid var(--border); border-radius: 10px;
+  padding: 8px 12px; font-size: 13px; font-family: var(--font);
+  outline: none; resize: none; line-height: 1.4; max-height: 90px;
+}
+#chat-input:focus { border-color: var(--blue-mid); }
+#chat-send {
+  width: 38px; height: 38px; border-radius: 10px; border: none;
+  background: var(--blue); color: #fff; cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+}
+#chat-send:hover { background: #1d4ed8; }
+#chat-send svg { width: 16px; height: 16px; stroke: #fff; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+#chat-send:disabled { background: #94a3b8; cursor: default; }
+</style>
+
+<!-- FAB button -->
+<button id="chat-fab" onclick="chatToggle()" title="Assistant maintenance">
+  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  <span class="chat-badge" id="chat-badge"></span>
+</button>
+
+<!-- Chat window -->
+<div id="chat-window">
+  <div class="chat-header">
+    <div class="chat-header-icon">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+    </div>
+    <div>
+      <div class="chat-header-title">Assistant Maintenance</div>
+      <div class="chat-header-sub">Posez vos questions sur les données</div>
+    </div>
+    <button class="chat-close" onclick="chatToggle()">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div id="chat-messages">
+    <div class="chat-msg bot">
+      <div class="chat-avatar">🤖</div>
+      <div class="chat-bubble">Bonjour ! Je suis votre assistant maintenance. Posez-moi des questions sur les OT, les arrêts préventifs, les moteurs ou les indicateurs.</div>
+    </div>
+  </div>
+
+  <div class="chat-suggestions" id="chat-suggestions">
+    <button class="chat-suggestion" onclick="chatSuggest(this)">OT planifiés demain ?</button>
+    <button class="chat-suggestion" onclick="chatSuggest(this)">Arrêts reportés cette semaine ?</button>
+    <button class="chat-suggestion" onclick="chatSuggest(this)">Taux de réalisation ce mois ?</button>
+    <button class="chat-suggestion" onclick="chatSuggest(this)">Moteurs en réparation ?</button>
+    <button class="chat-suggestion" onclick="chatSuggest(this)">Backlog actuel ?</button>
+  </div>
+
+  <div class="chat-input-row">
+    <textarea id="chat-input" placeholder="Posez votre question…" rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();chatSend();}"
+      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px'"></textarea>
+    <button id="chat-send" onclick="chatSend()">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+function chatToggle() {
+  const w = document.getElementById('chat-window');
+  w.classList.toggle('open');
+  if (w.classList.contains('open')) {
+    document.getElementById('chat-badge').style.display = 'none';
+    document.getElementById('chat-input').focus();
+  }
+}
+
+function chatSuggest(btn) {
+  document.getElementById('chat-input').value = btn.textContent;
+  chatSend();
+}
+
+function chatBuildContext() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const fmt = d => d ? `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}` : '—';
+  const lines = [];
+
+  // Date du jour
+  lines.push(`Date du jour : ${fmt(today)}`);
+
+  // OT (allData)
+  if (typeof allData !== 'undefined' && allData.length > 0) {
+    lines.push(`\n--- OT SAP (${allData.length} ordres) ---`);
+    const demain = new Date(today); demain.setDate(today.getDate() + 1);
+    // Résumé statuts
+    const statuts = {};
+    allData.forEach(r => { const s = r.statutSys||'?'; statuts[s] = (statuts[s]||0)+1; });
+    lines.push('Répartition statuts : ' + Object.entries(statuts).map(([k,v])=>`${k}:${v}`).join(', '));
+    // OT planifiés demain
+    const otDemain = allData.filter(r => r.debut && new Date(r.debut).setHours(0,0,0,0) === demain.getTime());
+    if (otDemain.length) lines.push(`OT planifiés demain (${fmt(demain)}) : ` + otDemain.map(r=>`[${r.ordre}] ${r.description||''} (${r.poste})`).slice(0,10).join(' | '));
+    // Types
+    const types = {};
+    allData.forEach(r => { const t = r.type||'?'; types[t]=(types[t]||0)+1; });
+    lines.push('Types OT : ' + Object.entries(types).map(([k,v])=>`${k}:${v}`).join(', '));
+    // Backlog ATPL+LANC
+    const backlog = allData.filter(r=>r.statutUtil&&r.statutUtil.includes('ATPL')&&r.statutSys&&r.statutSys.includes('LANC'));
+    lines.push(`Backlog (ATPL+LANC) : ${backlog.length} OT`);
+  }
+
+  // Arrêts préventifs (_caData)
+  if (typeof _caData !== 'undefined' && _caData.length > 0) {
+    lines.push(`\n--- Arrêts préventifs (${_caData.length} arrêts) ---`);
+    const lundi = new Date(today); lundi.setDate(today.getDate() - (today.getDay()+6)%7);
+    const dimanche = new Date(lundi); dimanche.setDate(lundi.getDate() + 6);
+    const isoFmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const arrSem = _caData.filter(r => r.date >= isoFmt(lundi) && r.date <= isoFmt(dimanche));
+    if (arrSem.length) lines.push('Arrêts cette semaine : ' + arrSem.map(r=>`${r.installation} le ${r.date}`).join(' | '));
+    if (typeof _caReporte !== 'undefined') {
+      const reportes = _caData.filter(r => _caReporte.has(r.date+'_'+r.installation));
+      if (reportes.length) lines.push('Arrêts reportés : ' + reportes.map(r=>`${r.installation} (${r.date})`).join(' | '));
+    }
+  }
+
+  // Moteurs (_demandesList)
+  if (typeof _demandesList !== 'undefined' && _demandesList.length > 0) {
+    const enCours = _demandesList.filter(d => d.statut && !['terminé','livré','clôturé'].includes((d.statut||'').toLowerCase()));
+    if (enCours.length) {
+      lines.push(`\n--- Moteurs en cours (${enCours.length}) ---`);
+      enCours.slice(0,15).forEach(d => lines.push(`${d.installation||'?'} — ${d.type||'?'} — statut: ${d.statut||'?'}`));
+    }
+  }
+
+  return lines.join('\n');
+}
+
+async function chatSend() {
+  const input = document.getElementById('chat-input');
+  const question = input.value.trim();
+  if (!question) return;
+
+  input.value = ''; input.style.height = 'auto';
+  document.getElementById('chat-send').disabled = true;
+  document.getElementById('chat-suggestions').style.display = 'none';
+
+  // Message utilisateur
+  chatAddMsg('user', question);
+
+  // Indicateur typing
+  const typingId = chatAddTyping();
+
+  try {
+    const context = chatBuildContext();
+    const resp = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question, context })
+    });
+    const data = await resp.json();
+    chatRemoveTyping(typingId);
+    chatAddMsg('bot', data.answer || data.error || 'Désolé, une erreur est survenue.');
+  } catch(e) {
+    chatRemoveTyping(typingId);
+    chatAddMsg('bot', '⚠️ Impossible de contacter l\'assistant. Vérifiez votre connexion.');
+  }
+
+  document.getElementById('chat-send').disabled = false;
+  document.getElementById('chat-input').focus();
+}
+
+function chatAddMsg(role, text) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  div.innerHTML = `<div class="chat-avatar">${role==='bot'?'🤖':'👤'}</div><div class="chat-bubble">${text.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function chatAddTyping() {
+  const msgs = document.getElementById('chat-messages');
+  const id = 'typing-' + Date.now();
+  const div = document.createElement('div');
+  div.className = 'chat-msg bot'; div.id = id;
+  div.innerHTML = `<div class="chat-avatar">🤖</div><div class="chat-bubble chat-typing"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return id;
+}
+
+function chatRemoveTyping(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+</script>
+
 <!-- ══ PULL-TO-REFRESH — mobile uniquement ══ -->
 <style>
 #ptr-indicator {
