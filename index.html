@@ -5312,6 +5312,11 @@ function showMainPage(page) {
     setTimeout(() => generateReport(), 50);
   }
 
+  // Widget calendrier arrêts — dashboard mobile
+  if (page === 'rapport' && window.innerWidth < 768) {
+    setTimeout(() => renderDashMobileArrets(), 80);
+  }
+
   // Page Planification (container des 3 sous-onglets)
   document.getElementById('page-planification').style.display = page === 'planification' ? 'block' : 'none';
   if (page === 'planification') showPlanTab(_currentPlanTab);

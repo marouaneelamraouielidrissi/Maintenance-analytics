@@ -1,0 +1,28 @@
+{
+  "rewrites": [
+    {
+      "source": "/proxy-sap",
+      "destination": "https://docs.google.com/spreadsheets/d/1aQAvb1DUv6Vk1Y1C-WEYgQnYN1BxujEAg8lbMt1sP3s/export?format=xlsx"
+    },
+    {
+      "source": "/proxy-arrets",
+      "destination": "https://docs.google.com/spreadsheets/d/1C9bYkPsoYg81ARgolVDlZRwsMZk4Seff6aC7vfxoVeE/export?format=xlsx"
+    },
+    {
+      "source": "/proxy-travhebdo",
+      "destination": "https://docs.google.com/spreadsheets/d/1C9bYkPsoYg81ARgolVDlZRwsMZk4Seff6aC7vfxoVeE/gviz/tq?tqx=out:csv&sheet=Travaux%20hebdomadaire"
+    },
+    {
+      "source": "/proxy-installation",
+      "destination": "https://docs.google.com/spreadsheets/d/1rOPljpAHYIs_uQ5-EUnL4yVwy2ciKAn20htExnU2vG4/gviz/tq?tqx=out:csv&sheet=Installation"
+    },
+    {
+      "source": "/proxy-code",
+      "destination": "https://docs.google.com/spreadsheets/d/1rOPljpAHYIs_uQ5-EUnL4yVwy2ciKAn20htExnU2vG4/gviz/tq?tqx=out:csv&sheet=Code"
+    },
+    {
+      "source": "/proxy-calarrets",
+      "destination": "https://docs.google.com/spreadsheets/d/1EBACM8ou8B_9fmExToUKsMCvHL27hiwU2D0yZ_gQGOA/gviz/tq?tqx=out:csv&sheet=Planning%20des%20arrets"
+    }
+  ]
+}
