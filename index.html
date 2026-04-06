@@ -8496,5 +8496,93 @@ function startNotifPolling() {
   // si 'denied' : ne rien faire
 }
 </script>
+
+<!-- ══ PULL-TO-REFRESH — mobile uniquement ══ -->
+<style>
+#ptr-indicator {
+  position: fixed;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 8px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  transition: top .25s ease;
+  pointer-events: none;
+}
+#ptr-indicator.ptr-visible { top: 70px; }
+#ptr-indicator svg {
+  width: 16px; height: 16px;
+  stroke: var(--blue); fill: none;
+  stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+  transition: transform .3s;
+}
+#ptr-indicator.ptr-ready svg { transform: rotate(180deg); }
+#ptr-indicator.ptr-loading svg { animation: ptr-spin .7s linear infinite; }
+@keyframes ptr-spin { to { transform: rotate(360deg); } }
+</style>
+
+<div id="ptr-indicator">
+  <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.06-5"/></svg>
+  <span id="ptr-label">Tirer pour actualiser</span>
+</div>
+
+<script>
+(function() {
+  if (window.innerWidth > 767) return; // desktop : désactivé
+
+  const indicator = document.getElementById('ptr-indicator');
+  const label     = document.getElementById('ptr-label');
+  const THRESHOLD = 80; // px à tirer pour déclencher
+  let startY = 0, pulling = false, triggered = false;
+
+  document.addEventListener('touchstart', e => {
+    if (window.scrollY === 0) {
+      startY   = e.touches[0].clientY;
+      pulling  = true;
+      triggered = false;
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchmove', e => {
+    if (!pulling) return;
+    const dist = e.touches[0].clientY - startY;
+    if (dist <= 0) { pulling = false; return; }
+
+    indicator.classList.add('ptr-visible');
+    if (dist >= THRESHOLD) {
+      indicator.classList.add('ptr-ready');
+      label.textContent = 'Relâcher pour actualiser';
+      triggered = true;
+    } else {
+      indicator.classList.remove('ptr-ready');
+      label.textContent = 'Tirer pour actualiser';
+      triggered = false;
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', () => {
+    if (!pulling) return;
+    pulling = false;
+    if (triggered) {
+      indicator.classList.remove('ptr-ready');
+      indicator.classList.add('ptr-loading');
+      label.textContent = 'Actualisation…';
+      setTimeout(() => location.reload(), 500);
+    } else {
+      indicator.classList.remove('ptr-visible', 'ptr-ready');
+    }
+  });
+})();
+</script>
 </body>
 </html>
