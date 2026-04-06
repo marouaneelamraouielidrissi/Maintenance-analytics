@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e40af"/>
+      <stop offset="100%" style="stop-color:#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.15"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fond arrondi -->
+  <rect width="512" height="512" rx="100" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="100" fill="url(#shine)"/>
+
+  <!-- Engrenage principal -->
+  <g transform="translate(256,245)" fill="white" opacity="0.95">
+    <path d="
+      M 0,-130
+      L 18,-110 L 38,-118 L 54,-102 L 46,-82 L 62,-68 L 58,-46 L 36,-42
+      L 32,-20 L 10,-12 L 0,-30 L -10,-12 L -32,-20 L -36,-42
+      L -58,-46 L -62,-68 L -46,-82 L -54,-102 L -38,-118 L -18,-110 Z
+    " opacity="0.3"/>
+    <!-- Dents de l'engrenage -->
+    <path d="
+      M-16,-128 L-16,-108 A88,88 0 0,0 -62,-96 L-78,-110 L-100,-88 L-86,-72
+      A88,88 0 0,0 -98,-26 L-118,-26 L-118,6 L-98,6
+      A88,88 0 0,0 -86,52 L-100,68 L-78,90 L-62,76
+      A88,88 0 0,0 -16,88 L-16,108 L16,108 L16,88
+      A88,88 0 0,0 62,76 L78,90 L100,68 L86,52
+      A88,88 0 0,0 98,6 L118,6 L118,-26 L98,-26
+      A88,88 0 0,0 86,-72 L100,-88 L78,-110 L62,-96
+      A88,88 0 0,0 16,-108 L16,-128 Z
+    " fill="white" opacity="0.9"/>
+    <!-- Centre de l'engrenage -->
+    <circle cx="0" cy="-10" r="44" fill="#1d4ed8"/>
+    <!-- Éclair au centre -->
+    <polygon points="8,-42 -14,-2 2,-2 -8,30 18,-14 2,-14 12,-42" fill="white"/>
+  </g>
+
+  <!-- Ligne décorative bas -->
+  <rect x="156" y="420" width="200" height="5" rx="3" fill="white" opacity="0.3"/>
+  <rect x="206" y="432" width="100" height="3" rx="2" fill="white" opacity="0.2"/>
+</svg>
