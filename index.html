@@ -118,6 +118,9 @@ select:focus { border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(59,130,
 #annual-section { display: none; }
 .annual-badge { background: var(--purple); color: white; border-radius: 6px; padding: 6px 16px; font-weight: 700; font-size: 13px; letter-spacing: -0.3px; white-space: nowrap; }
 
+/* Dashboard mobile arrets widget — caché sur desktop */
+#dash-mobile-arrets { display: none; }
+
 /* REPORT BANNER */
 .report-banner { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 20px 28px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; box-shadow: var(--shadow); flex-wrap: wrap; gap: 16px; }
 .report-banner-left { display: flex; align-items: center; gap: 20px; }
@@ -308,7 +311,7 @@ td { padding: 9px 14px; vertical-align: middle; }
 
   /* ── Hide UI controls ── */
   .topbar, #control-bar, .btn-secondary, .btn-generate, .mode-toggle,
-  #screen-upload, #cal-input-card { display: none !important; }
+  #screen-upload { display: none !important; }
 
   /* ── Page setup ── */
   @page {
@@ -1087,6 +1090,33 @@ td { padding: 9px 14px; vertical-align: middle; }
 .ca-mobile-day.ca-mobile-today .ca-mobile-day-name { color:var(--blue); }
 .ca-mobile-day-tags { padding:10px 14px; min-height:40px; display:flex; flex-wrap:wrap; gap:5px; align-items:center; }
 .ca-mobile-empty { color:#d1d5db; font-size:13px; }
+
+/* ── Calendrier mobile transposé : semaines en colonnes, jours en lignes ── */
+.ca-mt-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; padding:10px 12px 14px; }
+.ca-mt-table { border-collapse:collapse; width:100%; }
+.ca-mt-table th, .ca-mt-table td { border:1px solid var(--border); padding:5px 6px; text-align:center; vertical-align:top; }
+.ca-mt-day-head { background:#f8fafc; font-size:11px; font-weight:700; color:var(--muted); width:34px; min-width:34px; white-space:nowrap; }
+.ca-mt-wk-head { background:#f8fafc; font-size:11px; font-weight:700; color:var(--text); min-width:72px; white-space:nowrap; }
+.ca-mt-wk-head.ca-mt-current-wk { background:#eff6ff; color:var(--blue); }
+.ca-mt-wk-date { display:block; font-size:9px; font-weight:400; color:var(--muted); margin-top:1px; }
+.ca-mt-day-label { background:#f8fafc; font-size:11px; font-weight:700; color:var(--text); text-align:center; white-space:nowrap; padding:5px 6px; }
+.ca-mt-cell { vertical-align:middle; min-width:72px; }
+.ca-mt-cell.ca-mt-current-wk { background:#fafbff; }
+.ca-mt-cell.ca-today-col { background:#eff6ff; }
+.ca-mt-cell-date { display:block; font-size:9px; color:var(--muted); margin-bottom:3px; }
+.ca-mt-dot { color:#d1d5db; font-size:18px; line-height:1; }
+.ca-mt-cell.ca-mt-out { background:#f9fafa; }
+.ca-mt-cell.ca-mt-out .ca-mt-cell-date { color:#c8cbd0; }
+.ca-mt-cell.ca-mt-out .ca-mt-dot { color:#e5e7eb; }
+/* Nav mois */
+.ca-mt-nav { display:flex; align-items:center; gap:8px; padding:10px 12px 6px; }
+.ca-mt-nav-btn { width:34px; height:34px; border-radius:8px; border:1px solid var(--border); background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.ca-mt-nav-btn:active { background:#f1f5f9; }
+.ca-mt-nav-btn svg { width:16px; height:16px; stroke:var(--text2); fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+.ca-mt-nav-label { flex:1; text-align:center; font-size:13px; font-weight:700; color:var(--text); }
+.ca-mt-nav-today { padding:0 12px; height:34px; border-radius:8px; border:1px solid var(--blue-mid); background:#fff; color:var(--blue); font-size:11px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap; }
+.ca-mt-nav-today:active { background:var(--blue-lt); }
+
 @media (max-width:767px) {
   .ca-table-wrap > table { display:none !important; }
   #ca-mobile-week { display:block; }
@@ -1287,14 +1317,14 @@ td { padding: 9px 14px; vertical-align: middle; }
   .livrable-dl-btn { width: 100%; justify-content: center; }
   /* Sous-onglets Planification */
   .plan-subtab-bar {
-    padding: 0 0 0; top: 56px; gap: 0;
+    padding: 0; top: 94px; gap: 0;
     overflow-x: auto; overflow-y: visible;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
     border-bottom: 2px solid var(--border);
     display: flex;
-    position: relative;
+    position: sticky;
   }
   .plan-subtab-bar::-webkit-scrollbar { display: none; }
   .plan-subtab-btn {
@@ -1315,7 +1345,9 @@ td { padding: 9px 14px; vertical-align: middle; }
   .btn-generate { flex: 1; justify-content: center; padding: 7px 10px; font-size: 12px; }
   #screen-upload { padding: 20px 12px; }
   .upload-panel { padding: 28px 16px; }
+  #dash-mobile-arrets { display: block !important; }
   .report-banner { padding: 14px 16px; flex-direction: column; gap: 10px; }
+  .report-banner h2 { font-size: 13px !important; }
   .banner-stat { padding: 0 10px; }
   .banner-stat-val { font-size: 18px; }
   .section-label { font-size: 12px; padding: 8px 14px; }
@@ -1360,20 +1392,22 @@ td { padding: 9px 14px; vertical-align: middle; }
     box-shadow: 0 1px 3px rgba(0,0,0,.05);
   }
   .ot-table tbody tr td { border: none !important; padding: 0 !important; font-size: 12px; }
-  /* Date — ligne 1 gauche */
+  /* Ordre — ligne 1 gauche, muted */
   .ot-table tbody tr td:nth-child(1) { grid-column:1; grid-row:1; font-size:11px; color:var(--muted); }
-  /* Poste — ligne 1 droite */
-  .ot-table tbody tr td:nth-child(2) { grid-column:2; grid-row:1; text-align:right; }
-  /* Objet technique — ligne 2 pleine largeur */
-  .ot-table tbody tr td:nth-child(3) { grid-column:1/-1; grid-row:2; font-size:12px; }
-  /* Ordre — ligne 3 gauche */
-  .ot-table tbody tr td:nth-child(4) { grid-column:1; grid-row:3; font-size:11px; color:var(--muted); }
   /* Avis — masqué */
-  .ot-table tbody tr td:nth-child(5) { display:none; }
-  /* Type — ligne 3 droite */
-  .ot-table tbody tr td:nth-child(6) { grid-column:2; grid-row:3; text-align:right; }
-  /* Désignation — ligne 4 pleine largeur */
-  .ot-table tbody tr td:nth-child(7) { grid-column:1/-1; grid-row:4; font-size:11px; color:var(--text2); border-top:1px solid var(--border2) !important; padding-top:5px !important; }
+  .ot-table tbody tr td:nth-child(2) { display:none; }
+  /* Poste — ligne 2 pleine largeur, bold */
+  .ot-table tbody tr td:nth-child(3) { grid-column:1/-1; grid-row:2; font-size:13px; font-weight:600; }
+  /* Objet technique — ligne 3 pleine largeur */
+  .ot-table tbody tr td:nth-child(4) { grid-column:1/-1; grid-row:3; font-size:12px; color:var(--text2); }
+  /* Désignation — ligne 4 pleine largeur (visible!) */
+  .ot-table tbody tr td:nth-child(5) { grid-column:1/-1; grid-row:4; font-size:11px; color:var(--muted); border-top:1px solid var(--border2) !important; padding-top:5px !important; }
+  /* Type — ligne 1 droite */
+  .ot-table tbody tr td:nth-child(6) { grid-column:2; grid-row:1; text-align:right; }
+  /* Date — ligne 5 pleine largeur */
+  .ot-table tbody tr td:nth-child(7) { grid-column:1/-1; grid-row:5; font-size:11px; color:var(--muted); }
+  /* Réalisation — ligne 6 pleine largeur */
+  .ot-table tbody tr td:nth-child(8) { grid-column:1/-1; grid-row:6; border-top:1px solid var(--border2) !important; padding-top:6px !important; }
   .ot-table { font-size: 11px; }
   .ot-table thead th { padding: 7px 8px; font-size: 9.5px; }
   .ot-table td { padding: 8px 8px; }
@@ -1533,7 +1567,7 @@ td { padding: 9px 14px; vertical-align: middle; }
   .map-table tbody tr { display: block; background: white; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,.06); overflow: hidden; }
   .map-table td { display: flex; align-items: flex-start; gap: 8px; padding: 7px 12px; font-size: 12px; border-bottom: 1px solid var(--border2); }
   .map-table td:last-child { border-bottom: none; }
-  .map-table td.map-td-hide { display: none; }
+  .map-table td.map-td-hide { display: flex; } /* Objet technique visible sur mobile */
   .map-table td[data-label]::before { content: attr(data-label); font-size: 9.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; min-width: 70px; flex-shrink: 0; padding-top: 2px; }
   .map-filters {
     display: grid;
@@ -1823,21 +1857,21 @@ td { padding: 9px 14px; vertical-align: middle; }
 
   <!-- Barre de sous-onglets -->
   <div class="plan-subtab-bar">
-    <button class="plan-subtab-btn active" id="subtab-btn-plancharge" onclick="showPlanTab('plancharge')">
+    <button class="plan-subtab-btn active" id="subtab-btn-calarrets" onclick="showPlanTab('calarrets')">
+      <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:5px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Calendrier des arrêts
+    </button>
+    <button class="plan-subtab-btn" id="subtab-btn-plancharge" onclick="showPlanTab('plancharge')">
       <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:5px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       Plan de charge
-    </button>
-    <button class="plan-subtab-btn" id="subtab-btn-pdr" onclick="showPlanTab('pdr')">
-      <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:5px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-      PDR
     </button>
     <button class="plan-subtab-btn" id="subtab-btn-map" onclick="showPlanTab('map')">
       <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:5px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       Mise à profit
     </button>
-    <button class="plan-subtab-btn" id="subtab-btn-calarrets" onclick="showPlanTab('calarrets')">
-      <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:5px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Calendrier des arrêts
+    <button class="plan-subtab-btn" id="subtab-btn-pdr" onclick="showPlanTab('pdr')">
+      <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;margin-right:5px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      PDR
     </button>
   </div>
 
@@ -2730,30 +2764,19 @@ td { padding: 9px 14px; vertical-align: middle; }
       </div>
     </div>
 
-    <!-- CALENDRIER ARRÊTS PRÉVENTIFS -->
-    <div class="section-label">Calendrier des arrêts préventifs</div>
-
-    <!-- Filtres calendrier -->
-    <div class="chart-card" id="cal-input-card" style="margin-bottom:12px;">
-      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:4px 0;">
-        <div style="width:38px;height:38px;background:var(--green-lt);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        </div>
-        <div style="flex:1;min-width:200px;">
-          <div style="font-size:12.5px;font-weight:600;margin-bottom:2px;">Calendrier des arrêts préventifs</div>
-          <div style="font-size:11.5px;color:var(--muted);">Données intégrées — <span id="cal-count-badge" style="font-family:var(--mono);color:var(--blue);font-weight:600;">—</span> arrêts pour la période sélectionnée</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          <span style="font-size:12px;color:var(--muted);font-weight:500;">Section :</span>
-          <select id="cal-section-filter" style="font-size:12px;padding:6px 28px 6px 10px;" onchange="renderCalendar()">
-            <option value="">Toutes</option>
-          </select>
-          <button onclick="renderCalendar()" style="display:flex;align-items:center;gap:6px;background:var(--green);color:white;border:none;padding:7px 14px;border-radius:var(--radius);font-family:var(--font);font-weight:600;font-size:12.5px;cursor:pointer;">
-            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.36"/></svg>
-            Actualiser
-          </button>
-        </div>
+    <!-- ── Widget calendrier arrêts — mobile uniquement ── -->
+    <div id="dash-mobile-arrets" class="chart-card" style="margin-bottom:12px;">
+      <div id="dma-nav" class="ca-mobile-nav">
+        <button class="ca-mobile-nav-btn" onclick="dmaMobileNav(-1)" title="Semaine précédente">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span id="dma-label" class="ca-mobile-nav-label">Chargement…</span>
+        <button class="ca-mobile-nav-btn" onclick="dmaMobileNav(1)" title="Semaine suivante">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <button id="dma-today-btn" class="ca-mobile-nav-today" onclick="dmaMobileNav(0)" style="display:none;">Auj.</button>
       </div>
+      <div id="dma-body" style="padding:4px 0 6px;"></div>
     </div>
 
     <!-- Calendar grid -->
@@ -3548,7 +3571,7 @@ function generateReport() {
   // Afficher vue mensuelle, masquer vue annuelle
   document.getElementById('annual-section').style.display = 'none';
   document.getElementById('monthly-section').style.display = 'block';
-  document.getElementById('cal-input-card').style.display = '';
+  // cal-input-card removed from dashboard
 
   destroyCharts();
 
@@ -3701,7 +3724,6 @@ function generateAnnualReport() {
   // Masquer éléments mensuels, afficher section annuelle
   document.getElementById('annual-section').style.display = 'block';
   document.getElementById('monthly-section').style.display = 'none';
-  document.getElementById('cal-input-card').style.display = 'none';
   document.getElementById('cal-container').style.display  = 'none';
 
   destroyCharts();
@@ -3875,17 +3897,77 @@ function processArrets(raw) {
 
   console.log(`✅ Arrêts chargés : ${ARRETS_DATA.length} entrées`);
 
-  // Peupler le filtre Section
-  const sections = [...new Set(ARRETS_DATA.map(r => r.section.toUpperCase()).filter(Boolean))].sort();
-  const sel = document.getElementById('cal-section-filter');
-  sel.innerHTML = '<option value="">Toutes</option>';
-  sections.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sel.appendChild(o); });
+  // Section filter removed from dashboard — nothing to populate
+}
+
+/* ── Widget calendrier arrêts — Dashboard mobile ── */
+function renderDashMobileArrets() {
+  const widget = document.getElementById('dash-mobile-arrets');
+  if (!widget) return;
+
+  const today  = new Date(); today.setHours(0,0,0,0);
+  const fmt    = d => `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+  const DAYS_LONG = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+
+  const dow0   = (today.getDay() + 6) % 7;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - dow0 + _dmaWeekOffset * 7);
+  monday.setHours(0, 0, 0, 0);
+  const saturday = new Date(monday); saturday.setDate(monday.getDate() + 5);
+  const wn = caGetISOWeek(monday);
+
+  // Label nav
+  document.getElementById('dma-label').textContent = `S${wn} — ${fmt(monday)} au ${fmt(saturday)}`;
+  const todayBtn = document.getElementById('dma-today-btn');
+  if (todayBtn) todayBtn.style.display = _dmaWeekOffset !== 0 ? '' : 'none';
+
+  // Si données pas encore chargées → déclencher le chargement
+  if (!_caLoaded) {
+    document.getElementById('dma-body').innerHTML =
+      '<div style="text-align:center;padding:16px;color:var(--muted);font-size:12px;">Chargement…</div>';
+    loadCalArretsData(renderDashMobileArrets);
+    return;
+  }
+
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+  const daysHtml = DAYS_LONG.map((name, i) => {
+    const d       = new Date(monday); d.setDate(monday.getDate() + i);
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const isToday = dateStr === todayStr;
+    const items   = _caData.filter(r => r.date === dateStr);
+    if (!items.length) return ''; // ne pas afficher les jours vides
+
+    const tags = items.map(it => {
+      const key    = it.date + '_' + it.installation;
+      const isRep  = _caReporte.has(key);
+      const cls    = isRep ? 'ca-reporte' : it.cls;
+      const suffix = isRep ? ' ↩' : '';
+      return `<span class="ca-tag ${cls}">${it.installation}${suffix}</span>`;
+    }).join('');
+
+    return `<div class="ca-mobile-day${isToday ? ' ca-mobile-today' : ''}" style="margin:0 0 8px;">
+      <div class="ca-mobile-day-header">
+        <span class="ca-mobile-day-name">${name}</span>
+        <span class="ca-mobile-day-date">${fmt(d)}</span>
+      </div>
+      <div class="ca-mobile-day-tags">${tags}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('dma-body').innerHTML = daysHtml ||
+    '<div style="text-align:center;padding:16px;color:var(--muted);font-size:12px;">Aucun arrêt cette semaine</div>';
+}
+
+function dmaMobileNav(dir) {
+  _dmaWeekOffset = dir === 0 ? 0 : _dmaWeekOffset + dir;
+  renderDashMobileArrets();
 }
 
 function renderCalendar() {
   const mo = parseInt(document.getElementById('month-select').value);
   const yr = parseInt(document.getElementById('year-select').value);
-  const sectionFilter = (document.getElementById('cal-section-filter').value||'').toUpperCase();
+  const sectionFilter = '';
 
   // Filtrer les arrêts du mois/année sélectionné
   let rows = ARRETS_DATA.filter(r => {
@@ -3894,7 +3976,7 @@ function renderCalendar() {
   });
   if (sectionFilter) rows = rows.filter(r=>(r.section||'').toUpperCase()===sectionFilter);
 
-  document.getElementById('cal-count-badge').textContent = rows.length + ' arrêt' + (rows.length>1?'s':'');
+  // cal-count-badge removed from dashboard
 
   if (!rows.length) {
     document.getElementById('cal-container').style.display = 'none';
@@ -5198,7 +5280,7 @@ function buildLineMulti(id,labels,datasets){
 /* ════════════════════════════════════════════════════════════
    NAVIGATION PRINCIPALE — Basculement entre pages
    ════════════════════════════════════════════════════════════ */
-let _currentPlanTab = 'plancharge'; // sous-onglet actif dans Planification
+let _currentPlanTab = 'calarrets'; // sous-onglet actif dans Planification
 
 function showMainPage(page) {
   // Onglets nav
@@ -5274,7 +5356,8 @@ function showPlanTab(tab) {
 let _caData              = [];
 let _caLoaded            = false;
 let _caReporte           = new Set();
-let _caMobileWeekOffset  = 0; // 0 = semaine courante, ±N = semaines avant/après
+let _caMobileWeekOffset  = 0; // 0 = semaine courante, ±N semaines
+let _dmaWeekOffset       = 0; // offset semaine pour le widget dashboard mobile
 let _caYear        = new Date().getFullYear();
 let _caMonth       = new Date().getMonth(); // 0-based
 
@@ -5282,11 +5365,16 @@ const CA_FILE_ID   = '1EBACM8ou8B_9fmExToUKsMCvHL27hiwU2D0yZ_gQGOA';
 const CA_SHEET     = 'Planning des arrets';
 const MONTHS_FR_CA = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 
-async function loadCalArretsData() {
-  if (_caLoaded) { renderCalArretsPage(); return; }
-  document.getElementById('ca-loading').style.display = 'block';
-  document.getElementById('ca-table').style.display   = 'none';
-  document.getElementById('ca-no-data').style.display = 'none';
+async function loadCalArretsData(afterLoad) {
+  const done = afterLoad || renderCalArretsPage;
+  if (_caLoaded) { done(); return; }
+
+  if (!afterLoad) {
+    // chargement depuis l'onglet Calendrier — montrer indicateur
+    document.getElementById('ca-loading').style.display = 'block';
+    document.getElementById('ca-table').style.display   = 'none';
+    document.getElementById('ca-no-data').style.display = 'none';
+  }
 
   const proxyUrl  = '/proxy-calarrets';
   const directUrl = `https://docs.google.com/spreadsheets/d/${CA_FILE_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(CA_SHEET)}&t=${Date.now()}`;
@@ -5304,9 +5392,11 @@ async function loadCalArretsData() {
     const rows = parsePDRCSV(csv);
     processCalArretsData(rows);
     _caLoaded = true;
-    renderCalArretsPage();
+    done();
   } catch(e) {
-    document.getElementById('ca-loading').innerHTML = `<div style="color:var(--red);font-size:13px;">⚠️ Impossible de charger les données. ${e.message}</div>`;
+    if (!afterLoad) {
+      document.getElementById('ca-loading').innerHTML = `<div style="color:var(--red);font-size:13px;">⚠️ Impossible de charger les données. ${e.message}</div>`;
+    }
   }
 }
 
@@ -5464,19 +5554,19 @@ function caGetMondayISO(year, week) {
 }
 
 function caRenderMobileWeek(isAdmin, today) {
+  /* ── Vue semaine verticale : une carte par jour ── */
   const DAYS_LONG = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
   const fmt = d => `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
 
-  // Lundi de la semaine courante + offset
-  const dow0 = (today.getDay() + 6) % 7;
+  const dow0   = (today.getDay() + 6) % 7;
   const monday = new Date(today);
   monday.setDate(today.getDate() - dow0 + _caMobileWeekOffset * 7);
-  monday.setHours(0,0,0,0);
+  monday.setHours(0, 0, 0, 0);
 
   const saturday = new Date(monday); saturday.setDate(monday.getDate() + 5);
   const wn = caGetISOWeek(monday);
+  const isThisWeek = _caMobileWeekOffset === 0;
 
-  // Nav semaine
   const navHtml = `<div class="ca-mobile-nav">
     <button class="ca-mobile-nav-btn" onclick="caMobileWeekNav(-1)" title="Semaine précédente">
       <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
@@ -5485,24 +5575,29 @@ function caRenderMobileWeek(isAdmin, today) {
     <button class="ca-mobile-nav-btn" onclick="caMobileWeekNav(1)" title="Semaine suivante">
       <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
-    <button class="ca-mobile-nav-today" onclick="caMobileWeekNav(0)">Auj.</button>
+    ${!isThisWeek ? `<button class="ca-mobile-nav-today" onclick="caMobileWeekNav(0)">Auj.</button>` : ''}
   </div>`;
 
   const daysHtml = DAYS_LONG.map((name, i) => {
-    const d = new Date(monday); d.setDate(monday.getDate() + i);
+    const d       = new Date(monday); d.setDate(monday.getDate() + i);
     const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const isToday = d.getTime() === today.getTime();
-    const items = _caData.filter(r => r.date === dateStr);
-    const tags = items.length ? items.map(it => {
-      const key = it.date + '_' + it.installation;
-      const isReporte = _caReporte.has(key);
-      const safeDate = it.date.replace(/'/g,"\\'");
-      const safeLabel = it.installation.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-      const onclk = (isAdmin && !isReporte) ? ` onclick="caMarkReporte('${safeDate}','${safeLabel}',this)"` : '';
-      const cls = isReporte ? 'ca-reporte' : it.cls;
-      const suffix = isReporte ? ' ↩' : '';
-      return `<span class="ca-tag ${cls}"${onclk}>${it.installation}${suffix}</span>`;
-    }).join('') : '<span class="ca-mobile-empty">—</span>';
+    const todayStr= `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+    const isToday = dateStr === todayStr;
+    const items   = _caData.filter(r => r.date === dateStr);
+
+    const tags = items.length
+      ? items.map(it => {
+          const key      = it.date + '_' + it.installation;
+          const isRep    = _caReporte.has(key);
+          const safeDate = it.date.replace(/'/g,"\\'");
+          const safeLbl  = it.installation.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+          const onclk    = (isAdmin && !isRep) ? ` onclick="caMarkReporte('${safeDate}','${safeLbl}',this)"` : '';
+          const cls      = isRep ? 'ca-reporte' : it.cls;
+          const suffix   = isRep ? ' ↩' : '';
+          return `<span class="ca-tag ${cls}"${onclk}>${it.installation}${suffix}</span>`;
+        }).join('')
+      : '<span class="ca-mobile-empty">—</span>';
+
     return `<div class="ca-mobile-day${isToday ? ' ca-mobile-today' : ''}">
       <div class="ca-mobile-day-header">
         <span class="ca-mobile-day-name">${name}</span>
@@ -5513,7 +5608,7 @@ function caRenderMobileWeek(isAdmin, today) {
   }).join('');
 
   document.getElementById('ca-mobile-week').innerHTML = navHtml + daysHtml;
-  document.getElementById('ca-table').style.display = 'none';
+  document.getElementById('ca-table').style.display   = 'none';
   document.getElementById('ca-no-data').style.display = 'none';
   document.getElementById('ca-mobile-week').style.display = 'block';
 }
@@ -6598,6 +6693,11 @@ async function loadOTData() {
     });
 
     renderOTTable(filtered);
+    // Filtre ZCOR par défaut au chargement
+    if (filtered.some(r => r.type === 'ZCOR')) {
+      document.getElementById('pf-type').value = 'ZCOR';
+      applyOTFilters();
+    }
 
   } catch (err) {
     statusEl.className = 'pc-status-bar error';
@@ -7371,6 +7471,11 @@ async function loadMAPData() {
     mapDataLoaded    = true;
     mapTableRendered = true;
     renderMAPTable(mapAllRows);
+    // Filtre ZCOR par défaut au chargement
+    if (mapAllRows.some(r => r.type === 'ZCOR')) {
+      document.getElementById('mf-type').value = 'ZCOR';
+      applyMAPFilters();
+    }
 
   } catch (err) {
     document.getElementById('map-table-container').innerHTML = `
