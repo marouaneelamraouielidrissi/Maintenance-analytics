@@ -118,9 +118,6 @@ select:focus { border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(59,130,
 #annual-section { display: none; }
 .annual-badge { background: var(--purple); color: white; border-radius: 6px; padding: 6px 16px; font-weight: 700; font-size: 13px; letter-spacing: -0.3px; white-space: nowrap; }
 
-/* Dashboard mobile arrets widget — caché sur desktop */
-#dash-mobile-arrets { display: none; }
-
 /* REPORT BANNER */
 .report-banner { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 20px 28px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; box-shadow: var(--shadow); flex-wrap: wrap; gap: 16px; }
 .report-banner-left { display: flex; align-items: center; gap: 20px; }
@@ -1345,7 +1342,6 @@ td { padding: 9px 14px; vertical-align: middle; }
   .btn-generate { flex: 1; justify-content: center; padding: 7px 10px; font-size: 12px; }
   #screen-upload { padding: 20px 12px; }
   .upload-panel { padding: 28px 16px; }
-  #dash-mobile-arrets { display: block !important; }
   .report-banner { padding: 14px 16px; flex-direction: column; gap: 10px; }
   .report-banner h2 { font-size: 13px !important; }
   .banner-stat { padding: 0 10px; }
@@ -2764,21 +2760,6 @@ td { padding: 9px 14px; vertical-align: middle; }
       </div>
     </div>
 
-    <!-- ── Widget calendrier arrêts — mobile uniquement ── -->
-    <div id="dash-mobile-arrets" class="chart-card" style="margin-bottom:12px;">
-      <div id="dma-nav" class="ca-mobile-nav">
-        <button class="ca-mobile-nav-btn" onclick="dmaMobileNav(-1)" title="Semaine précédente">
-          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-        <span id="dma-label" class="ca-mobile-nav-label">Chargement…</span>
-        <button class="ca-mobile-nav-btn" onclick="dmaMobileNav(1)" title="Semaine suivante">
-          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        <button id="dma-today-btn" class="ca-mobile-nav-today" onclick="dmaMobileNav(0)" style="display:none;">Auj.</button>
-      </div>
-      <div id="dma-body" style="padding:4px 0 6px;"></div>
-    </div>
-
     <!-- Calendar grid -->
     <div id="cal-container" style="display:none;">
       <div class="chart-card">
@@ -3898,70 +3879,6 @@ function processArrets(raw) {
   console.log(`✅ Arrêts chargés : ${ARRETS_DATA.length} entrées`);
 
   // Section filter removed from dashboard — nothing to populate
-}
-
-/* ── Widget calendrier arrêts — Dashboard mobile ── */
-function renderDashMobileArrets() {
-  const widget = document.getElementById('dash-mobile-arrets');
-  if (!widget) return;
-
-  const today  = new Date(); today.setHours(0,0,0,0);
-  const fmt    = d => `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
-  const DAYS_LONG = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
-
-  const dow0   = (today.getDay() + 6) % 7;
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - dow0 + _dmaWeekOffset * 7);
-  monday.setHours(0, 0, 0, 0);
-  const saturday = new Date(monday); saturday.setDate(monday.getDate() + 5);
-  const wn = caGetISOWeek(monday);
-
-  // Label nav
-  document.getElementById('dma-label').textContent = `S${wn} — ${fmt(monday)} au ${fmt(saturday)}`;
-  const todayBtn = document.getElementById('dma-today-btn');
-  if (todayBtn) todayBtn.style.display = _dmaWeekOffset !== 0 ? '' : 'none';
-
-  // Si données pas encore chargées → déclencher le chargement
-  if (!_caLoaded) {
-    document.getElementById('dma-body').innerHTML =
-      '<div style="text-align:center;padding:16px;color:var(--muted);font-size:12px;">Chargement…</div>';
-    loadCalArretsData(renderDashMobileArrets);
-    return;
-  }
-
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-
-  const daysHtml = DAYS_LONG.map((name, i) => {
-    const d       = new Date(monday); d.setDate(monday.getDate() + i);
-    const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const isToday = dateStr === todayStr;
-    const items   = _caData.filter(r => r.date === dateStr);
-    if (!items.length) return ''; // ne pas afficher les jours vides
-
-    const tags = items.map(it => {
-      const key    = it.date + '_' + it.installation;
-      const isRep  = _caReporte.has(key);
-      const cls    = isRep ? 'ca-reporte' : it.cls;
-      const suffix = isRep ? ' ↩' : '';
-      return `<span class="ca-tag ${cls}">${it.installation}${suffix}</span>`;
-    }).join('');
-
-    return `<div class="ca-mobile-day${isToday ? ' ca-mobile-today' : ''}" style="margin:0 0 8px;">
-      <div class="ca-mobile-day-header">
-        <span class="ca-mobile-day-name">${name}</span>
-        <span class="ca-mobile-day-date">${fmt(d)}</span>
-      </div>
-      <div class="ca-mobile-day-tags">${tags}</div>
-    </div>`;
-  }).join('');
-
-  document.getElementById('dma-body').innerHTML = daysHtml ||
-    '<div style="text-align:center;padding:16px;color:var(--muted);font-size:12px;">Aucun arrêt cette semaine</div>';
-}
-
-function dmaMobileNav(dir) {
-  _dmaWeekOffset = dir === 0 ? 0 : _dmaWeekOffset + dir;
-  renderDashMobileArrets();
 }
 
 function renderCalendar() {
@@ -5312,10 +5229,6 @@ function showMainPage(page) {
     setTimeout(() => generateReport(), 50);
   }
 
-  // Widget calendrier arrêts — dashboard mobile
-  if (page === 'rapport' && window.innerWidth < 768) {
-    setTimeout(() => renderDashMobileArrets(), 80);
-  }
 
   // Page Planification (container des 3 sous-onglets)
   document.getElementById('page-planification').style.display = page === 'planification' ? 'block' : 'none';
@@ -5362,7 +5275,6 @@ let _caData              = [];
 let _caLoaded            = false;
 let _caReporte           = new Set();
 let _caMobileWeekOffset  = 0; // 0 = semaine courante, ±N semaines
-let _dmaWeekOffset       = 0; // offset semaine pour le widget dashboard mobile
 let _caYear        = new Date().getFullYear();
 let _caMonth       = new Date().getMonth(); // 0-based
 
