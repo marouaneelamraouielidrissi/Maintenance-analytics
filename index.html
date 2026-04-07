@@ -8605,6 +8605,7 @@ function chatBuildContext() {
     const samedi = new Date(lundi); samedi.setDate(lundi.getDate()+5);
     const otSem = allData.filter(r => { if(!r.debut) return false; const d=new Date(r.debut); d.setHours(0,0,0,0); return d>=lundi && d<=samedi; });
     lines.push(`\nOT planifiés cette semaine (${fmt(lundi)} - ${fmt(samedi)}) : ${otSem.length} OT`);
+    otSem.forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | Poste: ${r.poste} | Type: ${r.type} | Statut: ${r.statutSys} | Début: ${fmt(r.debut)}`));
 
     // Répartition statuts
     const statuts = {}; allData.forEach(r => { const s=r.statutSys||'?'; statuts[s]=(statuts[s]||0)+1; });
