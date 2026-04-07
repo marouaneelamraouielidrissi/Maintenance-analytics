@@ -5840,7 +5840,7 @@ async function submitMotorRequest(e) {
       demandeur: document.getElementById('mf-demandeur').value.trim(),
       demandeurEmail: document.getElementById('mf-demandeur-email').value.trim(),
       dateDemande: new Date().toISOString(),
-      statut: 'envoyee',
+      statut: currentDemandType === 'reparation' ? 'approuvee' : 'envoyee',
       justifRefus: '',
       etatReparation: 'attente',
     };
@@ -6456,9 +6456,9 @@ function renderAdminCard(d) {
         <span style="font-size:11.5px;font-weight:700;color:${statusColors[d.statut]||'var(--muted)'};white-space:nowrap;">${d.statut.toUpperCase()}</span>
       </div>
       <div class="admin-actions">
-        ${d.statut !== 'approuvee' ? `<button class="admin-approve-btn" onclick="adminApprove('${d.id}')">✓ Approuver</button>` : ''}
-        ${d.statut !== 'refusee' ? `<button class="admin-refuse-btn" onclick="adminShowRefus('${d.id}')">✗ Refuser</button>` : ''}
-        ${d.statut === 'envoyee' ? '' : `<button onclick="adminReset('${d.id}')" style="padding:6px 12px;background:var(--slate-lt);color:var(--slate);border:1px solid var(--border);border-radius:var(--radius);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;">↩ Réinitialiser</button>`}
+        ${d.type !== 'reparation' && d.statut !== 'approuvee' ? `<button class="admin-approve-btn" onclick="adminApprove('${d.id}')">✓ Approuver</button>` : ''}
+        ${d.type !== 'reparation' && d.statut !== 'refusee' ? `<button class="admin-refuse-btn" onclick="adminShowRefus('${d.id}')">✗ Refuser</button>` : ''}
+        ${d.type !== 'reparation' && d.statut !== 'envoyee' ? `<button onclick="adminReset('${d.id}')" style="padding:6px 12px;background:var(--slate-lt);color:var(--slate);border:1px solid var(--border);border-radius:var(--radius);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;">↩ Réinitialiser</button>` : ''}
       </div>
       ${refusModal}
     </div>`;
