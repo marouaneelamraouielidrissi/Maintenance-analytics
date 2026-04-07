@@ -991,6 +991,8 @@ td { padding: 9px 14px; vertical-align: middle; }
 .pdr-section-btn.complete .pdr-sect-count { background: rgba(255,255,255,0.35); }
 .pdr-sect-count { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; border-radius: 10px; font-size: 10px; font-weight: 700; background: rgba(255,255,255,0.25); padding: 0 4px; }
 .pdr-section-btn:not(.active) .pdr-sect-count { background: var(--bg); color: var(--muted); }
+.pdr-section-btn.bureau-active { background: var(--amber); color: white; border-color: var(--amber); }
+.pdr-bureau-badge { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 2px 7px; background: #fff7ed; color: #c2410c; border: 1px solid #fdba74; border-radius: 4px; font-size: 10.5px; font-weight: 700; white-space: nowrap; }
 
 .pdr-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
 .pdr-stat { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; display: flex; flex-direction: column; gap: 2px; box-shadow: var(--shadow); min-width: 120px; }
@@ -2044,6 +2046,10 @@ td { padding: 9px 14px; vertical-align: middle; }
     </button>
     <button class="pdr-section-btn" id="pdr-btn-reg"  onclick="filterPDRSection('reg')">
       <span class="pdr-section-label" data-name="Service Régulation">Service Régulation</span> <span class="pdr-sect-count" id="pdr-cnt-reg">0</span>
+    </button>
+    <button class="pdr-section-btn" id="pdr-btn-bureau" onclick="filterPDRSection('bureau')" style="border-color:#fdba74;color:#c2410c;background:#fff7ed;">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="pdr-section-label" data-name="Bureau de méthode">Bureau de méthode</span> <span class="pdr-sect-count" id="pdr-cnt-bureau">0</span>
     </button>
   </div>
 
@@ -7024,6 +7030,17 @@ function parsePDRCSV(text) {
   return rows;
 }
 
+/* ── Détection mots-clés Bureau de méthode ── */
+const PDR_BUREAU_KEYWORDS = ['réducteur', 'reducteur', 'pompe', 'moteur'];
+function pdrNeedsBureau(desc) {
+  if (!desc) return false;
+  const d = desc.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return PDR_BUREAU_KEYWORDS.some(kw => {
+    const k = kw.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    return d.includes(k);
+  });
+}
+
 /* ── Filtre par section ── */
 function filterPDRSection(section) {
   pdrCurrentSection = section;
@@ -7031,6 +7048,13 @@ function filterPDRSection(section) {
   ['all','mec','inst','elec','reg'].forEach(s => {
     document.getElementById('pdr-btn-'+s).classList.toggle('active', s === section);
   });
+  const bureauBtn = document.getElementById('pdr-btn-bureau');
+  if (bureauBtn) {
+    bureauBtn.classList.toggle('active', section === 'bureau');
+    bureauBtn.style.background = section === 'bureau' ? 'var(--amber)' : '#fff7ed';
+    bureauBtn.style.color      = section === 'bureau' ? 'white'        : '#c2410c';
+    bureauBtn.style.borderColor= section === 'bureau' ? 'var(--amber)' : '#fdba74';
+  }
   renderPDRTable(pdrAllRows);
 }
 
@@ -7039,16 +7063,18 @@ function renderPDRTable(rows) {
   const container = document.getElementById('pdr-table-container');
 
   // Comptages par section + vérification complétude
-  const counts   = { all: 0, mec: 0, inst: 0, elec: 0, reg: 0 };
-  const pending  = { all: 0, mec: 0, inst: 0, elec: 0, reg: 0 };
+  const counts   = { all: 0, mec: 0, inst: 0, elec: 0, reg: 0, bureau: 0 };
+  const pending  = { all: 0, mec: 0, inst: 0, elec: 0, reg: 0, bureau: 0 };
   rows.forEach(r => {
     counts.all++;
     const s = getPDRSectionForPoste(r.poste);
     if (counts[s] !== undefined) counts[s]++;
+    if (pdrNeedsBureau(r.desc)) counts.bureau++;
     const conf = buildPDRConf(r);
     if (!conf) {
       pending.all++;
       if (pending[s] !== undefined) pending[s]++;
+      if (pdrNeedsBureau(r.desc)) pending.bureau++;
     }
   });
   ['all','mec','inst','elec','reg'].forEach(s => {
@@ -7064,10 +7090,15 @@ function renderPDRTable(rows) {
       if (label) label.textContent = isComplete ? '✓ ' + label.dataset.name : label.dataset.name;
     }
   });
+  // Compteur Bureau de méthode
+  const bureauCntEl = document.getElementById('pdr-cnt-bureau');
+  if (bureauCntEl) bureauCntEl.textContent = counts.bureau || 0;
 
   // Filtre section
   let filtered = rows;
-  if (pdrCurrentSection !== 'all') {
+  if (pdrCurrentSection === 'bureau') {
+    filtered = rows.filter(r => pdrNeedsBureau(r.desc));
+  } else if (pdrCurrentSection !== 'all') {
     const postes = PDR_SECTIONS[pdrCurrentSection] || [];
     filtered = rows.filter(r => {
       const p = (r.poste || '').trim().toUpperCase();
@@ -7128,7 +7159,10 @@ function renderPDRTable(rows) {
 
     return `<tr class="${rowClass}" id="pdr-tr-${key}">
       <td data-label="Ordre"><span class="pdr-ref">${r.ordre}</span></td>
-      <td data-label="Désignation" class="pdr-text">${r.desc || '—'}</td>
+      <td data-label="Désignation" class="pdr-text">
+        ${r.desc || '—'}
+        ${pdrNeedsBureau(r.desc) ? `<div class="pdr-bureau-badge"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Bureau de méthode</div>` : ''}
+      </td>
       <td data-label="Objet" class="pdr-td-hide" style="font-size:12px;color:var(--text2);">${r.objet || '—'}</td>
       <td data-label="Poste"><span style="font-size:12px;font-weight:600;">${r.poste || '—'}</span>${sectionLabel ? `<span style="font-size:10px;color:var(--muted);display:block;">${sectionLabel}</span>` : ''}</td>
       <td data-label="PDR" class="pdr-text" style="max-width:180px;">${r.pdr}</td>
