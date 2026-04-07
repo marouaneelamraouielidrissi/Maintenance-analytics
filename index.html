@@ -8563,52 +8563,105 @@ function chatSuggest(btn) {
 
 function chatBuildContext() {
   const today = new Date(); today.setHours(0,0,0,0);
-  const fmt = d => d ? `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}` : '—';
+  const fmt   = d => d ? `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}` : '—';
+  const isoFmt= d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const txt   = id => (document.getElementById(id)||{}).textContent||'—';
   const lines = [];
 
-  // Date du jour
-  lines.push(`Date du jour : ${fmt(today)}`);
+  // ── Date courante ──
+  lines.push(`Date du jour : ${fmt(today)} (${['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][today.getDay()]})`);
+  const mo = today.toLocaleString('fr-FR',{month:'long'}); const yr = today.getFullYear();
+  lines.push(`Mois en cours : ${mo} ${yr}`);
 
-  // OT (allData)
+  // ── KPIs affichés dans le dashboard ──
+  lines.push('\n--- INDICATEURS CLÉS DU MOIS ---');
+  lines.push(`Taux de réalisation OT      : ${txt('banner-realisation')}`);
+  lines.push(`Taux réalisation arrêts     : ${txt('banner-arrets-real')}`);
+  lines.push(`Part préventif systématique : ${txt('banner-sys-ratio')}`);
+  lines.push(`Total OT planifiés          : ${txt('kpi-total')}`);
+  lines.push(`OT réalisés (CONF+TCLO+CLOT): ${txt('kpi-realise')} (${txt('kpi-realise-pct')})`);
+  lines.push(`Backlog (ATPL+LANC)         : ${txt('kpi-backlog')}`);
+  lines.push(`Taux réalisation préventif  : ${txt('kpi-taux-prev')}`);
+  lines.push(`Taux réalisation correctif  : ${txt('kpi-taux-cor')}`);
+  lines.push(`OT LANC (en cours)          : ${txt('kpi-lanc')}`);
+  lines.push(`OT CRPR (à planifier)       : ${txt('kpi-crpr')}`);
+
+  // ── OT SAP détaillés ──
   if (typeof allData !== 'undefined' && allData.length > 0) {
-    lines.push(`\n--- OT SAP (${allData.length} ordres) ---`);
+    lines.push(`\n--- OT SAP (${allData.length} ordres au total) ---`);
+
+    // Demain
     const demain = new Date(today); demain.setDate(today.getDate() + 1);
-    // Résumé statuts
-    const statuts = {};
-    allData.forEach(r => { const s = r.statutSys||'?'; statuts[s] = (statuts[s]||0)+1; });
-    lines.push('Répartition statuts : ' + Object.entries(statuts).map(([k,v])=>`${k}:${v}`).join(', '));
-    // OT planifiés demain
     const otDemain = allData.filter(r => r.debut && new Date(r.debut).setHours(0,0,0,0) === demain.getTime());
-    if (otDemain.length) lines.push(`OT planifiés demain (${fmt(demain)}) : ` + otDemain.map(r=>`[${r.ordre}] ${r.description||''} (${r.poste})`).slice(0,10).join(' | '));
-    // Types
-    const types = {};
-    allData.forEach(r => { const t = r.type||'?'; types[t]=(types[t]||0)+1; });
-    lines.push('Types OT : ' + Object.entries(types).map(([k,v])=>`${k}:${v}`).join(', '));
-    // Backlog ATPL+LANC
-    const backlog = allData.filter(r=>r.statutUtil&&r.statutUtil.includes('ATPL')&&r.statutSys&&r.statutSys.includes('LANC'));
-    lines.push(`Backlog (ATPL+LANC) : ${backlog.length} OT`);
+    if (otDemain.length) {
+      lines.push(`\nOT planifiés demain (${fmt(demain)}) — ${otDemain.length} OT :`);
+      otDemain.slice(0,20).forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | Poste: ${r.poste} | Type: ${r.type} | Statut: ${r.statutSys}`));
+    } else {
+      lines.push(`Aucun OT planifié pour demain (${fmt(demain)})`);
+    }
+
+    // Cette semaine
+    const lundi = new Date(today); lundi.setDate(today.getDate() - (today.getDay()+6)%7);
+    const samedi = new Date(lundi); samedi.setDate(lundi.getDate()+5);
+    const otSem = allData.filter(r => { if(!r.debut) return false; const d=new Date(r.debut); d.setHours(0,0,0,0); return d>=lundi && d<=samedi; });
+    lines.push(`\nOT planifiés cette semaine (${fmt(lundi)} - ${fmt(samedi)}) : ${otSem.length} OT`);
+
+    // Répartition statuts
+    const statuts = {}; allData.forEach(r => { const s=r.statutSys||'?'; statuts[s]=(statuts[s]||0)+1; });
+    lines.push('\nRépartition par statut système : ' + Object.entries(statuts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}:${v}`).join(', '));
+
+    // Répartition types
+    const types = {}; allData.forEach(r => { const t=r.type||'?'; types[t]=(types[t]||0)+1; });
+    lines.push('Répartition par type OT : ' + Object.entries(types).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}:${v}`).join(', '));
+
+    // Backlog détail
+    const backlog = allData.filter(r => (r.statutUtil||'').includes('ATPL') && (r.statutSys||'').includes('LANC'));
+    lines.push(`\nBacklog (ATPL+LANC) : ${backlog.length} OT`);
+    if (backlog.length) backlog.slice(0,10).forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | Poste: ${r.poste} | Type: ${r.type}`));
   }
 
-  // Arrêts préventifs (_caData)
+  // ── Arrêts préventifs ──
   if (typeof _caData !== 'undefined' && _caData.length > 0) {
-    lines.push(`\n--- Arrêts préventifs (${_caData.length} arrêts) ---`);
-    const lundi = new Date(today); lundi.setDate(today.getDate() - (today.getDay()+6)%7);
-    const dimanche = new Date(lundi); dimanche.setDate(lundi.getDate() + 6);
-    const isoFmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const arrSem = _caData.filter(r => r.date >= isoFmt(lundi) && r.date <= isoFmt(dimanche));
-    if (arrSem.length) lines.push('Arrêts cette semaine : ' + arrSem.map(r=>`${r.installation} le ${r.date}`).join(' | '));
-    if (typeof _caReporte !== 'undefined') {
+    lines.push(`\n--- ARRÊTS PRÉVENTIFS (${_caData.length} au total) ---`);
+
+    // Cette semaine
+    const lundi2 = new Date(today); lundi2.setDate(today.getDate() - (today.getDay()+6)%7);
+    const samedi2 = new Date(lundi2); samedi2.setDate(lundi2.getDate()+5);
+    const arrSem = _caData.filter(r => r.date >= isoFmt(lundi2) && r.date <= isoFmt(samedi2));
+    if (arrSem.length) {
+      lines.push(`\nArrêts prévus cette semaine (${fmt(lundi2)} - ${fmt(samedi2)}) :`);
+      arrSem.forEach(r => lines.push(`  • ${r.installation} — ${r.date} (${r.section||''})`));
+    } else {
+      lines.push('Aucun arrêt prévu cette semaine.');
+    }
+
+    // Ce mois
+    const arrMois = _caData.filter(r => r.date.startsWith(`${yr}-${String(today.getMonth()+1).padStart(2,'0')}`));
+    lines.push(`\nArrêts prévus ce mois (${mo} ${yr}) : ${arrMois.length}`);
+    arrMois.forEach(r => lines.push(`  • ${r.installation} — ${r.date} (${r.section||''})`));
+
+    // Reportés
+    if (typeof _caReporte !== 'undefined' && _caReporte.size > 0) {
       const reportes = _caData.filter(r => _caReporte.has(r.date+'_'+r.installation));
-      if (reportes.length) lines.push('Arrêts reportés : ' + reportes.map(r=>`${r.installation} (${r.date})`).join(' | '));
+      lines.push(`\nArrêts reportés (${reportes.length}) :`);
+      reportes.forEach(r => lines.push(`  • ${r.installation} — prévu le ${r.date}`));
+    } else {
+      lines.push('\nAucun arrêt reporté.');
     }
   }
 
-  // Moteurs (_demandesList)
-  if (typeof _demandesList !== 'undefined' && _demandesList.length > 0) {
-    const enCours = _demandesList.filter(d => d.statut && !['terminé','livré','clôturé'].includes((d.statut||'').toLowerCase()));
+  // ── Moteurs électriques ──
+  if (typeof allDemandes !== 'undefined' && allDemandes.length > 0) {
+    lines.push(`\n--- MOTEURS ÉLECTRIQUES (${allDemandes.length} demandes) ---`);
+    const enCours = allDemandes.filter(d => {
+      const s = (d.statut||'').toLowerCase();
+      return !['terminé','livré','clôturé','annulé'].includes(s);
+    });
     if (enCours.length) {
-      lines.push(`\n--- Moteurs en cours (${enCours.length}) ---`);
-      enCours.slice(0,15).forEach(d => lines.push(`${d.installation||'?'} — ${d.type||'?'} — statut: ${d.statut||'?'}`));
+      lines.push(`Moteurs en cours de réparation/pose (${enCours.length}) :`);
+      enCours.slice(0,20).forEach(d => lines.push(`  • ${d.objetTechnique||d.installation||'?'} — ${d.type||'?'} — Statut: ${d.statut||'?'} — Demandeur: ${d.demandeur||'?'}`));
+    } else {
+      lines.push('Aucun moteur en cours.');
     }
   }
 
