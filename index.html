@@ -8754,11 +8754,25 @@ function chatBuildContext() {
     lines.push(`\nOT semaine (${fmt(lundi)}-${fmt(samedi)}) : ${otSem.length}`);
     otSem.slice(0,40).forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | ${r.objet||''} | ${r.poste}`));
 
-    // Résumés
+    // Résumés globaux
     const statuts = {}; allData.forEach(r => { const s=r.statutSys||'?'; statuts[s]=(statuts[s]||0)+1; });
     lines.push('Statuts: ' + Object.entries(statuts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}:${v}`).join(', '));
     const types = {}; allData.forEach(r => { const t=r.type||'?'; types[t]=(types[t]||0)+1; });
     lines.push('Types: ' + Object.entries(types).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}:${v}`).join(', '));
+
+    // OT LANC par poste (corps de métier)
+    const lancRows = allData.filter(r => (r.statutSys||'').includes('LANC'));
+    const lancByPoste = {};
+    lancRows.forEach(r => { const p=r.poste||'?'; lancByPoste[p]=(lancByPoste[p]||0)+1; });
+    lines.push(`\nOT LANC (lancés/en exécution) par poste — total ${lancRows.length} :`);
+    Object.entries(lancByPoste).sort((a,b)=>b[1]-a[1]).forEach(([p,n]) => lines.push(`  • ${p} : ${n} OT`));
+
+    // OT CRPR par poste (en cours de préparation)
+    const crprRows = allData.filter(r => (r.statutSys||'').includes('CRPR'));
+    const crprByPoste = {};
+    crprRows.forEach(r => { const p=r.poste||'?'; crprByPoste[p]=(crprByPoste[p]||0)+1; });
+    lines.push(`\nOT CRPR (en cours de préparation) par poste — total ${crprRows.length} :`);
+    Object.entries(crprByPoste).sort((a,b)=>b[1]-a[1]).forEach(([p,n]) => lines.push(`  • ${p} : ${n} OT`));
 
     // Backlog
     const backlog = allData.filter(r => (r.statutUtil||'').includes('ATPL') && (r.statutSys||'').includes('LANC'));
