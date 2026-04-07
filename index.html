@@ -8735,7 +8735,7 @@ function chatBuildContext() {
   lines.push(`Taux réalisation préventif  : ${txt('kpi-taux-prev')}`);
   lines.push(`Taux réalisation correctif  : ${txt('kpi-taux-cor')}`);
   lines.push(`OT LANC (lancés, en exécution)              : ${txt('kpi-lanc')}`);
-  lines.push(`OT CRPR (en cours de préparation)           : ${txt('kpi-crpr')}`);
+  lines.push(`OT CRPR (en cours de préparation)           : ${txt('kpi-retard')}`);
 
   // ── OT SAP détaillés ──
   if (typeof allData !== 'undefined' && allData.length > 0) {
@@ -8767,8 +8767,8 @@ function chatBuildContext() {
     lines.push(`\nOT LANC (lancés/en exécution) par poste — total ${lancRows.length} :`);
     Object.entries(lancByPoste).sort((a,b)=>b[1]-a[1]).forEach(([p,n]) => lines.push(`  • ${p} : ${n} OT`));
 
-    // OT CRPR par poste (en cours de préparation)
-    const crprRows = allData.filter(r => (r.statutSys||'').includes('CRPR'));
+    // OT CRPR par poste (en cours de préparation) — CRPR est dans statutUtil
+    const crprRows = allData.filter(r => (r.statutUtil||'').includes('CRPR'));
     const crprByPoste = {};
     crprRows.forEach(r => { const p=r.poste||'?'; crprByPoste[p]=(crprByPoste[p]||0)+1; });
     lines.push(`\nOT CRPR (en cours de préparation) par poste — total ${crprRows.length} :`);
