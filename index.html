@@ -7203,6 +7203,7 @@ function renderPDRTable(rows) {
       <div style="font-size:11.5px;color:var(--muted);margin-top:6px;">
         ${conf.status === 'nok' && conf.justification ? `<b>Justification :</b> ${conf.justification}<br>` : ''}
         ${conf.status === 'nok' && conf.delai ? `<b>Délai estimé :</b> ${conf.delai}<br>` : ''}
+        ${conf.observation ? `<span style="display:inline-flex;align-items:flex-start;gap:4px;margin-top:3px;"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span><b>Observation :</b> ${conf.observation}</span></span><br>` : ''}
         <span style="color:var(--muted);font-size:10.5px;">Confirmé le ${conf.date || ''}</span>
       </div>` : '';
 
@@ -7249,6 +7250,13 @@ function renderPDRTable(rows) {
               <div class="pdr-field-label">Délai approximatif</div>
               <input class="pdr-delai-input" id="pdr-delai-${key}" type="text" placeholder="ex : 2 semaines, 1 mois…" value="${conf && conf.delai ? conf.delai : ''}">
             </div>
+          </div>
+          <div style="margin-top:12px;">
+            <div class="pdr-field-label" style="display:flex;align-items:center;gap:6px;">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Observation <span style="font-weight:400;color:var(--muted);font-size:10.5px;">(optionnelle)</span>
+            </div>
+            <textarea class="pdr-textarea" id="pdr-obs-${key}" placeholder="Informations complémentaires, besoin de précisions sur le PDR, autre motif…" style="min-height:60px;">${conf && conf.observation ? conf.observation : ''}</textarea>
           </div>
           <div style="display:flex;justify-content:flex-end;margin-top:12px;gap:8px;">
             <button class="pdr-action-btn" onclick="togglePDRPanel('${key}')">Annuler</button>
@@ -7872,11 +7880,13 @@ async function savePDRConfirmation(key) {
 
   const justEl  = document.getElementById('pdr-just-'+key);
   const delaiEl = document.getElementById('pdr-delai-'+key);
+  const obsEl   = document.getElementById('pdr-obs-'+key);
   const now     = new Date().toLocaleDateString('fr-FR');
 
   const disponibilite = status === 'ok' ? 'Oui' : 'Non';
   const justification = justEl  ? justEl.value.trim()  : '';
   const delai         = delaiEl ? delaiEl.value.trim() : '';
+  const observation   = obsEl   ? obsEl.value.trim()   : '';
 
   // ① Trouver la ligne (rowIdx = numéro réel dans le Sheets)
   const row    = pdrAllRows.find(r => r.ordre === key);
@@ -7885,7 +7895,7 @@ async function savePDRConfirmation(key) {
   // ② Mise à jour optimiste en mémoire + re-render
   if (row) { row.sheetDispo = disponibilite; row.sheetJust = justification; row.sheetDelai = delai; }
   const store = getPDRStore();
-  store[key] = { status, justification, delai, date: now };
+  store[key] = { status, justification, delai, observation, date: now };
   savePDRStore(store);
   renderPDRTable(pdrAllRows);
 
@@ -7906,6 +7916,7 @@ async function savePDRConfirmation(key) {
       disponibilite,
       justification,
       delai,
+      observation,
       desc:          row ? (row.desc  || '') : '',
       objet:         row ? (row.objet || '') : '',
       poste:         row ? (row.poste || '') : '',
