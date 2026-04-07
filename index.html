@@ -3468,9 +3468,17 @@ window.addEventListener('load', autoLoadSAP);
 
 function parseDate(val) {
   if (!val) return null;
-  if (val instanceof Date) return isNaN(val)?null:val;
-  if (typeof val==='number') return new Date(Math.round((val-25569)*86400*1000));
-  const d=new Date(val); return isNaN(d)?null:d;
+  if (val instanceof Date) return isNaN(val) ? null : val;
+  if (typeof val === 'number') return new Date(Math.round((val - 25569) * 86400 * 1000));
+  if (typeof val === 'string') {
+    // ISO date "YYYY-MM-DD" → forcer heure locale pour éviter le décalage UTC
+    const iso = val.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
+    // Format DD/MM/YYYY
+    const fr = val.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+    if (fr) return new Date(+fr[3], +fr[2]-1, +fr[1]);
+  }
+  const d = new Date(val); return isNaN(d) ? null : d;
 }
 function isRealise(r) { return r.statutSys.includes('CONF')||r.statutSys.includes('TCLO')||r.statutSys.includes('CLOT'); }
 function isSys(r)     { return ['ZCON','ZEST','ZETL'].includes(r.type); }
@@ -6688,13 +6696,19 @@ function renderOTTable(rows, isFiltered) {
     </div>`;
 }
 
+// Convertit une date en "YYYY-MM-DD" en heure locale (évite le décalage UTC)
+function localDateStr(d) {
+  if (!d) return '';
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
 function populateOTFilters(rows) {
   const fmt = d => d ? d.toLocaleDateString('fr-FR', { weekday:'short', day:'2-digit', month:'short' }) : '';
   const uniq = (arr) => [...new Set(arr.filter(Boolean))].sort();
 
   const postes = uniq(rows.map(r => r.poste));
   const types  = uniq(rows.map(r => r.type));
-  const dates  = uniq(rows.map(r => r.debut ? r.debut.toISOString().slice(0,10) : ''));
+  const dates  = uniq(rows.map(r => localDateStr(r.debut)));
 
   const fillSel = (id, vals, labelFn) => {
     const sel = document.getElementById(id);
@@ -6718,7 +6732,7 @@ function applyOTFilters() {
   const filtered = currentWeekOT.filter(row => {
     if (poste && row.poste !== poste) return false;
     if (type  && row.type  !== type)  return false;
-    if (date  && row.debut && row.debut.toISOString().slice(0,10) !== date) return false;
+    if (date  && localDateStr(row.debut) !== date) return false;
     if (objet && !(row.objet || '').toLowerCase().includes(objet)) return false;
     return true;
   });
