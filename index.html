@@ -7114,7 +7114,7 @@ function renderPDRTable(rows) {
       if (counts[s] !== undefined) counts[s]++;
     }
     const conf = buildPDRConf(r);
-    if (!conf) {
+    if (!conf || conf.status === 'obs') {
       pending.all++;
       if (isBureau) {
         pending.bureau++;
@@ -7159,7 +7159,7 @@ function renderPDRTable(rows) {
   let nOk = 0, nNok = 0, nPending = 0;
   filtered.forEach(r => {
     const conf = buildPDRConf(r);
-    if (!conf) nPending++;
+    if (!conf || conf.status === 'obs') nPending++;
     else if (conf.status === 'ok') nOk++;
     else nNok++;
   });
@@ -7191,9 +7191,13 @@ function renderPDRTable(rows) {
     } else if (conf.status === 'ok') {
       statusBadge = '<span class="pdr-status-badge ok">✅ Disponible</span>';
       rowClass = 'pdr-row-ok';
-    } else {
+    } else if (conf.status === 'nok') {
       statusBadge = '<span class="pdr-status-badge nok">❌ Rupture</span>';
       rowClass = 'pdr-row-nok';
+    } else {
+      // statut 'obs' = observation en attente de décision
+      statusBadge = '<span class="pdr-status-badge" style="background:#fdf4ff;color:#7c3aed;border:1px solid #e9d5ff;">💬 Observation</span>';
+      rowClass = '';
     }
 
     const section = getPDRSectionForPoste(r.poste);
@@ -7203,8 +7207,8 @@ function renderPDRTable(rows) {
       <div style="font-size:11.5px;color:var(--muted);margin-top:6px;">
         ${conf.status === 'nok' && conf.justification ? `<b>Justification :</b> ${conf.justification}<br>` : ''}
         ${conf.status === 'nok' && conf.delai ? `<b>Délai estimé :</b> ${conf.delai}<br>` : ''}
-        ${conf.observation ? `<span style="display:inline-flex;align-items:flex-start;gap:4px;margin-top:3px;"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span><b>Observation :</b> ${conf.observation}</span></span><br>` : ''}
-        <span style="color:var(--muted);font-size:10.5px;">Confirmé le ${conf.date || ''}</span>
+        ${conf.observation ? `<span style="display:inline-flex;align-items:flex-start;gap:4px;margin-top:3px;color:#7c3aed;"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span><b>Observation :</b> ${conf.observation}</span></span><br>` : ''}
+        <span style="color:var(--muted);font-size:10.5px;">${conf.status === 'obs' ? 'Noté' : 'Confirmé'} le ${conf.date || ''}</span>
       </div>` : '';
 
     return `<tr class="${rowClass}" id="pdr-tr-${key}">
@@ -7873,27 +7877,31 @@ async function savePDRConfirmation(key) {
   if (btnOk.classList.contains('sel-ok'))   status = 'ok';
   if (btnNok.classList.contains('sel-nok')) status = 'nok';
 
-  if (!status) {
-    showPDRToast('⚠️ Sélectionnez un statut avant d\'enregistrer.', 'warn');
-    return;
-  }
-
   const justEl  = document.getElementById('pdr-just-'+key);
   const delaiEl = document.getElementById('pdr-delai-'+key);
   const obsEl   = document.getElementById('pdr-obs-'+key);
   const now     = new Date().toLocaleDateString('fr-FR');
 
-  const disponibilite = status === 'ok' ? 'Oui' : 'Non';
   const justification = justEl  ? justEl.value.trim()  : '';
   const delai         = delaiEl ? delaiEl.value.trim() : '';
   const observation   = obsEl   ? obsEl.value.trim()   : '';
+
+  // Si aucun statut → autoriser si observation saisie, sinon bloquer
+  if (!status && !observation) {
+    showPDRToast('⚠️ Sélectionnez un statut ou saisissez une observation.', 'warn');
+    return;
+  }
+  // Statut "obs" = observation sans décision de stock
+  if (!status) status = 'obs';
+
+  const disponibilite = status === 'ok' ? 'Oui' : status === 'nok' ? 'Non' : '';
 
   // ① Trouver la ligne (rowIdx = numéro réel dans le Sheets)
   const row    = pdrAllRows.find(r => r.ordre === key);
   const rowIdx = row ? row.rowIdx : null;
 
   // ② Mise à jour optimiste en mémoire + re-render
-  if (row) { row.sheetDispo = disponibilite; row.sheetJust = justification; row.sheetDelai = delai; }
+  if (row) { row.sheetDispo = disponibilite; row.sheetJust = observation || justification; row.sheetDelai = delai; }
   const store = getPDRStore();
   store[key] = { status, justification, delai, observation, date: now };
   savePDRStore(store);
@@ -7914,7 +7922,7 @@ async function savePDRConfirmation(key) {
       sheetName:     'Travaux hebdomadaire',
       ordre:         key,
       disponibilite,
-      justification,
+      justification: observation || justification,   // col U — observation prioritaire
       delai,
       observation,
       desc:          row ? (row.desc  || '') : '',
