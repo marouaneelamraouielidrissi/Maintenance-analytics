@@ -8659,7 +8659,7 @@ function chatBuildContext() {
     });
     if (enCours.length) {
       lines.push(`Moteurs en cours de réparation/pose (${enCours.length}) :`);
-      enCours.slice(0,20).forEach(d => lines.push(`  • ${d.objetTechnique||d.installation||'?'} — ${d.type||'?'} — Statut: ${d.statut||'?'} — Demandeur: ${d.demandeur||'?'}`));
+      enCours.slice(0,20).forEach(d => lines.push(`  • ${d.objetTechnique||d.installation||'?'} — ${d.type||'?'} — Puissance: ${d.puissance||'?'} kW — Tension: ${d.tension||'?'} V — Statut: ${d.statut||'?'} — Demandeur: ${d.demandeur||'?'} — Installation: ${d.installation||'?'}`));
     } else {
       lines.push('Aucun moteur en cours.');
     }
