@@ -5830,7 +5830,7 @@ async function submitMotorRequest(e) {
       type: currentDemandType,
       installation: document.getElementById('mf-installation').value.trim(),
       objetTechnique: document.getElementById('mf-objet').value.trim(),
-      puissance: String(document.getElementById('mf-puissance').value || '').replace(',', '.'),
+      puissance: parseFloat(String(document.getElementById('mf-puissance').value || '').replace(',', '.')) || '',
       tension: document.getElementById('mf-tension').value,
       vitesse: document.getElementById('mf-vitesse').value,
       anomalie: currentDemandType === 'changement' ? document.getElementById('mf-anomalie').value.trim() : '',
