@@ -8606,33 +8606,27 @@ function chatBuildContext() {
 
     // Demain
     const demain = new Date(today); demain.setDate(today.getDate() + 1);
-    const otDemain = allData.filter(r => r.debut && new Date(r.debut).setHours(0,0,0,0) === demain.getTime());
-    if (otDemain.length) {
-      lines.push(`\nOT planifiés demain (${fmt(demain)}) — ${otDemain.length} OT :`);
-      otDemain.slice(0,20).forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | Poste: ${r.poste} | Type: ${r.type} | Statut: ${r.statutSys}`));
-    } else {
-      lines.push(`Aucun OT planifié pour demain (${fmt(demain)})`);
-    }
+    const otDemain = allData.filter(r => r.debut && r.debut.toDateString() === demain.toDateString());
+    lines.push(`\nOT demain (${fmt(demain)}) : ${otDemain.length}`);
+    otDemain.slice(0,20).forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | ${r.poste} | ${r.type} | ${r.statutSys}`));
 
     // Cette semaine
-    const lundi = new Date(today); lundi.setDate(today.getDate() - (today.getDay()+6)%7);
-    const samedi = new Date(lundi); samedi.setDate(lundi.getDate()+5);
-    const otSem = allData.filter(r => { if(!r.debut) return false; const d=new Date(r.debut); d.setHours(0,0,0,0); return d>=lundi && d<=samedi; });
-    lines.push(`\nOT planifiés cette semaine (${fmt(lundi)} - ${fmt(samedi)}) : ${otSem.length} OT`);
-    otSem.forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | Poste: ${r.poste} | Type: ${r.type} | Statut: ${r.statutSys} | Début: ${fmt(r.debut)}`));
+    const lundi = new Date(today); lundi.setDate(today.getDate() - (today.getDay()+6)%7); lundi.setHours(0,0,0,0);
+    const samedi = new Date(lundi); samedi.setDate(lundi.getDate()+5); samedi.setHours(23,59,59,999);
+    const otSem = allData.filter(r => r.debut && r.debut >= lundi && r.debut <= samedi);
+    lines.push(`\nOT semaine (${fmt(lundi)}-${fmt(samedi)}) : ${otSem.length}`);
+    otSem.slice(0,40).forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | ${r.poste} | ${r.type} | ${r.statutSys} | ${fmt(r.debut)}`));
 
-    // Répartition statuts
+    // Résumés
     const statuts = {}; allData.forEach(r => { const s=r.statutSys||'?'; statuts[s]=(statuts[s]||0)+1; });
-    lines.push('\nRépartition par statut système : ' + Object.entries(statuts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}:${v}`).join(', '));
-
-    // Répartition types
+    lines.push('Statuts: ' + Object.entries(statuts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}:${v}`).join(', '));
     const types = {}; allData.forEach(r => { const t=r.type||'?'; types[t]=(types[t]||0)+1; });
-    lines.push('Répartition par type OT : ' + Object.entries(types).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}:${v}`).join(', '));
+    lines.push('Types: ' + Object.entries(types).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}:${v}`).join(', '));
 
-    // Backlog détail
+    // Backlog
     const backlog = allData.filter(r => (r.statutUtil||'').includes('ATPL') && (r.statutSys||'').includes('LANC'));
-    lines.push(`\nBacklog (ATPL+LANC) : ${backlog.length} OT`);
-    if (backlog.length) backlog.slice(0,10).forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | Poste: ${r.poste} | Type: ${r.type}`));
+    lines.push(`Backlog (ATPL+LANC) : ${backlog.length} OT`);
+    backlog.slice(0,10).forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | ${r.poste} | ${r.type}`));
   }
 
   // ── Arrêts préventifs ──
@@ -8699,7 +8693,9 @@ async function chatSend() {
   const typingId = chatAddTyping();
 
   try {
-    const context = chatBuildContext();
+    let context = chatBuildContext();
+    // Limiter à 6000 caractères pour ne pas dépasser le quota Groq
+    if (context.length > 6000) context = context.slice(0, 6000) + '\n[... données tronquées]';
     const resp = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
