@@ -7032,9 +7032,9 @@ function parsePDRCSV(text) {
 
 /* ── Détection mots-clés Bureau de méthode ── */
 const PDR_BUREAU_KEYWORDS = ['réducteur', 'reducteur', 'pompe', 'moteur'];
-function pdrNeedsBureau(desc) {
-  if (!desc) return false;
-  const d = desc.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+function pdrNeedsBureau(pdr) {
+  if (!pdr) return false;
+  const d = pdr.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   return PDR_BUREAU_KEYWORDS.some(kw => {
     const k = kw.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     return d.includes(k);
@@ -7069,12 +7069,12 @@ function renderPDRTable(rows) {
     counts.all++;
     const s = getPDRSectionForPoste(r.poste);
     if (counts[s] !== undefined) counts[s]++;
-    if (pdrNeedsBureau(r.desc)) counts.bureau++;
+    if (pdrNeedsBureau(r.pdr)) counts.bureau++;
     const conf = buildPDRConf(r);
     if (!conf) {
       pending.all++;
       if (pending[s] !== undefined) pending[s]++;
-      if (pdrNeedsBureau(r.desc)) pending.bureau++;
+      if (pdrNeedsBureau(r.pdr)) pending.bureau++;
     }
   });
   ['all','mec','inst','elec','reg'].forEach(s => {
@@ -7097,7 +7097,7 @@ function renderPDRTable(rows) {
   // Filtre section
   let filtered = rows;
   if (pdrCurrentSection === 'bureau') {
-    filtered = rows.filter(r => pdrNeedsBureau(r.desc));
+    filtered = rows.filter(r => pdrNeedsBureau(r.pdr));
   } else if (pdrCurrentSection !== 'all') {
     const postes = PDR_SECTIONS[pdrCurrentSection] || [];
     filtered = rows.filter(r => {
@@ -7161,7 +7161,7 @@ function renderPDRTable(rows) {
       <td data-label="Ordre"><span class="pdr-ref">${r.ordre}</span></td>
       <td data-label="Désignation" class="pdr-text">
         ${r.desc || '—'}
-        ${pdrNeedsBureau(r.desc) ? `<div class="pdr-bureau-badge"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Bureau de méthode</div>` : ''}
+        ${pdrNeedsBureau(r.pdr) ? `<div class="pdr-bureau-badge"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Bureau de méthode</div>` : ''}
       </td>
       <td data-label="Objet" class="pdr-td-hide" style="font-size:12px;color:var(--text2);">${r.objet || '—'}</td>
       <td data-label="Poste"><span style="font-size:12px;font-weight:600;">${r.poste || '—'}</span>${sectionLabel ? `<span style="font-size:10px;color:var(--muted);display:block;">${sectionLabel}</span>` : ''}</td>
