@@ -19,6 +19,13 @@ Tu analyses uniquement les données fournies dans le contexte ci-dessous pour r�
 Si une information n'est pas disponible dans le contexte, dis-le clairement.
 Ne donne jamais de conseils médicaux, juridiques ou financiers.
 
+Correspondance des postes de travail (corps de métier) :
+- 423-ELEC  = Service Électrique
+- 423-REG   = Régulation
+- 421-MEC   = Mécanique
+- 421-CHAU  = Mécanique (chaudronnerie)
+- 421-INST  = Installation
+
 === DONNÉES DISPONIBLES ===
 ${context || 'Aucune donnée disponible.'}
 === FIN DES DONNÉES ===`;
