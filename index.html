@@ -7067,14 +7067,22 @@ function renderPDRTable(rows) {
   const pending  = { all: 0, mec: 0, inst: 0, elec: 0, reg: 0, bureau: 0 };
   rows.forEach(r => {
     counts.all++;
+    const isBureau = pdrNeedsBureau(r.pdr);
     const s = getPDRSectionForPoste(r.poste);
-    if (counts[s] !== undefined) counts[s]++;
-    if (pdrNeedsBureau(r.pdr)) counts.bureau++;
+    // Si bureau de méthode → ne compter que dans bureau (pas dans mec/elec/...)
+    if (isBureau) {
+      counts.bureau++;
+    } else {
+      if (counts[s] !== undefined) counts[s]++;
+    }
     const conf = buildPDRConf(r);
     if (!conf) {
       pending.all++;
-      if (pending[s] !== undefined) pending[s]++;
-      if (pdrNeedsBureau(r.pdr)) pending.bureau++;
+      if (isBureau) {
+        pending.bureau++;
+      } else {
+        if (pending[s] !== undefined) pending[s]++;
+      }
     }
   });
   ['all','mec','inst','elec','reg'].forEach(s => {
@@ -7098,9 +7106,12 @@ function renderPDRTable(rows) {
   let filtered = rows;
   if (pdrCurrentSection === 'bureau') {
     filtered = rows.filter(r => pdrNeedsBureau(r.pdr));
-  } else if (pdrCurrentSection !== 'all') {
+  } else if (pdrCurrentSection === 'all') {
+    filtered = rows; // "Tous" : tout afficher
+  } else {
     const postes = PDR_SECTIONS[pdrCurrentSection] || [];
     filtered = rows.filter(r => {
+      if (pdrNeedsBureau(r.pdr)) return false; // exclus des sections normales
       const p = (r.poste || '').trim().toUpperCase();
       return postes.some(s => p.includes(s.toUpperCase()) || s.toUpperCase().includes(p));
     });
