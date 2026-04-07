@@ -8670,6 +8670,42 @@ function chatBuildContext() {
     }
   }
 
+  // ── Avis ──
+  if (typeof avisData !== 'undefined' && avisData.length > 0) {
+    lines.push(`\n--- AVIS (${avisData.length} au total) ---`);
+
+    // Avis ouverts (AOUV) et en cours (AENC)
+    const avisOuverts = avisData.filter(r => r.statutABR === 'AOUV' || r.statutABR === 'AENC');
+    lines.push(`Avis en attente OT (AOUV+AENC) : ${avisOuverts.length}`);
+
+    // Avis à planifier
+    const avisAPlanifier = avisData.filter(r => r.aPlanifier);
+    lines.push(`Avis à planifier : ${avisAPlanifier.length}`);
+
+    // Résumé par statut
+    const avisStatuts = {};
+    avisData.forEach(r => { const s = r.statutABR || '?'; avisStatuts[s] = (avisStatuts[s] || 0) + 1; });
+    lines.push('Répartition par statut: ' + Object.entries(avisStatuts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}:${v}`).join(', '));
+
+    // Résumé par poste
+    const avisByPoste = {};
+    avisOuverts.forEach(r => { const p = r.poste || '?'; avisByPoste[p] = (avisByPoste[p] || 0) + 1; });
+    lines.push('Avis ouverts par poste: ' + Object.entries(avisByPoste).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k}:${v}`).join(', '));
+
+    // Résumé par installation (top 8)
+    const avisByInst = {};
+    avisOuverts.forEach(r => { const i = r.installation || '?'; avisByInst[i] = (avisByInst[i] || 0) + 1; });
+    const topInst = Object.entries(avisByInst).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    lines.push('Top installations (avis ouverts): ' + topInst.map(([k,v])=>`${k}:${v}`).join(', '));
+
+    // Avis ouverts récents (15 plus récents)
+    const avisOuvertsRecents = [...avisOuverts].sort((a,b) => (b.creeLe||0) - (a.creeLe||0)).slice(0,15);
+    if (avisOuvertsRecents.length) {
+      lines.push(`\nAvis ouverts récents (${avisOuvertsRecents.length}) :`);
+      avisOuvertsRecents.forEach(r => lines.push(`  • [${r.notification}] ${r.designation} | ${r.objTech} | ${r.poste} | ${r.installation} | Statut: ${r.statutABR}${r.aPlanifier ? ' | À planifier' : ''}`));
+    }
+  }
+
   // ── Moteurs électriques ──
   if (typeof allDemandes !== 'undefined' && allDemandes.length > 0) {
     lines.push(`\n--- MOTEURS ÉLECTRIQUES (${allDemandes.length} demandes) ---`);
@@ -8706,7 +8742,7 @@ async function chatSend() {
   try {
     let context = chatBuildContext();
     // Limiter à 6000 caractères pour ne pas dépasser le quota Groq
-    if (context.length > 6000) context = context.slice(0, 6000) + '\n[... données tronquées]';
+    if (context.length > 8000) context = context.slice(0, 8000) + '\n[... données tronquées]';
     const resp = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
