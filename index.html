@@ -8734,8 +8734,8 @@ function chatBuildContext() {
   lines.push(`Backlog (ATPL+LANC)         : ${txt('kpi-backlog')}`);
   lines.push(`Taux réalisation préventif  : ${txt('kpi-taux-prev')}`);
   lines.push(`Taux réalisation correctif  : ${txt('kpi-taux-cor')}`);
-  lines.push(`OT LANC (en cours)          : ${txt('kpi-lanc')}`);
-  lines.push(`OT CRPR (à planifier)       : ${txt('kpi-crpr')}`);
+  lines.push(`OT LANC (lancés, en exécution)              : ${txt('kpi-lanc')}`);
+  lines.push(`OT CRPR (en cours de préparation)           : ${txt('kpi-crpr')}`);
 
   // ── OT SAP détaillés ──
   if (typeof allData !== 'undefined' && allData.length > 0) {
@@ -8840,6 +8840,34 @@ function chatBuildContext() {
     if (avisOuvertsRecents.length) {
       lines.push(`\nAvis ouverts récents (${avisOuvertsRecents.length}) :`);
       avisOuvertsRecents.forEach(r => lines.push(`  • [${r.notification}] ${r.designation} | ${r.objTech} | ${r.poste} | ${r.installation} | Statut: ${r.statutABR}${r.aPlanifier ? ' | À planifier' : ''}`));
+    }
+  }
+
+  // ── PDR (Pièces de Rechange) ──
+  if (typeof pdrAllRows !== 'undefined' && pdrAllRows.length > 0) {
+    lines.push(`\n--- PDR DISPONIBILITÉ PIÈCES DE RECHANGE (${pdrAllRows.length} OTs avec PDR) ---`);
+    const pdrStore = typeof getPDRStore === 'function' ? getPDRStore() : {};
+    let pdrOk = 0, pdrNok = 0, pdrObs = 0, pdrPending = 0;
+    pdrAllRows.forEach(r => {
+      const conf = pdrStore[r.ordre] || (r.sheetDispo ? { status: r.sheetDispo.toUpperCase()==='OUI'?'ok':'nok' } : r.sheetJust ? { status:'obs' } : null);
+      if (!conf) pdrPending++;
+      else if (conf.status === 'ok') pdrOk++;
+      else if (conf.status === 'nok') pdrNok++;
+      else if (conf.status === 'obs') pdrObs++;
+      else pdrPending++;
+    });
+    lines.push(`OT en attente de confirmation PDR : ${pdrPending}`);
+    lines.push(`OT PDR disponible en stock        : ${pdrOk}`);
+    lines.push(`OT PDR rupture de stock           : ${pdrNok}`);
+    lines.push(`OT PDR observation en attente     : ${pdrObs}`);
+    // Détail des OTs en attente (max 15)
+    const pdrEnAttente = pdrAllRows.filter(r => {
+      const conf = pdrStore[r.ordre] || (r.sheetDispo ? { status:'done' } : r.sheetJust ? { status:'done' } : null);
+      return !conf;
+    });
+    if (pdrEnAttente.length) {
+      lines.push(`\nOTs PDR en attente de confirmation (${pdrEnAttente.length}) :`);
+      pdrEnAttente.slice(0,15).forEach(r => lines.push(`  • [${r.ordre}] ${r.desc||''} | Poste: ${r.poste||'?'} | PDR: ${r.pdr||'?'}`));
     }
   }
 
