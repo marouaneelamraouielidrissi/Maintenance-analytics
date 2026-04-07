@@ -7035,8 +7035,20 @@ function buildPDRConf(r) {
     return {
       status:        r.sheetDispo.toUpperCase() === 'OUI' ? 'ok' : 'nok',
       justification: r.sheetJust  || '',
+      observation:   r.sheetJust  || '',   // colonne U = observation
       delai:         r.sheetDelai || '',
-      date:          '',   // non stocké en colonne
+      date:          '',
+      fromSheet:     true,
+    };
+  }
+  // 3. Observation seule (colonne U remplie, colonne T vide)
+  if (r.sheetJust) {
+    return {
+      status:        'obs',
+      justification: r.sheetJust,
+      observation:   r.sheetJust,
+      delai:         r.sheetDelai || '',
+      date:          '',
       fromSheet:     true,
     };
   }
