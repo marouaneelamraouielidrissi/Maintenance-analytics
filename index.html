@@ -8549,7 +8549,12 @@ function startNotifPolling() {
   transition: transform .2s, box-shadow .2s;
 }
 #chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(37,99,235,.55); }
-#chat-fab svg { width: 24px; height: 24px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+#chat-fab svg { width: 28px; height: 28px; }
+@keyframes robot-antenna { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-2px)} }
+@keyframes robot-eye { 0%,90%,100%{transform:scaleY(1)} 95%{transform:scaleY(0.1)} }
+#chat-fab-robot .antenna { animation: robot-antenna 1.6s ease-in-out infinite; transform-origin: bottom center; }
+#chat-fab-robot .eye-l { animation: robot-eye 3s ease-in-out infinite; transform-origin: center; }
+#chat-fab-robot .eye-r { animation: robot-eye 3s ease-in-out infinite 0.15s; transform-origin: center; }
 #chat-fab .chat-badge {
   position: absolute; top: -3px; right: -3px;
   background: #ef4444; color: #fff; border-radius: 50%;
@@ -8630,7 +8635,25 @@ function startNotifPolling() {
 
 <!-- FAB button -->
 <button id="chat-fab" onclick="chatToggle()" title="Assistant maintenance">
-  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  <svg id="chat-fab-robot" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Antenne -->
+    <g class="antenna">
+      <line x1="16" y1="5" x2="16" y2="9" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="16" cy="4" r="2" fill="white"/>
+    </g>
+    <!-- Tête -->
+    <rect x="6" y="9" width="20" height="14" rx="4" fill="white" fill-opacity="0.2" stroke="white" stroke-width="1.8"/>
+    <!-- Yeux -->
+    <rect class="eye-l" x="9.5" y="13" width="4" height="4" rx="1.5" fill="white"/>
+    <rect class="eye-r" x="18.5" y="13" width="4" height="4" rx="1.5" fill="white"/>
+    <!-- Bouche -->
+    <path d="M11 20.5 Q16 23 21 20.5" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+    <!-- Corps -->
+    <rect x="9" y="24" width="14" height="6" rx="2" fill="white" fill-opacity="0.2" stroke="white" stroke-width="1.8"/>
+    <!-- Bras -->
+    <rect x="3" y="25" width="5" height="3" rx="1.5" fill="white" fill-opacity="0.3" stroke="white" stroke-width="1.5"/>
+    <rect x="24" y="25" width="5" height="3" rx="1.5" fill="white" fill-opacity="0.3" stroke="white" stroke-width="1.5"/>
+  </svg>
   <span class="chat-badge" id="chat-badge"></span>
 </button>
 
@@ -8651,7 +8674,7 @@ function startNotifPolling() {
 
   <div id="chat-messages">
     <div class="chat-msg bot">
-      <div class="chat-avatar">🤖</div>
+      <div class="chat-avatar"><svg viewBox="0 0 24 24" fill="none" style="width:16px;height:16px;"><line x1="12" y1="2" x2="12" y2="5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="1.5" r="1.2" fill="currentColor"/><rect x="4" y="5" width="16" height="11" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="7" y="8.5" width="3" height="3" rx="1" fill="currentColor"/><rect x="14" y="8.5" width="3" height="3" rx="1" fill="currentColor"/><path d="M8.5 14.5 Q12 16.5 15.5 14.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><rect x="6.5" y="17" width="11" height="4.5" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="18" width="4" height="2" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="18" y="18" width="4" height="2" rx="1" stroke="currentColor" stroke-width="1.2"/></svg></div>
       <div class="chat-bubble">Bonjour ! Je suis votre assistant maintenance. Posez-moi des questions sur les OT, les arrêts préventifs, les moteurs ou les indicateurs.</div>
     </div>
   </div>
@@ -8722,14 +8745,14 @@ function chatBuildContext() {
     const demain = new Date(today); demain.setDate(today.getDate() + 1);
     const otDemain = allData.filter(r => r.debut && r.debut.toDateString() === demain.toDateString());
     lines.push(`\nOT demain (${fmt(demain)}) : ${otDemain.length}`);
-    otDemain.slice(0,20).forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | ${r.poste} | ${r.type} | ${r.statutSys}`));
+    otDemain.slice(0,20).forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | ${r.objet||''} | ${r.poste}`));
 
     // Cette semaine
     const lundi = new Date(today); lundi.setDate(today.getDate() - (today.getDay()+6)%7); lundi.setHours(0,0,0,0);
     const samedi = new Date(lundi); samedi.setDate(lundi.getDate()+5); samedi.setHours(23,59,59,999);
     const otSem = allData.filter(r => r.debut && r.debut >= lundi && r.debut <= samedi);
     lines.push(`\nOT semaine (${fmt(lundi)}-${fmt(samedi)}) : ${otSem.length}`);
-    otSem.slice(0,40).forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | ${r.poste} | ${r.type} | ${r.statutSys} | ${fmt(r.debut)}`));
+    otSem.slice(0,40).forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | ${r.objet||''} | ${r.poste}`));
 
     // Résumés
     const statuts = {}; allData.forEach(r => { const s=r.statutSys||'?'; statuts[s]=(statuts[s]||0)+1; });
@@ -8740,7 +8763,7 @@ function chatBuildContext() {
     // Backlog
     const backlog = allData.filter(r => (r.statutUtil||'').includes('ATPL') && (r.statutSys||'').includes('LANC'));
     lines.push(`Backlog (ATPL+LANC) : ${backlog.length} OT`);
-    backlog.slice(0,10).forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | ${r.poste} | ${r.type}`));
+    backlog.slice(0,10).forEach(r => lines.push(`  • [${r.ordre}] ${r.description||''} | ${r.objet||''} | ${r.poste}`));
   }
 
   // ── Arrêts préventifs ──
@@ -8878,7 +8901,8 @@ function chatAddMsg(role, text) {
   const msgs = document.getElementById('chat-messages');
   const div = document.createElement('div');
   div.className = 'chat-msg ' + role;
-  div.innerHTML = `<div class="chat-avatar">${role==='bot'?'🤖':'👤'}</div><div class="chat-bubble">${text.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>`;
+  const botAvatar = `<svg viewBox="0 0 24 24" fill="none" style="width:16px;height:16px;"><line x1="12" y1="2" x2="12" y2="5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="1.5" r="1.2" fill="currentColor"/><rect x="4" y="5" width="16" height="11" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="7" y="8.5" width="3" height="3" rx="1" fill="currentColor"/><rect x="14" y="8.5" width="3" height="3" rx="1" fill="currentColor"/><path d="M8.5 14.5 Q12 16.5 15.5 14.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><rect x="6.5" y="17" width="11" height="4.5" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="18" width="4" height="2" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="18" y="18" width="4" height="2" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>`;
+  div.innerHTML = `<div class="chat-avatar">${role==='bot' ? botAvatar : '👤'}</div><div class="chat-bubble">${text.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>`;
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
   return div;
@@ -8889,7 +8913,7 @@ function chatAddTyping() {
   const id = 'typing-' + Date.now();
   const div = document.createElement('div');
   div.className = 'chat-msg bot'; div.id = id;
-  div.innerHTML = `<div class="chat-avatar">🤖</div><div class="chat-bubble chat-typing"><span></span><span></span><span></span></div>`;
+  div.innerHTML = `<div class="chat-avatar"><svg viewBox="0 0 24 24" fill="none" style="width:16px;height:16px;"><line x1="12" y1="2" x2="12" y2="5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="1.5" r="1.2" fill="currentColor"/><rect x="4" y="5" width="16" height="11" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="7" y="8.5" width="3" height="3" rx="1" fill="currentColor"/><rect x="14" y="8.5" width="3" height="3" rx="1" fill="currentColor"/><path d="M8.5 14.5 Q12 16.5 15.5 14.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><rect x="6.5" y="17" width="11" height="4.5" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="18" width="4" height="2" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="18" y="18" width="4" height="2" rx="1" stroke="currentColor" stroke-width="1.2"/></svg></div><div class="chat-bubble chat-typing"><span></span><span></span><span></span></div>`;
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
   return id;
