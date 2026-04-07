@@ -5219,8 +5219,10 @@ function buildLineMulti(id,labels,datasets){
    NAVIGATION PRINCIPALE — Basculement entre pages
    ════════════════════════════════════════════════════════════ */
 let _currentPlanTab = 'calarrets'; // sous-onglet actif dans Planification
+let _currentMainPage = 'rapport';  // page principale active
 
 function showMainPage(page) {
+  _currentMainPage = page;
   // Onglets nav
   document.getElementById('nav-tab-rapport').classList.toggle('active', page === 'rapport');
   document.getElementById('nav-tab-planification').classList.toggle('active', page === 'planification');
@@ -6942,17 +6944,15 @@ async function globalRefresh() {
   mapDataLoaded    = false;
   mapTableRendered = false;
   _caLoaded        = false;
-  // Recharger selon le sous-onglet actif
+  // Rester sur la page et sous-onglet actifs
   try {
-    const subtab = document.querySelector('.plan-subtab-btn.active');
-    if (subtab) {
-      const t = subtab.id.replace('subtab-btn-', '');
-      if (t === 'pdr')            await loadPDRData();
-      else if (t === 'map')       await loadMAPData();
-      else if (t === 'calarrets') loadCalArretsData();
-    } else {
-      const calarPage = document.getElementById('page-calarrets');
-      if (calarPage && calarPage.style.display !== 'none') loadCalArretsData();
+    if (_currentMainPage === 'planification') {
+      showMainPage('planification');
+      if (_currentPlanTab === 'pdr')            await loadPDRData();
+      else if (_currentPlanTab === 'map')       await loadMAPData();
+      else if (_currentPlanTab === 'calarrets') loadCalArretsData();
+    } else if (_currentMainPage) {
+      showMainPage(_currentMainPage);
     }
   } catch(e) {}
   if (btn) btn.disabled = false;
