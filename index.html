@@ -8631,23 +8631,34 @@ function chatBuildContext() {
 
   // ── Arrêts préventifs ──
   if (typeof _caData !== 'undefined' && _caData.length > 0) {
-    lines.push(`\n--- ARRÊTS PRÉVENTIFS (${_caData.length} au total) ---`);
+    lines.push(`\n--- ARRÊTS PRÉVENTIFS PLANIFIÉS (${_caData.length} au total) ---`);
+    lines.push('IMPORTANT: Ces arrêts sont distincts des OTs SAP. Ce sont des arrêts de maintenance préventive planifiés.');
+
+    // Demain
+    const demain2 = new Date(today); demain2.setDate(today.getDate() + 1);
+    const arrDemain = _caData.filter(r => r.date === isoFmt(demain2));
+    if (arrDemain.length) {
+      lines.push(`\nArrêts préventifs prévus demain (${fmt(demain2)}) :`);
+      arrDemain.forEach(r => lines.push(`  • ${r.installation} — Section: ${r.section||'?'} — Statut: ${r.cls||'?'}`));
+    } else {
+      lines.push(`Aucun arrêt préventif prévu demain (${fmt(demain2)}).`);
+    }
 
     // Cette semaine
     const lundi2 = new Date(today); lundi2.setDate(today.getDate() - (today.getDay()+6)%7);
     const samedi2 = new Date(lundi2); samedi2.setDate(lundi2.getDate()+5);
     const arrSem = _caData.filter(r => r.date >= isoFmt(lundi2) && r.date <= isoFmt(samedi2));
     if (arrSem.length) {
-      lines.push(`\nArrêts prévus cette semaine (${fmt(lundi2)} - ${fmt(samedi2)}) :`);
-      arrSem.forEach(r => lines.push(`  • ${r.installation} — ${r.date} (${r.section||''})`));
+      lines.push(`\nArrêts préventifs cette semaine (${fmt(lundi2)}-${fmt(samedi2)}) :`);
+      arrSem.forEach(r => lines.push(`  • ${r.installation} — ${r.date} — Section: ${r.section||'?'}`));
     } else {
-      lines.push('Aucun arrêt prévu cette semaine.');
+      lines.push('Aucun arrêt préventif cette semaine.');
     }
 
     // Ce mois
     const arrMois = _caData.filter(r => r.date.startsWith(`${yr}-${String(today.getMonth()+1).padStart(2,'0')}`));
-    lines.push(`\nArrêts prévus ce mois (${mo} ${yr}) : ${arrMois.length}`);
-    arrMois.forEach(r => lines.push(`  • ${r.installation} — ${r.date} (${r.section||''})`));
+    lines.push(`\nArrêts préventifs ce mois (${mo} ${yr}) : ${arrMois.length}`);
+    arrMois.forEach(r => lines.push(`  • ${r.installation} — ${r.date} — Section: ${r.section||'?'}`));
 
     // Reportés
     if (typeof _caReporte !== 'undefined' && _caReporte.size > 0) {
