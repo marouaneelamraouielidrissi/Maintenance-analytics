@@ -5915,45 +5915,36 @@ const DEMANDEUR_EMAIL_MAP = {};
 let _installationsLoaded = false; // cache : ne charge qu'une seule fois par session
 
 async function loadInstallations() {
-  if (_installationsLoaded) return; // données déjà en mémoire, pas besoin de recharger
+  if (_installationsLoaded) return;
   const selInst = document.getElementById('mf-installation');
   const selDem  = document.getElementById('mf-demandeur');
   if (!selInst) return;
   try {
-    let resp = await fetch(`/proxy-installation`);
-    if (!resp.ok) resp = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Installation&t=${Date.now()}`);
+    // Passer par Apps Script (accès authentifié — fonctionne même si le sheet est privé)
+    const resp = await fetch(`${WEBAPP_URL}?action=getInstallations&t=${Date.now()}`);
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const text = await resp.text();
+    const data = await resp.json();
+    if (!data.success) throw new Error(data.error || 'Erreur serveur');
 
-    // Parser le CSV (chaque ligne = col A, col B, col C)
-    const rows = text.split('\n').map(line => {
-      const cols = line.match(/(".*?"|[^,]+)(?=,|$)/g) || [];
-      return cols.map(c => c.replace(/^"|"$/g, '').trim());
-    }).filter(r => r[0]);
-
-    // Colonne A → installations
-    const installations = [...new Set(rows.map(r => r[0]).filter(Boolean))];
+    // Remplir installations
     selInst.innerHTML = '<option value="">— Sélectionner —</option>' +
-      installations.map(v => `<option value="${v}">${v}</option>`).join('');
+      data.installations.map(v => `<option value="${v}">${v}</option>`).join('');
 
-    // Colonnes B + C → demandeurs + emails (uniques par nom)
+    // Remplir demandeurs
     if (selDem) {
-      rows.forEach(r => {
-        const nom   = (r[1] || '').trim();
-        const email = (r[2] || '').trim();
-        if (nom && !DEMANDEUR_EMAIL_MAP[nom]) DEMANDEUR_EMAIL_MAP[nom] = email;
+      data.demandeurs.forEach(d => {
+        if (d.nom && !DEMANDEUR_EMAIL_MAP[d.nom]) DEMANDEUR_EMAIL_MAP[d.nom] = d.email;
       });
       const noms = Object.keys(DEMANDEUR_EMAIL_MAP);
       selDem.innerHTML = '<option value="">— Sélectionner votre nom —</option>' +
         noms.map(n => `<option value="${n}">${n}</option>`).join('');
 
-      // Remplir l'email caché dès qu'un nom est choisi
       selDem.addEventListener('change', () => {
         const email = DEMANDEUR_EMAIL_MAP[selDem.value] || '';
         document.getElementById('mf-demandeur-email').value = email;
       });
     }
-    _installationsLoaded = true; // marquer comme chargé — ne rechargera plus jusqu'au prochain refresh
+    _installationsLoaded = true;
   } catch (e) {
     selInst.innerHTML = '<option value="">— Erreur chargement —</option>';
     console.warn('Chargement installations échoué:', e.message);

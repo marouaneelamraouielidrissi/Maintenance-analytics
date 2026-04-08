@@ -19,6 +19,26 @@ const HEADERS = [
 function doGet(e) {
   try {
 
+    // ── Installations + Demandeurs ────────────────────────────
+    if (e && e.parameter && e.parameter.action === 'getInstallations') {
+      var iSS    = SpreadsheetApp.openById(SHEET_ID);
+      var iSheet = iSS.getSheetByName('Installation');
+      if (!iSheet) return jsonResponse({ success: false, error: 'Feuille Installation introuvable' });
+      var iVals  = iSheet.getDataRange().getValues();
+      var installations = [];
+      var demandeurs    = [];
+      var instSet = {};
+      var demSet  = {};
+      for (var i = 1; i < iVals.length; i++) {
+        var inst  = String(iVals[i][0] || '').trim();
+        var nom   = String(iVals[i][1] || '').trim();
+        var email = String(iVals[i][2] || '').trim();
+        if (inst && !instSet[inst]) { installations.push(inst); instSet[inst] = true; }
+        if (nom  && !demSet[nom])   { demandeurs.push({ nom: nom, email: email }); demSet[nom] = true; }
+      }
+      return jsonResponse({ success: true, installations: installations, demandeurs: demandeurs });
+    }
+
     // ── Confirmation PDR ─────────────────────────────────────
     if (e && e.parameter && e.parameter.action === 'updatePDR') {
       var p        = e.parameter;
