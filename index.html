@@ -7142,45 +7142,44 @@ function filterPDRSection(section) {
 function renderPDRTable(rows) {
   const container = document.getElementById('pdr-table-container');
 
-  // Comptages par section + vérification complétude
-  const counts   = { all: 0, mec: 0, inst: 0, elec: 0, reg: 0, bureau: 0 };
-  const pending  = { all: 0, mec: 0, inst: 0, elec: 0, reg: 0, bureau: 0 };
+  // Comptages par section
+  const counts      = { all: 0, mec: 0, inst: 0, elec: 0, reg: 0, bureau: 0 }; // total OTs
+  const pending     = { all: 0, mec: 0, inst: 0, elec: 0, reg: 0, bureau: 0 }; // sans confirmation (obs inclus)
+  const pendingNoObs = { all: 0, mec: 0, inst: 0, elec: 0, reg: 0, bureau: 0 }; // sans confirmation ET sans observation
   rows.forEach(r => {
     counts.all++;
     const isBureau = pdrNeedsBureau(r.pdr);
     const s = getPDRSectionForPoste(r.poste);
-    // Si bureau de méthode → ne compter que dans bureau (pas dans mec/elec/...)
-    if (isBureau) {
-      counts.bureau++;
-    } else {
-      if (counts[s] !== undefined) counts[s]++;
-    }
+    if (isBureau) { counts.bureau++; } else { if (counts[s] !== undefined) counts[s]++; }
+
     const conf = buildPDRConf(r);
+    // pending = pas de statut OU statut obs
     if (!conf || conf.status === 'obs') {
       pending.all++;
-      if (isBureau) {
-        pending.bureau++;
-      } else {
-        if (pending[s] !== undefined) pending[s]++;
-      }
+      if (isBureau) { pending.bureau++; } else { if (pending[s] !== undefined) pending[s]++; }
+    }
+    // pendingNoObs = aucune réponse (ni statut ni observation)
+    if (!conf) {
+      pendingNoObs.all++;
+      if (isBureau) { pendingNoObs.bureau++; } else { if (pendingNoObs[s] !== undefined) pendingNoObs[s]++; }
     }
   });
+  // Afficher dans la barre : nombre d'OTs en attente SANS observation
   ['all','mec','inst','elec','reg'].forEach(s => {
     const el  = document.getElementById('pdr-cnt-'+s);
-    if (el) el.textContent = counts[s] || 0;
+    if (el) el.textContent = pendingNoObs[s] || 0;
     const btn = document.getElementById('pdr-btn-'+s);
     if (btn) {
       // Vert si toutes les OTs de cette section sont confirmées (et section non vide)
       const isComplete = counts[s] > 0 && pending[s] === 0;
       btn.classList.toggle('complete', isComplete);
-      // Ajouter ✓ devant le texte si complet
       const label = btn.querySelector('.pdr-section-label');
       if (label) label.textContent = isComplete ? '✓ ' + label.dataset.name : label.dataset.name;
     }
   });
   // Compteur Bureau de méthode
   const bureauCntEl = document.getElementById('pdr-cnt-bureau');
-  if (bureauCntEl) bureauCntEl.textContent = counts.bureau || 0;
+  if (bureauCntEl) bureauCntEl.textContent = pendingNoObs.bureau || 0;
 
   // Filtre section
   let filtered = rows;
