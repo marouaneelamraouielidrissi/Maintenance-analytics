@@ -6635,31 +6635,40 @@ async function loadOTData() {
 
       const headers = csvRows[0];
       const ci = name => headers.findIndex(h => h.toLowerCase().includes(name.toLowerCase()));
-      const iOrdre = ci('ordre');
-      const iType  = headers.findIndex(h => h.toLowerCase().includes("type") && h.toLowerCase().includes("ordre"));
-      const iDesc  = ci('description');
-      const iObjet = ci('obj');
-      const iDebut = headers.findIndex(h => h.toLowerCase().includes('d') && h.toLowerCase().includes('but'));
-      const iPoste = ci('poste');
-      const iAvis  = ci('avis');
+      const iOrdre      = ci('ordre');
+      const iType       = headers.findIndex(h => h.toLowerCase().includes("type") && h.toLowerCase().includes("ordre"));
+      const iDesc       = ci('description');
+      const iObjet      = ci('obj');
+      const iDebut      = headers.findIndex(h => h.toLowerCase().includes('d') && h.toLowerCase().includes('but'));
+      const iPoste      = ci('poste');
+      const iAvis       = ci('avis');
+      const iStatutUtil = 10; // Colonne K — statut utilisateur
+      const iStatutSys  = 21; // Colonne V — statut système
 
       rows = csvRows.slice(1).map(r => ({
-        ordre:       r[iOrdre] || '',
-        type:        r[iType]  || '',
-        description: r[iDesc]  || '',
-        objet:       r[iObjet] || '',
+        ordre:       r[iOrdre]      || '',
+        type:        r[iType]       || '',
+        description: r[iDesc]       || '',
+        objet:       r[iObjet]      || '',
         debut:       parseDate(r[iDebut] || ''),
-        poste:       (r[iPoste] || '').trim(),
-        avis:        r[iAvis]  || '',
+        poste:       (r[iPoste]     || '').trim(),
+        avis:        r[iAvis]       || '',
+        statutUtil:  (r[iStatutUtil]|| '').trim(),
+        statutSys:   (r[iStatutSys] || '').trim(),
       }));
 
       _otRawRows = rows; // mettre en cache pour les prochains appels
     }
 
-    // Filtrer par semaine (local, instantané)
+    // Filtrer par semaine + statut obligatoire (SOPL colonne K ET LANC colonne V)
     const filtered = rows.filter(row => {
       const d = row.debut;
-      return d && d >= monday && d <= sunday;
+      if (!d || d < monday || d > sunday) return false;
+      const sUtil = (row.statutUtil || '').toUpperCase();
+      const sSys  = (row.statutSys  || '').toUpperCase();
+      if (sUtil.indexOf('SOPL') < 0) return false;
+      if (sSys.indexOf('LANC')  < 0) return false;
+      return true;
     });
 
     renderOTTable(filtered);
