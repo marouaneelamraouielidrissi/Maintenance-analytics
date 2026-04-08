@@ -9,8 +9,10 @@ const EMAIL_DEMANDEUR_FALLBACK = 'mar.elamraoui@gmail.com';
 const SENDER_NAME = 'Bureau de méthode Daoui - Section Interchangeable';
 
 const HEADERS = [
-  'id','type','installation','objetTechnique','puissance','tension','vitesse',
-  'anomalie','matricule','demandeur','demandeurEmail','dateDemande','statut','etatReparation','justifRefus'
+  'id','type','installation','objetTechnique','puissance','tension','vitesse',        // A-G
+  'anomalie','matricule','demandeur','demandeurEmail','dateDemande','statut','etatReparation','justifRefus', // H-O
+  '',                // P — réservé
+  'remarqueAnomalie' // Q
 ];
 
 // ══════════════════════════════════════════════
