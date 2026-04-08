@@ -6533,6 +6533,7 @@ function adminApprove(id) {
   const _body = d ? (d.installation || '') + ' — ' + (d.objetTechnique || '') : id;
   sendWebPush('Demande approuvée ✅', _body, 'electrique');
   sendWebPush('Demande approuvée ✅', _body, 'controle');
+  sendWebPush('Demande approuvée ✅', _body, 'mecanique');
 }
 function adminShowRefus(id) {
   const el = document.getElementById('refus-input-'+id);
@@ -6548,6 +6549,7 @@ function adminConfirmRefus(id) {
   const _body = d ? (d.installation || '') + ' — ' + (d.objetTechnique || '') : id;
   sendWebPush('Demande refusée ❌', _body, 'electrique');
   sendWebPush('Demande refusée ❌', _body, 'controle');
+  sendWebPush('Demande refusée ❌', _body, 'mecanique');
 }
 function adminReset(id) {
   updateDemande(id, { statut: 'envoyee', justifRefus: '' });
