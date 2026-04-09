@@ -5,286 +5,303 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Maintenance Analytics — Présentation</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
-:root {
-  --blue:#1d4ed8; --blue-lt:#eff6ff; --blue-mid:#3b82f6;
-  --green:#059669; --green-lt:#ecfdf5;
-  --amber:#d97706; --amber-lt:#fffbeb;
-  --red:#dc2626; --red-lt:#fef2f2;
-  --purple:#7c3aed; --purple-lt:#f5f3ff;
-  --slate:#475569; --slate-lt:#f1f5f9;
-  --text:#1a2035; --text2:#4a5568; --muted:#8a97ab;
-  --border:#dde2ea; --bg:#f4f6f9; --white:#fff;
-  --font:'Inter',sans-serif; --mono:'IBM Plex Mono',monospace;
-  --shadow:0 1px 4px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
-  --shadow-md:0 2px 8px rgba(0,0,0,.08),0 8px 32px rgba(0,0,0,.06);
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:var(--font);background:#0f172a;color:var(--text);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:#0a0f1e}
 
-/* ── HERO ── */
-.hero{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 50%,#1d4ed8 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 24px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
-.hero-badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:6px 18px;font-size:12px;font-weight:600;color:rgba(255,255,255,.9);letter-spacing:.5px;text-transform:uppercase;margin-bottom:28px;display:inline-block}
-.hero-logo{width:72px;height:72px;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.25);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;backdrop-filter:blur(10px)}
-.hero-logo svg{width:36px;height:36px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.hero h1{font-size:clamp(32px,5vw,64px);font-weight:800;color:white;letter-spacing:-2px;line-height:1.1;margin-bottom:16px}
-.hero h1 span{background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero-sub{font-size:18px;color:rgba(255,255,255,.65);max-width:560px;margin:0 auto 40px;font-weight:400}
-.hero-tags{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:48px}
-.hero-tag{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:8px 16px;font-size:13px;color:rgba(255,255,255,.8);font-weight:500}
-.hero-stats{display:flex;gap:48px;justify-content:center;flex-wrap:wrap}
-.hero-stat{text-align:center}
-.hero-stat-num{font-size:36px;font-weight:800;color:white;letter-spacing:-1px}
-.hero-stat-lbl{font-size:12px;color:rgba(255,255,255,.5);font-weight:500;text-transform:uppercase;letter-spacing:.5px}
-.scroll-hint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.4);font-size:12px;display:flex;flex-direction:column;align-items:center;gap:8px;animation:bounce 2s infinite}
-@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
-.scroll-hint svg{width:20px;height:20px;stroke:currentColor;fill:none}
-
-/* ── NAV ── */
-.sticky-nav{position:sticky;top:0;z-index:100;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08);padding:0 32px}
-.nav-inner{max-width:1200px;margin:0 auto;display:flex;gap:4px;overflow-x:auto;padding:12px 0}
-.nav-inner::-webkit-scrollbar{display:none}
-.nav-link{white-space:nowrap;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;color:rgba(255,255,255,.55);text-decoration:none;transition:all .2s;cursor:pointer;border:none;background:none}
-.nav-link:hover{color:white;background:rgba(255,255,255,.08)}
-.nav-link.active{color:white;background:rgba(59,130,246,.3);border:1px solid rgba(59,130,246,.4)}
-
-/* ── SECTIONS ── */
-.section{padding:80px 24px;max-width:1200px;margin:0 auto}
-.section-header{text-align:center;margin-bottom:56px}
-.section-eyebrow{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue-mid);margin-bottom:12px}
-.section-title{font-size:clamp(24px,4vw,40px);font-weight:800;color:white;letter-spacing:-1px;line-height:1.2;margin-bottom:16px}
-.section-desc{font-size:16px;color:rgba(255,255,255,.5);max-width:600px;margin:0 auto}
-
-/* ── APP FRAME ── */
-.app-frame{background:#f4f6f9;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.1),0 32px 80px rgba(0,0,0,.5);margin:40px 0}
-.app-frame-bar{background:white;padding:12px 20px;border-bottom:1px solid #dde2ea;display:flex;align-items:center;gap:10px}
-.app-frame-dots{display:flex;gap:6px}
-.app-frame-dot{width:12px;height:12px;border-radius:50%}
-.app-frame-dot.red{background:#ef4444}
-.app-frame-dot.yellow{background:#f59e0b}
-.app-frame-dot.green{background:#10b981}
-.app-frame-url{flex:1;background:#f1f5f9;border-radius:6px;padding:5px 12px;font-size:12px;font-family:var(--mono);color:#64748b;text-align:center}
-.app-frame-topbar{background:white;border-bottom:1px solid #dde2ea;padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between}
-.app-brand{display:flex;align-items:center;gap:10px}
-.app-brand-mark{width:32px;height:32px;background:#1d4ed8;border-radius:6px;display:flex;align-items:center;justify-content:center}
-.app-brand-mark svg{width:16px;height:16px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.app-brand-name{font-weight:700;font-size:13px;color:#1a2035}
-.app-brand-sub{font-size:10px;color:#8a97ab}
-.app-nav{display:flex;gap:2px}
-.app-nav-tab{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;color:#4a5568;background:none;border:none;cursor:default;display:flex;align-items:center;gap:6px}
-.app-nav-tab svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.app-nav-tab.active{background:#eff6ff;color:#1d4ed8;font-weight:600}
-.app-content{padding:24px 32px;background:#f4f6f9;min-height:320px}
-
-/* ── KPI GRID ── */
-.kpi-grid-demo{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
-.kpi-demo{background:white;border:1px solid #dde2ea;border-radius:10px;padding:16px 18px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.kpi-demo-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
-.kpi-demo-icon svg{width:17px;height:17px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.kpi-demo-icon.blue{background:#1d4ed8}
-.kpi-demo-icon.green{background:#059669}
-.kpi-demo-icon.amber{background:#d97706}
-.kpi-demo-icon.red{background:#dc2626}
-.kpi-demo-icon.purple{background:#7c3aed}
-.kpi-demo-icon.slate{background:#475569}
-.kpi-demo-val{font-size:26px;font-weight:800;color:#1a2035;letter-spacing:-1px;line-height:1}
-.kpi-demo-lbl{font-size:11.5px;font-weight:600;color:#4a5568;margin-top:4px}
-.kpi-demo-sub{font-size:10.5px;color:#8a97ab;margin-top:3px}
-.kpi-demo-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;margin-top:6px;background:#ecfdf5;color:#059669}
-.kpi-demo-tag.amber{background:#fffbeb;color:#d97706}
-.kpi-demo-tag.red{background:#fef2f2;color:#dc2626}
-
-/* ── CHART DEMO ── */
-.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.chart-demo{background:white;border:1px solid #dde2ea;border-radius:10px;padding:16px 18px}
-.chart-demo-title{font-size:12px;font-weight:700;color:#1a2035;margin-bottom:4px}
-.chart-demo-sub{font-size:10.5px;color:#8a97ab;margin-bottom:14px}
-.bar-chart{display:flex;align-items:flex-end;gap:6px;height:80px}
-.bar{flex:1;border-radius:4px 4px 0 0;min-height:4px;position:relative}
-.bar.blue{background:#3b82f6}
-.bar.green{background:#10b981}
-.bar.amber{background:#f59e0b}
-.bar.red{background:#ef4444}
-.bar.purple{background:#8b5cf6}
-.bar.slate{background:#94a3b8}
-.bar.gray{background:#e2e8f0}
-.donut-demo{width:80px;height:80px;border-radius:50%;background:conic-gradient(#3b82f6 0% 45%,#10b981 45% 75%,#f59e0b 75% 90%,#e2e8f0 90% 100%);display:flex;align-items:center;justify-content:center;position:relative;margin:0 auto 10px}
-.donut-hole{width:52px;height:52px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#1a2035}
-.donut-legend{display:flex;flex-direction:column;gap:4px}
-.donut-legend-item{display:flex;align-items:center;gap:6px;font-size:10.5px;color:#4a5568}
-.donut-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
-
-/* ── FEATURE CARDS ── */
-.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px}
-.feature-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;transition:all .3s}
-.feature-card:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.15);transform:translateY(-2px)}
-.feature-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
-.feature-icon.blue{background:rgba(59,130,246,.15)}
-.feature-icon.green{background:rgba(5,150,105,.15)}
-.feature-icon.amber{background:rgba(217,119,6,.15)}
-.feature-icon.purple{background:rgba(124,58,237,.15)}
-.feature-icon.red{background:rgba(220,38,38,.15)}
-.feature-icon.slate{background:rgba(71,85,105,.15)}
-.feature-title{font-size:17px;font-weight:700;color:white;margin-bottom:8px}
-.feature-desc{font-size:13.5px;color:rgba(255,255,255,.5);line-height:1.7}
-.feature-list{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:6px}
-.feature-list li{font-size:12.5px;color:rgba(255,255,255,.45);display:flex;align-items:center;gap:8px}
-.feature-list li::before{content:'→';color:var(--blue-mid);font-size:11px;flex-shrink:0}
-
-/* ── PROFILE SECTION ── */
-.profiles-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.profile-card-demo{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;text-align:center;transition:all .2s}
-.profile-card-demo:hover{border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.05)}
-.profile-emoji{font-size:28px;margin-bottom:10px}
-.profile-name{font-size:13px;font-weight:700;color:white;margin-bottom:6px}
-.profile-role{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:12px}
-.profile-perms{display:flex;flex-direction:column;gap:4px}
-.profile-perm{font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
-.profile-perm.green{background:rgba(5,150,105,.15);color:#34d399}
-.profile-perm.blue{background:rgba(59,130,246,.15);color:#60a5fa}
-.profile-perm.amber{background:rgba(217,119,6,.15);color:#fbbf24}
-.profile-perm.purple{background:rgba(124,58,237,.15);color:#a78bfa}
-.profile-perm.red{background:rgba(220,38,38,.15);color:#f87171}
-
-/* ── PDR DEMO ── */
-.pdr-demo-table{width:100%;border-collapse:collapse;font-size:12px}
-.pdr-demo-table th{background:#f8fafc;border:1px solid #e2e8f0;padding:8px 12px;font-size:10.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.4px;text-align:left}
-.pdr-demo-table td{border:1px solid #e2e8f0;padding:10px 12px;color:#1a2035}
-.pdr-demo-table tr:hover td{background:#f8fafc}
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:10.5px;font-weight:600}
-.badge.ok{background:#ecfdf5;color:#059669;border:1px solid #a7f3d0}
-.badge.nok{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5}
-.badge.pending{background:#fffbeb;color:#d97706;border:1px solid #fde68a}
-.badge.obs{background:#f5f3ff;color:#7c3aed;border:1px solid #ddd6fe}
-
-/* ── MAP DEMO ── */
-.map-demo-table{width:100%;border-collapse:collapse;font-size:12px}
-.map-demo-table th{background:#f8fafc;border:1px solid #e2e8f0;padding:8px 10px;font-size:10.5px;font-weight:700;color:#64748b;text-transform:uppercase}
-.map-demo-table td{border:1px solid #e2e8f0;padding:9px 10px;color:#1a2035}
-.zcor-badge{background:#fff7ed;color:#c2410c;border:1px solid #fdba74;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700}
-.zcon-badge{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700}
-.real-oui{color:#059669;font-weight:700;font-size:11px}
-.real-non{color:#dc2626;font-weight:700;font-size:11px}
-
-/* ── MOTEUR DEMO ── */
-.demande-card{background:white;border:1px solid #dde2ea;border-radius:10px;padding:16px;margin-bottom:10px;font-size:12px}
-.demande-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-.demande-title{font-weight:700;color:#1a2035;font-size:13px}
-.demande-sub{font-size:11px;color:#8a97ab;margin-top:2px}
-.demande-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.demande-field{font-size:11px}
-.demande-field-lbl{color:#8a97ab;font-weight:600;margin-bottom:2px}
-.demande-field-val{color:#1a2035;font-weight:500}
-.statut-approuvee{background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;padding:3px 8px;border-radius:6px;font-size:10.5px;font-weight:600}
-.statut-envoyee{background:#fffbeb;color:#d97706;border:1px solid #fde68a;padding:3px 8px;border-radius:6px;font-size:10.5px;font-weight:600}
-.statut-refusee{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;padding:3px 8px;border-radius:6px;font-size:10.5px;font-weight:600}
-.rep-steps{display:flex;align-items:center;gap:0;margin-top:10px}
-.rep-step{display:flex;align-items:center;gap:0;flex:1}
-.rep-dot{width:24px;height:24px;border-radius:50%;border:2px solid #dde2ea;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#8a97ab;flex-shrink:0;background:white}
-.rep-dot.done{background:#059669;border-color:#059669;color:white}
-.rep-dot.active{background:#1d4ed8;border-color:#1d4ed8;color:white}
-.rep-line{flex:1;height:2px;background:#dde2ea}
-.rep-line.done{background:#059669}
-.rep-step-lbl{font-size:9px;color:#8a97ab;margin-top:4px;text-align:center}
-
-/* ── NOTIF DEMO ── */
-.notif-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start;margin-bottom:10px}
-.notif-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.notif-icon.green{background:rgba(5,150,105,.15)}
-.notif-icon.blue{background:rgba(59,130,246,.15)}
-.notif-icon.amber{background:rgba(217,119,6,.15)}
-.notif-title{font-size:14px;font-weight:600;color:white;margin-bottom:4px}
-.notif-body{font-size:12.5px;color:rgba(255,255,255,.5)}
-.notif-time{font-size:11px;color:rgba(255,255,255,.3);margin-top:6px}
-
-/* ── LIVRABLES ── */
-.livrable-item{background:white;border:1px solid #dde2ea;border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.livrable-icon{width:36px;height:36px;background:#fef2f2;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.livrable-icon svg{width:18px;height:18px;stroke:#dc2626;fill:none;stroke-width:2}
-.livrable-name{font-size:12.5px;font-weight:600;color:#1a2035;flex:1}
-.livrable-date{font-size:11px;color:#8a97ab}
-.livrable-btn{background:#1d4ed8;color:white;border:none;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:600;cursor:default}
-
-/* ── CAL ARRETS ── */
-.cal-demo{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:11px}
-.cal-day-hdr{text-align:center;font-weight:700;color:#8a97ab;padding:4px;font-size:10px;text-transform:uppercase}
-.cal-day{background:white;border:1px solid #e2e8f0;border-radius:6px;padding:6px;min-height:50px;font-weight:600;color:#1a2035;font-size:11px}
-.cal-day.weekend{background:#f8fafc}
-.cal-day.has-arret{border-color:#1d4ed8;background:#eff6ff}
-.cal-event{font-size:9px;background:#1d4ed8;color:white;border-radius:3px;padding:1px 4px;margin-top:3px;font-weight:500}
-.cal-event.planned{background:#059669}
-.cal-event.correction{background:#d97706}
-
-/* ── TECH STACK ── */
-.tech-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
-.tech-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:20px;display:flex;align-items:center;gap:14px}
-.tech-icon{font-size:24px;flex-shrink:0}
-.tech-name{font-size:14px;font-weight:600;color:white}
-.tech-role{font-size:12px;color:rgba(255,255,255,.4)}
-
-/* ── SEARCH DEMO ── */
-.filter-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.filter-select{border:1px solid #dde2ea;border-radius:7px;padding:7px 10px;font-size:12px;color:#1a2035;background:white;font-family:var(--font)}
-.filter-input{border:1px solid #dde2ea;border-radius:7px;padding:7px 12px;font-size:12px;color:#1a2035;background:white;flex:1;min-width:120px;font-family:var(--font)}
-.filter-btn{border:none;background:#1d4ed8;color:white;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:600;cursor:default}
-
-/* ── ANNUAL SECTION ── */
-.ann-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
-.ann-kpi{background:white;border:1px solid #dde2ea;border-radius:10px;padding:14px}
-.ann-kpi-val{font-size:22px;font-weight:800;color:#1a2035;letter-spacing:-1px}
-.ann-kpi-lbl{font-size:10.5px;color:#8a97ab;margin-top:3px;font-weight:500}
-
-/* ── TIMELINE ── */
-.timeline{position:relative;padding-left:28px}
-.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,#3b82f6,#8b5cf6)}
-.tl-item{position:relative;margin-bottom:28px}
-.tl-dot{position:absolute;left:-24px;top:2px;width:14px;height:14px;border-radius:50%;background:#3b82f6;border:2px solid #0f172a;box-shadow:0 0 0 3px rgba(59,130,246,.25)}
-.tl-title{font-size:15px;font-weight:700;color:white;margin-bottom:4px}
-.tl-desc{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6}
-
-/* ── FOOTER ── */
-.footer{background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,.05);padding:40px 24px;text-align:center}
-.footer-logo{font-size:20px;font-weight:800;color:white;letter-spacing:-1px;margin-bottom:8px}
-.footer-sub{font-size:13px;color:rgba(255,255,255,.3)}
-
-/* ── BG SECTIONS ── */
-.bg-dark{background:#0f172a;padding:80px 0}
-.bg-card{background:rgba(255,255,255,.02);padding:80px 0;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)}
-.bg-blue{background:linear-gradient(135deg,rgba(29,78,216,.15),rgba(124,58,237,.08));padding:80px 0;border-top:1px solid rgba(59,130,246,.1)}
-
-/* ── CALLOUT ── */
-.callout{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:20px 24px;display:flex;gap:14px;align-items:flex-start;margin:24px 0}
-.callout-icon{font-size:20px;flex-shrink:0;margin-top:1px}
-.callout-text{font-size:13.5px;color:rgba(255,255,255,.7);line-height:1.7}
-.callout-text strong{color:white}
-
-/* ── RESPONSIVE ── */
-@media(max-width:768px){
-  .kpi-grid-demo{grid-template-columns:1fr 1fr}
-  .charts-row{grid-template-columns:1fr}
-  .profiles-grid{grid-template-columns:repeat(2,1fr)}
-  .ann-kpi-grid{grid-template-columns:1fr 1fr}
-  .hero-stats{gap:24px}
-  .demande-grid{grid-template-columns:1fr 1fr}
+/* ═══ SLIDESHOW CONTAINER ═══ */
+.slideshow{width:100vw;height:100vh;position:relative;overflow:hidden}
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 80px;
+  opacity:0;pointer-events:none;
+  transform:translateX(60px);
+  transition:opacity .5s cubic-bezier(.4,0,.2,1),transform .5s cubic-bezier(.4,0,.2,1);
 }
-@media(max-width:480px){
-  .kpi-grid-demo{grid-template-columns:1fr}
-  .profiles-grid{grid-template-columns:1fr 1fr}
-}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.slide.exit-left{opacity:0;transform:translateX(-60px)}
+
+/* ═══ PROGRESS BAR ═══ */
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#3b82f6,#8b5cf6);transition:width .4s ease;z-index:200}
+
+/* ═══ SLIDE COUNTER ═══ */
+.slide-counter{position:fixed;bottom:28px;right:36px;font-size:12px;color:rgba(255,255,255,.35);font-weight:600;letter-spacing:.5px;z-index:200;font-family:'IBM Plex Mono',monospace}
+
+/* ═══ NAV ARROWS ═══ */
+.nav-arrow{position:fixed;top:50%;transform:translateY(-50%);width:44px;height:44px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:200;transition:all .2s;backdrop-filter:blur(8px)}
+.nav-arrow:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.25)}
+.nav-arrow svg{width:18px;height:18px;stroke:rgba(255,255,255,.7);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.nav-prev{left:20px}
+.nav-next{right:20px}
+.nav-arrow.disabled{opacity:.2;pointer-events:none}
+
+/* ═══ SLIDE DOTS ═══ */
+.slide-dots{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:200}
+.dot{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.2);cursor:pointer;transition:all .3s}
+.dot.active{background:white;width:20px}
+.dot:hover{background:rgba(255,255,255,.5)}
+
+/* ═══ SLIDE BACKGROUNDS ═══ */
+.bg-hero{background:linear-gradient(135deg,#0a0f1e 0%,#0d1f4a 50%,#1a3a8f 100%)}
+.bg-dark{background:linear-gradient(160deg,#0a0f1e 0%,#111827 100%)}
+.bg-blue{background:linear-gradient(160deg,#0a0f1e 0%,#0c1a3a 60%,#0f2d6b 100%)}
+.bg-green{background:linear-gradient(160deg,#0a0f1e 0%,#0c2a1a 60%,#0a4a2a 100%)}
+.bg-purple{background:linear-gradient(160deg,#0a0f1e 0%,#1a0a3a 60%,#2d1060 100%)}
+.bg-amber{background:linear-gradient(160deg,#0a0f1e 0%,#1e1200 60%,#3d2200 100%)}
+.bg-slate{background:linear-gradient(160deg,#0a0f1e 0%,#0f1825 60%,#1a2840 100%)}
+
+/* ═══ NOISE OVERLAY ═══ */
+.slide::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+.slide>*{position:relative;z-index:1}
+
+/* ═══ COMMON TYPOGRAPHY ═══ */
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#60a5fa;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:'';width:24px;height:2px;background:#3b82f6;border-radius:1px}
+h1.slide-title{font-size:clamp(38px,5.5vw,72px);font-weight:900;color:white;letter-spacing:-2.5px;line-height:1.05;margin-bottom:20px}
+h2.slide-title{font-size:clamp(28px,4vw,52px);font-weight:800;color:white;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px}
+h3.slide-title{font-size:clamp(22px,3vw,38px);font-weight:800;color:white;letter-spacing:-1px;line-height:1.15;margin-bottom:14px}
+.slide-sub{font-size:clamp(14px,1.6vw,19px);color:rgba(255,255,255,.55);max-width:680px;line-height:1.7;font-weight:400}
+.accent{background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* ═══ SLIDE 1 — HERO ═══ */
+.hero-logo{width:80px;height:80px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:28px;backdrop-filter:blur(10px)}
+.hero-logo svg{width:38px;height:38px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:28px 0}
+.hero-tag{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 14px;font-size:12.5px;color:rgba(255,255,255,.75);font-weight:500}
+.hero-stats{display:flex;gap:52px;margin-top:8px}
+.hero-stat-num{font-size:40px;font-weight:900;color:white;letter-spacing:-2px;line-height:1}
+.hero-stat-lbl{font-size:11px;color:rgba(255,255,255,.4);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+
+/* ═══ OVERVIEW GRID ═══ */
+.overview-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;width:100%;max-width:900px;margin-top:32px}
+.ov-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;display:flex;gap:18px;align-items:flex-start;transition:all .3s}
+.ov-num{font-size:11px;font-weight:700;color:rgba(255,255,255,.2);font-family:'IBM Plex Mono',monospace;margin-bottom:8px}
+.ov-icon{font-size:28px;flex-shrink:0;margin-top:2px}
+.ov-title{font-size:17px;font-weight:700;color:white;margin-bottom:6px}
+.ov-desc{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6}
+
+/* ═══ KPI CARDS ═══ */
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;max-width:820px;margin-top:24px}
+.kpi-c{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px 22px}
+.kpi-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.kpi-icon svg{width:17px;height:17px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.kpi-icon.blue{background:#1d4ed8}
+.kpi-icon.green{background:#059669}
+.kpi-icon.amber{background:#d97706}
+.kpi-icon.red{background:#dc2626}
+.kpi-icon.purple{background:#7c3aed}
+.kpi-icon.slate{background:#475569}
+.kpi-val{font-size:28px;font-weight:900;color:white;letter-spacing:-1.5px;line-height:1}
+.kpi-lbl{font-size:12px;font-weight:600;color:rgba(255,255,255,.5);margin-top:5px}
+.kpi-sub{font-size:11px;color:rgba(255,255,255,.3);margin-top:3px}
+.kpi-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;margin-top:8px;background:rgba(5,150,105,.2);color:#34d399;border:1px solid rgba(5,150,105,.3)}
+.kpi-tag.amber{background:rgba(217,119,6,.2);color:#fbbf24;border-color:rgba(217,119,6,.3)}
+.kpi-tag.red{background:rgba(220,38,38,.2);color:#f87171;border-color:rgba(220,38,38,.3)}
+
+/* ═══ CHARTS ═══ */
+.charts-2col{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%;max-width:860px;margin-top:24px}
+.chart-box{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px}
+.chart-title{font-size:13px;font-weight:700;color:white;margin-bottom:4px}
+.chart-sub{font-size:11px;color:rgba(255,255,255,.35);margin-bottom:16px}
+.bar-wrap{display:flex;align-items:flex-end;gap:5px;height:90px}
+.bar{flex:1;border-radius:4px 4px 0 0;min-height:4px;opacity:.9}
+.bar.b-blue{background:#3b82f6}
+.bar.b-green{background:#10b981}
+.bar.b-amber{background:#f59e0b}
+.bar.b-purple{background:#8b5cf6}
+.bar.b-slate{background:#64748b}
+.bar-labels{display:flex;justify-content:space-between;margin-top:5px;font-size:9px;color:rgba(255,255,255,.3)}
+.donut-wrap{display:flex;align-items:center;gap:20px}
+.donut{width:90px;height:90px;border-radius:50%;background:conic-gradient(#3b82f6 0% 43%,#10b981 43% 73%,#f59e0b 73% 88%,rgba(255,255,255,.08) 88% 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.donut-inner{width:60px;height:60px;background:#111827;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:white}
+.legend{display:flex;flex-direction:column;gap:7px}
+.leg-item{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.55)}
+.leg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+/* ═══ VIDEO SLIDE ═══ */
+.video-container{width:100%;max-width:1000px;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.1),0 40px 120px rgba(0,0,0,.6);margin-top:24px;background:#000;position:relative}
+.video-container video{width:100%;display:block;max-height:55vh;object-fit:contain;background:#000}
+.video-caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.8));padding:20px;font-size:12px;color:rgba(255,255,255,.6)}
+
+/* ═══ PDR TABLE ═══ */
+.pdr-table-wrap{width:100%;max-width:900px;margin-top:24px;overflow:hidden;border-radius:14px;border:1px solid rgba(255,255,255,.1)}
+.pdr-table{width:100%;border-collapse:collapse;font-size:12px}
+.pdr-table th{background:rgba(255,255,255,.08);padding:11px 14px;text-align:left;font-size:10.5px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,.08)}
+.pdr-table td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.8)}
+.pdr-table tr:last-child td{border-bottom:none}
+.pdr-table tr:hover td{background:rgba(255,255,255,.03)}
+.b-ok{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;font-size:10.5px;font-weight:700;background:rgba(5,150,105,.2);color:#34d399;border:1px solid rgba(5,150,105,.3)}
+.b-nok{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;font-size:10.5px;font-weight:700;background:rgba(220,38,38,.2);color:#f87171;border:1px solid rgba(220,38,38,.3)}
+.b-pend{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;font-size:10.5px;font-weight:700;background:rgba(217,119,6,.2);color:#fbbf24;border:1px solid rgba(217,119,6,.3)}
+.b-obs{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;font-size:10.5px;font-weight:700;background:rgba(124,58,237,.2);color:#a78bfa;border:1px solid rgba(124,58,237,.3)}
+.poste-tag{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#60a5fa}
+
+/* ═══ FEATURES LIST ═══ */
+.feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;width:100%;max-width:900px;margin-top:24px}
+.feat-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 24px}
+.feat-icon{font-size:22px;margin-bottom:10px}
+.feat-title{font-size:15px;font-weight:700;color:white;margin-bottom:6px}
+.feat-desc{font-size:12.5px;color:rgba(255,255,255,.45);line-height:1.7}
+.feat-list{list-style:none;margin-top:10px;display:flex;flex-direction:column;gap:5px}
+.feat-list li{font-size:12px;color:rgba(255,255,255,.4);display:flex;align-items:flex-start;gap:7px}
+.feat-list li::before{content:'›';color:#60a5fa;font-size:13px;flex-shrink:0;margin-top:-1px}
+
+/* ═══ PROFILES ═══ */
+.profiles-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;width:100%;max-width:960px;margin-top:24px}
+.pcard{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:18px;text-align:center}
+.pcard-emoji{font-size:26px;margin-bottom:8px}
+.pcard-name{font-size:13px;font-weight:700;color:white;margin-bottom:3px}
+.pcard-role{font-size:10.5px;color:rgba(255,255,255,.35);margin-bottom:10px}
+.pcard-perms{display:flex;flex-direction:column;gap:4px}
+.pp{font-size:10px;padding:3px 7px;border-radius:4px;font-weight:600;display:inline-flex;align-items:center;gap:3px}
+.pp.g{background:rgba(5,150,105,.15);color:#34d399}
+.pp.b{background:rgba(59,130,246,.15);color:#60a5fa}
+.pp.a{background:rgba(217,119,6,.15);color:#fbbf24}
+.pp.p{background:rgba(124,58,237,.15);color:#a78bfa}
+.pp.r{background:rgba(220,38,38,.15);color:#f87171}
+
+/* ═══ NOTIF CARDS ═══ */
+.notif-list{display:flex;flex-direction:column;gap:12px;width:100%;max-width:680px;margin-top:24px}
+.notif-c{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px 20px;display:flex;gap:14px;align-items:flex-start}
+.notif-ic{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.notif-ic.g{background:rgba(5,150,105,.15)}
+.notif-ic.b{background:rgba(59,130,246,.15)}
+.notif-ic.a{background:rgba(217,119,6,.15)}
+.notif-ic.r{background:rgba(220,38,38,.15)}
+.ntitle{font-size:14px;font-weight:700;color:white;margin-bottom:3px}
+.nbody{font-size:12.5px;color:rgba(255,255,255,.45)}
+.ntime{font-size:10.5px;color:rgba(255,255,255,.25);margin-top:5px}
+
+/* ═══ TECH STACK ═══ */
+.tech-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;width:100%;max-width:900px;margin-top:24px}
+.tech-c{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:18px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.tech-ic{font-size:28px}
+.tech-name{font-size:13px;font-weight:700;color:white}
+.tech-role{font-size:11px;color:rgba(255,255,255,.35);line-height:1.5}
+
+/* ═══ ARCH DIAGRAM ═══ */
+.arch-flow{display:flex;align-items:center;gap:8px;margin-top:32px;flex-wrap:wrap;justify-content:center}
+.arch-node{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:18px 22px;text-align:center;min-width:120px}
+.arch-node.highlight{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.4)}
+.arch-node-ic{font-size:24px;margin-bottom:8px}
+.arch-node-name{font-size:12px;font-weight:700;color:white}
+.arch-node-sub{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px}
+.arch-arrow{font-size:20px;color:rgba(255,255,255,.2)}
+
+/* ═══ EMAIL DEMO ═══ */
+.email-demo{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:24px;width:100%;max-width:700px;margin-top:24px}
+.email-header{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.email-field{font-size:12px;color:rgba(255,255,255,.4);display:flex;gap:12px}
+.email-field b{color:rgba(255,255,255,.7);min-width:60px}
+.email-body{font-size:13px;color:rgba(255,255,255,.6);line-height:1.8}
+.email-body strong{color:white}
+.email-highlight{background:rgba(59,130,246,.15);border-left:3px solid #3b82f6;padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0}
+
+/* ═══ MAP TABLE ═══ */
+.map-table-wrap{width:100%;max-width:900px;margin-top:20px;overflow:hidden;border-radius:14px;border:1px solid rgba(255,255,255,.1)}
+.map-table{width:100%;border-collapse:collapse;font-size:12px}
+.map-table th{background:rgba(255,255,255,.08);padding:10px 12px;text-align:left;font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,.08)}
+.map-table td{padding:11px 12px;border-bottom:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.75)}
+.map-table tr:last-child td{border-bottom:none}
+.zcor{background:rgba(194,65,12,.2);color:#fb923c;border:1px solid rgba(194,65,12,.3);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700}
+.zcon{background:rgba(29,78,216,.2);color:#60a5fa;border:1px solid rgba(29,78,216,.3);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700}
+.real-y{color:#34d399;font-weight:700;font-size:11px}
+.real-n{color:#f87171;font-weight:700;font-size:11px}
+.real-p{color:rgba(255,255,255,.25);font-size:11px}
+
+/* ═══ DEMANDE CARD ═══ */
+.demande-demo{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px;width:100%;max-width:860px;margin-top:12px}
+.dem-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.dem-title{font-size:15px;font-weight:700;color:white}
+.dem-sub{font-size:11.5px;color:rgba(255,255,255,.35);margin-top:3px}
+.dem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.dem-f-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+.dem-f-val{font-size:13px;font-weight:600;color:rgba(255,255,255,.8)}
+.rep-bar{display:flex;align-items:center;margin-top:6px}
+.rep-d{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(255,255,255,.4);flex-shrink:0;background:transparent}
+.rep-d.done{background:#059669;border-color:#059669;color:white}
+.rep-d.act{background:#1d4ed8;border-color:#1d4ed8;color:white}
+.rep-l{flex:1;height:2px;background:rgba(255,255,255,.1)}
+.rep-l.done{background:#059669}
+.st-app{background:rgba(5,150,105,.2);color:#34d399;border:1px solid rgba(5,150,105,.3);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700}
+.st-wait{background:rgba(217,119,6,.2);color:#fbbf24;border:1px solid rgba(217,119,6,.3);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700}
+.st-ref{background:rgba(220,38,38,.2);color:#f87171;border:1px solid rgba(220,38,38,.3);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700}
+
+/* ═══ LIVRABLE ═══ */
+.livrable-list{width:100%;max-width:700px;margin-top:24px;display:flex;flex-direction:column;gap:10px}
+.liv-item{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:14px}
+.liv-ic{width:38px;height:38px;background:rgba(220,38,38,.15);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.liv-ic svg{width:18px;height:18px;stroke:#f87171;fill:none;stroke-width:2}
+.liv-name{font-size:13px;font-weight:600;color:rgba(255,255,255,.8);flex:1}
+.liv-date{font-size:11px;color:rgba(255,255,255,.3)}
+.liv-btn{background:#1d4ed8;color:white;border:none;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:600;cursor:default}
+
+/* ═══ CONCLUSION ═══ */
+.concl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;width:100%;max-width:820px;margin-top:32px}
+.concl-c{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px;text-align:center}
+.concl-num{font-size:42px;font-weight:900;color:white;letter-spacing:-2px;line-height:1}
+.concl-lbl{font-size:12px;color:rgba(255,255,255,.4);margin-top:6px;font-weight:500}
+
+/* ═══ FILTER BAR ═══ */
+.filter-demo{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 16px;width:100%;max-width:860px;flex-wrap:wrap}
+.f-select{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:6px 12px;font-size:12px;color:rgba(255,255,255,.7);font-family:'Inter',sans-serif;cursor:default}
+.f-input{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:6px 12px;font-size:12px;color:rgba(255,255,255,.7);flex:1;min-width:100px;font-family:'Inter',sans-serif}
+.f-btn{background:#1d4ed8;border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:600;color:white;cursor:default}
+
+/* ═══ SECTION BAR ═══ */
+.section-bar{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.sec-btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:default}
+.sec-btn.active{background:#1d4ed8;color:white}
+.sec-btn.inactive{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.55)}
+.sec-btn.bureau{background:rgba(194,65,12,.15);border:1px solid rgba(194,65,12,.3);color:#fb923c}
+
+/* ═══ SLIDE FADE ═══ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.slide.active .eyebrow{animation:fadeUp .5s .1s both}
+.slide.active h2.slide-title,.slide.active h1.slide-title,.slide.active h3.slide-title{animation:fadeUp .5s .2s both}
+.slide.active .slide-sub{animation:fadeUp .5s .3s both}
+.slide.active .hero-tags,.slide.active .hero-stats,.slide.active .overview-grid,.slide.active .kpi-row,.slide.active .charts-2col,.slide.active .video-container,.slide.active .pdr-table-wrap,.slide.active .feat-grid,.slide.active .profiles-grid,.slide.active .notif-list,.slide.active .tech-grid,.slide.active .arch-flow,.slide.active .email-demo,.slide.active .map-table-wrap,.slide.active .demande-demo,.slide.active .livrable-list,.slide.active .concl-grid,.slide.active .filter-demo,.slide.active .section-bar{animation:fadeUp .5s .4s both}
+
+/* ═══ KEYBOARD HINT ═══ */
+.kbd-hint{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(255,255,255,.2);z-index:200;display:flex;align-items:center;gap:6px;white-space:nowrap;pointer-events:none}
+.kbd{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:4px;padding:1px 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,.35)}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
-<section class="hero">
-  <div class="hero-badge">Bureau des Méthodes · Section Planification</div>
+<!-- PROGRESS -->
+<div class="progress-bar" id="pb"></div>
+
+<!-- ARROWS -->
+<div class="nav-arrow nav-prev" id="btnPrev" onclick="go(-1)">
+  <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+</div>
+<div class="nav-arrow nav-next" id="btnNext" onclick="go(1)">
+  <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+</div>
+
+<!-- DOTS -->
+<div class="slide-dots" id="dots"></div>
+
+<!-- COUNTER -->
+<div class="slide-counter" id="counter">1 / 18</div>
+
+<!-- KEYBOARD HINT -->
+<div class="kbd-hint"><span class="kbd">←</span> <span class="kbd">→</span> ou cliquez les flèches</div>
+
+<div class="slideshow" id="ss">
+
+<!-- ══════════════════════════════════════
+     SLIDE 1 — COUVERTURE
+══════════════════════════════════════ -->
+<div class="slide bg-hero active" data-slide="1">
   <div class="hero-logo">
     <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
   </div>
-  <h1>Maintenance<br><span>Analytics</span></h1>
-  <p class="hero-sub">Application web de pilotage de la maintenance industrielle — tableau de bord, planification, PDR et gestion des moteurs électriques</p>
+  <div class="eyebrow">Bureau des Méthodes · Section Planification · OCP Group</div>
+  <h1 class="slide-title" style="text-align:center">Maintenance<br><span class="accent">Analytics</span></h1>
+  <p class="slide-sub" style="text-align:center">Application web de pilotage de la maintenance industrielle — tableau de bord, planification, PDR et gestion des moteurs électriques</p>
   <div class="hero-tags">
     <span class="hero-tag">📊 Dashboard KPIs</span>
     <span class="hero-tag">📋 Plan de charge</span>
@@ -296,1084 +313,728 @@ body{font-family:var(--font);background:#0f172a;color:var(--text);font-size:14px
     <span class="hero-tag">📱 PWA installable</span>
   </div>
   <div class="hero-stats">
-    <div class="hero-stat"><div class="hero-stat-num">4</div><div class="hero-stat-lbl">Modules</div></div>
-    <div class="hero-stat"><div class="hero-stat-num">8</div><div class="hero-stat-lbl">Profils</div></div>
-    <div class="hero-stat"><div class="hero-stat-num">100%</div><div class="hero-stat-lbl">Temps réel</div></div>
-    <div class="hero-stat"><div class="hero-stat-num">SAP</div><div class="hero-stat-lbl">Intégration</div></div>
+    <div style="text-align:center"><div class="hero-stat-num">4</div><div class="hero-stat-lbl">Modules</div></div>
+    <div style="text-align:center"><div class="hero-stat-num">8</div><div class="hero-stat-lbl">Profils</div></div>
+    <div style="text-align:center"><div class="hero-stat-num">100%</div><div class="hero-stat-lbl">Temps réel</div></div>
+    <div style="text-align:center"><div class="hero-stat-num">SAP</div><div class="hero-stat-lbl">Intégration</div></div>
   </div>
-  <div class="scroll-hint">
-    <span>Explorer</span>
-    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-  </div>
-</section>
+</div>
 
-<!-- ═══════════════════════════════ NAV ═══════════════════════════════ -->
-<nav class="sticky-nav">
-  <div class="nav-inner">
-    <a class="nav-link active" href="#dashboard">📊 Dashboard</a>
-    <a class="nav-link" href="#planification">🗓️ Planification</a>
-    <a class="nav-link" href="#pdr">🔩 PDR</a>
-    <a class="nav-link" href="#map">🗺️ MAP</a>
-    <a class="nav-link" href="#calarrets">🏭 Arrêts</a>
-    <a class="nav-link" href="#moteur">⚡ Moteurs</a>
-    <a class="nav-link" href="#livrables">📁 Livrables</a>
-    <a class="nav-link" href="#profils">👥 Profils</a>
-    <a class="nav-link" href="#notifs">🔔 Notifications</a>
-    <a class="nav-link" href="#tech">⚙️ Technique</a>
-  </div>
-</nav>
-
-<!-- ═══════════════════════════════ DASHBOARD ═══════════════════════════════ -->
-<div class="bg-dark" id="dashboard">
-<div class="section">
-  <div class="section-header">
-    <div class="section-eyebrow">Module 1</div>
-    <h2 class="section-title">📊 Dashboard — Rapport de Maintenance</h2>
-    <p class="section-desc">Tableau de bord complet avec KPIs, graphiques analytiques et basculement mensuel / annuel en un clic</p>
-  </div>
-
-  <!-- APP FRAME -->
-  <div class="app-frame">
-    <div class="app-frame-bar">
-      <div class="app-frame-dots">
-        <div class="app-frame-dot red"></div>
-        <div class="app-frame-dot yellow"></div>
-        <div class="app-frame-dot green"></div>
-      </div>
-      <div class="app-frame-url">maintenance-analytics.vercel.app</div>
-    </div>
-    <div class="app-frame-topbar">
-      <div class="app-brand">
-        <div class="app-brand-mark"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-        <div><div class="app-brand-name">Maintenance Analytics</div><div class="app-brand-sub">Bureau des méthodes</div></div>
-      </div>
-      <div class="app-nav">
-        <div class="app-nav-tab active"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</div>
-        <div class="app-nav-tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Planification</div>
-        <div class="app-nav-tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/></svg>Moteurs</div>
-        <div class="app-nav-tab"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Livrables</div>
+<!-- ══════════════════════════════════════
+     SLIDE 2 — VUE D'ENSEMBLE
+══════════════════════════════════════ -->
+<div class="slide bg-dark" data-slide="2">
+  <div class="eyebrow">Vue d'ensemble</div>
+  <h2 class="slide-title">4 modules principaux</h2>
+  <p class="slide-sub">Une application complète centralisée, accessible depuis n'importe quel appareil, connectée en temps réel à Google Sheets</p>
+  <div class="overview-grid">
+    <div class="ov-card">
+      <div><div class="ov-num">01</div><div class="ov-icon">📊</div></div>
+      <div>
+        <div class="ov-title">Dashboard</div>
+        <div class="ov-desc">KPIs de maintenance, graphiques analytiques, rapports mensuels et annuels générés automatiquement depuis les données SAP</div>
       </div>
     </div>
-    <div class="app-content">
-      <!-- Contrôles période -->
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px">
-        <div style="font-size:11px;color:#8a97ab;display:flex;align-items:center;gap:8px">
-          <span style="color:#059669;font-weight:600">✓</span>
-          <span style="font-family:monospace;font-size:11px">SAP_Export_Mars_2025.xlsx</span>
-          <span style="color:#8a97ab">·</span>
-          <span style="font-weight:700;color:#1a2035">1 247 ordres chargés</span>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <div style="display:flex;border:1px solid #dde2ea;border-radius:8px;overflow:hidden">
-            <div style="padding:6px 14px;background:#1d4ed8;color:white;font-size:12px;font-weight:600">Mensuel</div>
-            <div style="padding:6px 14px;font-size:12px;color:#64748b">Annuel</div>
-          </div>
-          <select style="border:1px solid #dde2ea;border-radius:7px;padding:6px 10px;font-size:12px;color:#1a2035;font-family:var(--font)"><option>Mars 2025</option></select>
-        </div>
-      </div>
-
-      <!-- KPI Grid -->
-      <div style="font-size:10.5px;font-weight:700;color:#8a97ab;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Global</div>
-      <div class="kpi-grid-demo">
-        <div class="kpi-demo">
-          <div class="kpi-demo-icon blue"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
-          <div class="kpi-demo-val">1 247</div>
-          <div class="kpi-demo-lbl">Total OT planifiés</div>
-          <div class="kpi-demo-sub">Ordres de travail du mois</div>
-        </div>
-        <div class="kpi-demo">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start">
-            <div class="kpi-demo-icon green"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-            <span class="kpi-demo-tag">+3.2%</span>
-          </div>
-          <div class="kpi-demo-val">894</div>
-          <div class="kpi-demo-lbl">OT Réalisés</div>
-          <div class="kpi-demo-sub">Taux de réalisation : <b>71.7%</b></div>
-        </div>
-        <div class="kpi-demo">
-          <div class="kpi-demo-icon amber"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-          <div class="kpi-demo-val">212</div>
-          <div class="kpi-demo-lbl">OT Lancés</div>
-          <div class="kpi-demo-sub">En cours : <b>17.0%</b></div>
-        </div>
-        <div class="kpi-demo">
-          <div class="kpi-demo-icon red"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-          <div class="kpi-demo-val">141</div>
-          <div class="kpi-demo-lbl">Non lancés</div>
-          <div class="kpi-demo-sub">Part du total : <b>11.3%</b></div>
-        </div>
-        <div class="kpi-demo">
-          <div class="kpi-demo-icon amber"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-          <div class="kpi-demo-val">68% / 32%</div>
-          <div class="kpi-demo-lbl">Préventif vs Correctif</div>
-          <div class="kpi-demo-sub">Préventif : <b>849</b> · Correctif : <b>398</b></div>
-        </div>
-        <div class="kpi-demo">
-          <div class="kpi-demo-icon slate"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-          <div class="kpi-demo-val">87</div>
-          <div class="kpi-demo-lbl">Backlog</div>
-          <div class="kpi-demo-sub">Statut util. ATPL + Statut sys. LANC</div>
-        </div>
-      </div>
-
-      <!-- Charts row -->
-      <div class="charts-row" style="margin-top:14px">
-        <div class="chart-demo">
-          <div class="chart-demo-title">Répartition par type d'ordre</div>
-          <div class="chart-demo-sub">ZCON · ZCOR · ZEST · ZETL</div>
-          <div style="display:flex;align-items:center;gap:20px">
-            <div class="donut-demo">
-              <div class="donut-hole">71.7%</div>
-            </div>
-            <div class="donut-legend">
-              <div class="donut-legend-item"><div class="donut-dot" style="background:#3b82f6"></div>ZCON Systématique (45%)</div>
-              <div class="donut-legend-item"><div class="donut-dot" style="background:#10b981"></div>ZCOR Correctif (30%)</div>
-              <div class="donut-legend-item"><div class="donut-dot" style="background:#f59e0b"></div>ZEST Estimation (15%)</div>
-              <div class="donut-legend-item"><div class="donut-dot" style="background:#e2e8f0"></div>Autres (10%)</div>
-            </div>
-          </div>
-        </div>
-        <div class="chart-demo">
-          <div class="chart-demo-title">Taux de réalisation mensuel</div>
-          <div class="chart-demo-sub">CONF + TCLO + CLOT / total</div>
-          <div class="bar-chart" style="padding-bottom:4px">
-            <div class="bar blue" style="height:60%"></div>
-            <div class="bar blue" style="height:72%"></div>
-            <div class="bar blue" style="height:55%"></div>
-            <div class="bar blue" style="height:80%"></div>
-            <div class="bar green" style="height:68%"></div>
-            <div class="bar green" style="height:75%"></div>
-            <div class="bar blue" style="height:85%"></div>
-            <div class="bar blue" style="height:72%"></div>
-            <div class="bar amber" style="height:50%"></div>
-            <div class="bar blue" style="height:66%"></div>
-            <div class="bar blue" style="height:78%"></div>
-            <div class="bar green" style="height:90%"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:9px;color:#8a97ab;margin-top:4px">
-            <span>Janv</span><span>Fév</span><span>Mars</span><span>Avr</span><span>Mai</span><span>Juin</span><span>Juil</span><span>Août</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Déc</span>
-          </div>
-        </div>
+    <div class="ov-card">
+      <div><div class="ov-num">02</div><div class="ov-icon">🗓️</div></div>
+      <div>
+        <div class="ov-title">Planification</div>
+        <div class="ov-desc">4 sous-onglets : PDR disponibilité, MAP, Plan de charge hebdomadaire et Calendrier des arrêts préventifs</div>
       </div>
     </div>
-  </div>
-
-  <!-- Features of Dashboard -->
-  <div class="feature-grid" style="margin-top:40px">
-    <div class="feature-card">
-      <div class="feature-icon blue">📊</div>
-      <div class="feature-title">KPIs en temps réel</div>
-      <div class="feature-desc">6 indicateurs clés globaux + KPIs préventif et correctif calculés automatiquement depuis les données SAP</div>
-      <ul class="feature-list">
-        <li>Total OT planifiés du mois</li>
-        <li>Taux de réalisation (CONF/TCLO/CLOT)</li>
-        <li>OT Lancés / Non lancés / Backlog</li>
-        <li>Ratio préventif vs correctif</li>
-      </ul>
+    <div class="ov-card">
+      <div><div class="ov-num">03</div><div class="ov-icon">⚡</div></div>
+      <div>
+        <div class="ov-title">Moteurs Électriques</div>
+        <div class="ov-desc">Gestion complète des demandes de changement, pose et réparation avec workflow d'approbation et notifications</div>
+      </div>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon purple">📅</div>
-      <div class="feature-title">Basculement Mensuel / Annuel</div>
-      <div class="feature-desc">Choisissez entre vue mensuelle avec sélecteur mois/année ou vue annuelle agrégée sur les 12 mois</div>
-      <ul class="feature-list">
-        <li>Vue mensuelle : sélecteur mois + année</li>
-        <li>Vue annuelle : KPIs agrégés 12 mois</li>
-        <li>Graphiques adaptatifs selon le mode</li>
-        <li>Recalcul automatique au basculement</li>
-      </ul>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon green">📈</div>
-      <div class="feature-title">Graphiques analytiques</div>
-      <div class="feature-desc">Visualisations interactives pour analyser les tendances et la répartition des OT</div>
-      <ul class="feature-list">
-        <li>Donut répartition par type d'ordre</li>
-        <li>Barres taux de réalisation mensuel</li>
-        <li>Systématique vs Curatif</li>
-        <li>Réalisation par corps de métier</li>
-      </ul>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon amber">📤</div>
-      <div class="feature-title">Export PDF / Excel</div>
-      <div class="feature-desc">Générez des rapports formatés pour impression ou partage, directement depuis le dashboard</div>
-      <ul class="feature-list">
-        <li>Export PDF rapport mensuel complet</li>
-        <li>Export Excel du plan de charge</li>
-        <li>En-tête Bureau des méthodes</li>
-        <li>Mise en page optimisée impression</li>
-      </ul>
+    <div class="ov-card">
+      <div><div class="ov-num">04</div><div class="ov-icon">📁</div></div>
+      <div>
+        <div class="ov-title">Livrables</div>
+        <div class="ov-desc">Bibliothèque de documents techniques (rapports, procédures, plans) organisée par année et mois, hébergée sur GitHub</div>
+      </div>
     </div>
   </div>
 </div>
-</div>
 
-<!-- ═══════════════════════════════ PLANIFICATION ═══════════════════════════════ -->
-<div class="bg-card" id="planification">
-<div class="section">
-  <div class="section-header">
-    <div class="section-eyebrow">Module 2</div>
-    <h2 class="section-title">🗓️ Planification</h2>
-    <p class="section-desc">4 sous-onglets pour gérer la planification opérationnelle : PDR, MAP, Plan de charge et Calendrier des arrêts</p>
-  </div>
-
-  <!-- Sub-tabs preview -->
-  <div class="app-frame">
-    <div class="app-frame-bar">
-      <div class="app-frame-dots">
-        <div class="app-frame-dot red"></div><div class="app-frame-dot yellow"></div><div class="app-frame-dot green"></div>
-      </div>
-      <div class="app-frame-url">maintenance-analytics.vercel.app → Planification</div>
-    </div>
-    <div class="app-content" style="padding:16px 24px">
-      <div style="display:flex;gap:4px;border-bottom:2px solid #e2e8f0;margin-bottom:20px;padding-bottom:0">
-        <div style="padding:10px 18px;border-bottom:2px solid #1d4ed8;margin-bottom:-2px;font-size:13px;font-weight:700;color:#1d4ed8">🔩 PDR Disponibilité</div>
-        <div style="padding:10px 18px;font-size:13px;font-weight:500;color:#8a97ab">🗺️ MAP</div>
-        <div style="padding:10px 18px;font-size:13px;font-weight:500;color:#8a97ab">📋 Plan de charge</div>
-        <div style="padding:10px 18px;font-size:13px;font-weight:500;color:#8a97ab">🏭 Cal. Arrêts</div>
-      </div>
-      <div style="color:#64748b;font-size:13px;text-align:center;padding:24px">Sélectionnez un sous-onglet pour accéder aux données en temps réel depuis Google Sheets</div>
-    </div>
+<!-- ══════════════════════════════════════
+     SLIDE 3 — DASHBOARD DEMO VIDEO
+══════════════════════════════════════ -->
+<div class="slide bg-blue" data-slide="3">
+  <div class="eyebrow">Module 1 — Dashboard</div>
+  <h2 class="slide-title">Démonstration du Dashboard</h2>
+  <p class="slide-sub">Chargement des données SAP, KPIs en temps réel, basculement mensuel / annuel</p>
+  <div class="video-container">
+    <video controls preload="metadata" poster="">
+      <source src="videos/Dashboard.mov" type="video/mp4">
+      <source src="videos/Dashboard.mov" type="video/quicktime">
+      <p style="color:rgba(255,255,255,.5);padding:40px;text-align:center">Votre navigateur ne supporte pas cette vidéo. <a href="videos/Dashboard.mov" style="color:#60a5fa">Télécharger</a></p>
+    </video>
+    <div class="video-caption">📹 Enregistrement d'écran — Dashboard Maintenance Analytics</div>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 4 — DASHBOARD KPIs
+══════════════════════════════════════ -->
+<div class="slide bg-dark" data-slide="4">
+  <div class="eyebrow">Module 1 — Dashboard · KPIs</div>
+  <h2 class="slide-title">Indicateurs clés de performance</h2>
+  <p class="slide-sub">6 KPIs globaux + indicateurs préventif et correctif calculés automatiquement depuis les données SAP</p>
+  <div class="kpi-row">
+    <div class="kpi-c">
+      <div class="kpi-icon blue"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+      <div class="kpi-val">1 247</div>
+      <div class="kpi-lbl">Total OT planifiés</div>
+      <div class="kpi-sub">Ordres du mois · SAP</div>
+    </div>
+    <div class="kpi-c">
+      <div style="display:flex;justify-content:space-between">
+        <div class="kpi-icon green"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <span class="kpi-tag">+3.2%</span>
+      </div>
+      <div class="kpi-val">894</div>
+      <div class="kpi-lbl">OT Réalisés</div>
+      <div class="kpi-sub">Taux : <b style="color:white">71.7%</b></div>
+    </div>
+    <div class="kpi-c">
+      <div class="kpi-icon amber"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div class="kpi-val">212</div>
+      <div class="kpi-lbl">OT Lancés</div>
+      <div class="kpi-sub">En cours : <b style="color:white">17.0%</b></div>
+    </div>
+    <div class="kpi-c">
+      <div class="kpi-icon red"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+      <div class="kpi-val">141</div>
+      <div class="kpi-lbl">Non lancés</div>
+      <div class="kpi-sub">Part du total : <b style="color:white">11.3%</b></div>
+    </div>
+    <div class="kpi-c">
+      <div class="kpi-icon purple"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <div class="kpi-val">849</div>
+      <div class="kpi-lbl">OT Préventif</div>
+      <div class="kpi-sub">ZCON + ZEST + ZETL</div>
+    </div>
+    <div class="kpi-c">
+      <div class="kpi-icon slate"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <div class="kpi-val">87</div>
+      <div class="kpi-lbl">Backlog</div>
+      <div class="kpi-sub">ATPL + LANC</div>
+    </div>
+  </div>
 </div>
 
-<!-- ═══════════════════════════════ PDR ═══════════════════════════════ -->
-<div class="bg-dark" id="pdr">
-<div class="section">
-  <div class="section-header">
-    <div class="section-eyebrow">Planification → Sous-onglet 1</div>
-    <h2 class="section-title">🔩 PDR — Disponibilité Pièces de Rechange</h2>
-    <p class="section-desc">Confirmation de la disponibilité des PDR par le service Approvisionnement, avec filtrage par section et notifications automatiques</p>
-  </div>
-
-  <div class="app-frame">
-    <div class="app-frame-bar">
-      <div class="app-frame-dots">
-        <div class="app-frame-dot red"></div><div class="app-frame-dot yellow"></div><div class="app-frame-dot green"></div>
+<!-- ══════════════════════════════════════
+     SLIDE 5 — DASHBOARD GRAPHIQUES
+══════════════════════════════════════ -->
+<div class="slide bg-dark" data-slide="5">
+  <div class="eyebrow">Module 1 — Dashboard · Graphiques</div>
+  <h2 class="slide-title">Analyses visuelles</h2>
+  <p class="slide-sub">Graphiques interactifs Chart.js · Vue mensuelle et annuelle · Export PDF & Excel</p>
+  <div class="charts-2col">
+    <div class="chart-box">
+      <div class="chart-title">Répartition par type d'ordre</div>
+      <div class="chart-sub">ZCON · ZCOR · ZEST · ZETL</div>
+      <div class="donut-wrap">
+        <div class="donut"><div class="donut-inner">71.7%</div></div>
+        <div class="legend">
+          <div class="leg-item"><div class="leg-dot" style="background:#3b82f6"></div>ZCON Systématique 43%</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#10b981"></div>ZCOR Correctif 30%</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#f59e0b"></div>ZEST Estimation 15%</div>
+          <div class="leg-item"><div class="leg-dot" style="background:rgba(255,255,255,.15)"></div>Autres 12%</div>
+        </div>
       </div>
-      <div class="app-frame-url">Disponibilité PDR · Pièces de Rechange</div>
     </div>
-    <div class="app-content" style="padding:16px 24px">
-
-      <!-- Barre section -->
-      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-        <div style="padding:7px 16px;background:#1d4ed8;color:white;border-radius:8px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px">Tous <span style="background:rgba(255,255,255,.3);border-radius:10px;padding:1px 7px;font-size:10px">12</span></div>
-        <div style="padding:7px 14px;background:white;border:1px solid #dde2ea;border-radius:8px;font-size:12px;color:#4a5568;display:flex;align-items:center;gap:6px">Mécanique <span style="background:#f1f5f9;border-radius:10px;padding:1px 7px;font-size:10px;color:#d97706">3</span></div>
-        <div style="padding:7px 14px;background:white;border:1px solid #dde2ea;border-radius:8px;font-size:12px;color:#4a5568;display:flex;align-items:center;gap:6px">Installation <span style="background:#f1f5f9;border-radius:10px;padding:1px 7px;font-size:10px;color:#d97706">2</span></div>
-        <div style="padding:7px 14px;background:white;border:1px solid #dde2ea;border-radius:8px;font-size:12px;color:#4a5568;display:flex;align-items:center;gap:6px">Électrique <span style="background:#f1f5f9;border-radius:10px;padding:1px 7px;font-size:10px;color:#059669">0</span></div>
-        <div style="padding:7px 14px;background:white;border:1px solid #dde2ea;border-radius:8px;font-size:12px;color:#4a5568;display:flex;align-items:center;gap:6px">Régulation <span style="background:#f1f5f9;border-radius:10px;padding:1px 7px;font-size:10px;color:#d97706">1</span></div>
-        <div style="padding:7px 14px;background:#fff7ed;border:1px solid #fdba74;border-radius:8px;font-size:12px;color:#c2410c;display:flex;align-items:center;gap:6px">Bureau méthode <span style="background:rgba(194,65,12,.15);border-radius:10px;padding:1px 7px;font-size:10px">2</span></div>
+    <div class="chart-box">
+      <div class="chart-title">Taux de réalisation mensuel</div>
+      <div class="chart-sub">CONF + TCLO + CLOT / total · 12 mois</div>
+      <div class="bar-wrap">
+        <div class="bar b-blue" style="height:60%"></div>
+        <div class="bar b-blue" style="height:72%"></div>
+        <div class="bar b-blue" style="height:55%"></div>
+        <div class="bar b-green" style="height:80%"></div>
+        <div class="bar b-blue" style="height:68%"></div>
+        <div class="bar b-blue" style="height:75%"></div>
+        <div class="bar b-blue" style="height:85%"></div>
+        <div class="bar b-amber" style="height:50%"></div>
+        <div class="bar b-blue" style="height:66%"></div>
+        <div class="bar b-blue" style="height:78%"></div>
+        <div class="bar b-green" style="height:90%"></div>
+        <div class="bar b-purple" style="height:71%"></div>
       </div>
-
-      <!-- Stats bar -->
-      <div style="display:flex;gap:16px;background:white;border:1px solid #dde2ea;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px">
-        <span style="color:#64748b">Total : <b>12</b></span>
-        <span style="color:#059669">✅ Disponibles : <b>5</b></span>
-        <span style="color:#dc2626">❌ Rupture : <b>2</b></span>
-        <span style="color:#d97706">⏳ En attente : <b>5</b></span>
+      <div class="bar-labels"><span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span><span>O</span><span>N</span><span>D</span></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">Réalisation par corps de métier</div>
+      <div class="chart-sub">% OT réalisés par poste de travail</div>
+      <div class="bar-wrap">
+        <div class="bar b-blue" style="height:85%"></div>
+        <div class="bar b-green" style="height:70%"></div>
+        <div class="bar b-amber" style="height:90%"></div>
+        <div class="bar b-blue" style="height:60%"></div>
+        <div class="bar b-purple" style="height:78%"></div>
       </div>
-
-      <!-- Table -->
-      <table class="pdr-demo-table">
-        <thead>
-          <tr>
-            <th>Ordre</th><th>Désignation</th><th>Objet</th><th>Poste</th><th>PDR requis</th><th>Statut</th><th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><b style="font-family:monospace;font-size:11px">4528901</b></td>
-            <td>Révision pompe centrifuge P-201</td>
-            <td style="font-size:11px;color:#64748b">P-201 POMPE</td>
-            <td><b>421-MEC</b></td>
-            <td style="max-width:160px;font-size:11px;color:#4a5568">Joint torique DN50, roulement 6204</td>
-            <td><span class="badge ok">✅ Disponible</span></td>
-            <td><button style="background:none;border:1px solid #dde2ea;border-radius:6px;padding:5px 10px;font-size:11px;color:#4a5568;cursor:default">✏️ Modifier</button></td>
-          </tr>
-          <tr>
-            <td><b style="font-family:monospace;font-size:11px">4528844</b></td>
-            <td>Remplacement réducteur R-102</td>
-            <td style="font-size:11px;color:#64748b">R-102 REDUCTEUR</td>
-            <td><b>421-MEC</b></td>
-            <td style="max-width:160px;font-size:11px;color:#4a5568">Réducteur 7.5kW ratio 1/30</td>
-            <td><span class="badge nok">❌ Rupture</span><div style="font-size:10px;color:#64748b;margin-top:4px">Délai : 3 semaines</div></td>
-            <td><button style="background:none;border:1px solid #dde2ea;border-radius:6px;padding:5px 10px;font-size:11px;color:#4a5568;cursor:default">✏️ Modifier</button></td>
-          </tr>
-          <tr>
-            <td><b style="font-family:monospace;font-size:11px">4529012</b></td>
-            <td>Maintenance préventive moteur électrique</td>
-            <td style="font-size:11px;color:#64748b">M-401 MOTEUR</td>
-            <td><b>423-ELEC</b></td>
-            <td style="max-width:160px;font-size:11px;color:#4a5568">Condensateur 400V, fusibles</td>
-            <td><span class="badge pending">⏳ En attente</span></td>
-            <td><button style="background:#1d4ed8;border:none;border-radius:6px;padding:5px 10px;font-size:11px;color:white;cursor:default">✓ Confirmer</button></td>
-          </tr>
-          <tr>
-            <td><b style="font-family:monospace;font-size:11px">4529034</b></td>
-            <td>Inspection vanne régulatrice V-305</td>
-            <td style="font-size:11px;color:#64748b">V-305 VANNE</td>
-            <td><b>423-REG</b></td>
-            <td style="max-width:160px;font-size:11px;color:#4a5568">Joint PTFE, ressort de rappel</td>
-            <td><span class="badge obs">💬 Observation</span><div style="font-size:10px;color:#7c3aed;margin-top:4px">À clarifier avec fournisseur</div></td>
-            <td><button style="background:none;border:1px solid #dde2ea;border-radius:6px;padding:5px 10px;font-size:11px;color:#4a5568;cursor:default">✏️ Modifier</button></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="bar-labels"><span>421-MEC</span><span>423-ELEC</span><span>421-INST</span><span>423-REG</span><span>421-CHAU</span></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">Évolution Systématique vs Curatif</div>
+      <div class="chart-sub">Part en % du volume mensuel</div>
+      <div class="bar-wrap" style="align-items:flex-end">
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px;height:100%;justify-content:flex-end">
+          <div style="height:42%;background:#3b82f6;border-radius:4px 4px 0 0;opacity:.9"></div>
+          <div style="height:28%;background:#10b981;border-radius:4px 4px 0 0;opacity:.9"></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px;height:100%;justify-content:flex-end">
+          <div style="height:48%;background:#3b82f6;border-radius:4px 4px 0 0;opacity:.9"></div>
+          <div style="height:25%;background:#10b981;border-radius:4px 4px 0 0;opacity:.9"></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px;height:100%;justify-content:flex-end">
+          <div style="height:38%;background:#3b82f6;border-radius:4px 4px 0 0;opacity:.9"></div>
+          <div style="height:32%;background:#10b981;border-radius:4px 4px 0 0;opacity:.9"></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px;height:100%;justify-content:flex-end">
+          <div style="height:55%;background:#3b82f6;border-radius:4px 4px 0 0;opacity:.9"></div>
+          <div style="height:20%;background:#10b981;border-radius:4px 4px 0 0;opacity:.9"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:8px">
+        <div class="leg-item"><div class="leg-dot" style="background:#3b82f6"></div>Préventif</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#10b981"></div>Correctif</div>
+      </div>
     </div>
   </div>
+</div>
 
-  <div class="feature-grid" style="margin-top:40px">
-    <div class="feature-card">
-      <div class="feature-icon blue">🔒</div>
-      <div class="feature-title">Accès sécurisé Appro</div>
-      <div class="feature-desc">Authentification par code PIN pour le service Approvisionnement avant toute confirmation ou modification</div>
-      <ul class="feature-list">
-        <li>Code d'accès configurable depuis les paramètres</li>
-        <li>Session verrouillable à tout moment</li>
-        <li>Lecture seule par défaut sans code</li>
+<!-- ══════════════════════════════════════
+     SLIDE 6 — PDR INTRO
+══════════════════════════════════════ -->
+<div class="slide bg-green" data-slide="6">
+  <div class="eyebrow">Module 2 — Planification · PDR</div>
+  <h2 class="slide-title">Disponibilité<br>Pièces de Rechange</h2>
+  <p class="slide-sub">Confirmation du stock PDR par le service Approvisionnement, filtrée par section et synchronisée en temps réel dans Google Sheets</p>
+  <div class="section-bar">
+    <div class="sec-btn active">Tous <span style="opacity:.6;margin-left:4px">12</span></div>
+    <div class="sec-btn inactive">Mécanique <span style="opacity:.6;margin-left:4px">3</span></div>
+    <div class="sec-btn inactive">Installation <span style="opacity:.6;margin-left:4px">2</span></div>
+    <div class="sec-btn inactive">Électrique <span style="opacity:.6;margin-left:4px">0</span></div>
+    <div class="sec-btn inactive">Régulation <span style="opacity:.6;margin-left:4px">1</span></div>
+    <div class="sec-btn bureau">Bureau méthode <span style="opacity:.7;margin-left:4px">2</span></div>
+  </div>
+  <div class="pdr-table-wrap">
+    <table class="pdr-table">
+      <thead>
+        <tr><th>Ordre</th><th>Désignation</th><th>Poste</th><th>PDR requis</th><th>Statut</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="poste-tag">4528901</span></td>
+          <td>Révision pompe centrifuge P-201</td>
+          <td><span class="poste-tag">421-MEC</span></td>
+          <td style="font-size:11px;color:rgba(255,255,255,.45)">Joint torique DN50, roulement 6204</td>
+          <td><span class="b-ok">✅ Disponible</span></td>
+          <td><span style="font-size:11px;color:rgba(255,255,255,.3)">✏️ Modifier</span></td>
+        </tr>
+        <tr>
+          <td><span class="poste-tag">4528844</span></td>
+          <td>Remplacement réducteur R-102</td>
+          <td><span class="poste-tag">421-MEC</span></td>
+          <td style="font-size:11px;color:rgba(255,255,255,.45)">Réducteur 7.5kW ratio 1/30</td>
+          <td><span class="b-nok">❌ Rupture</span><div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:3px">Délai : 3 semaines</div></td>
+          <td><span style="font-size:11px;color:rgba(255,255,255,.3)">✏️ Modifier</span></td>
+        </tr>
+        <tr>
+          <td><span class="poste-tag">4529012</span></td>
+          <td>Maintenance préventive moteur électrique</td>
+          <td><span class="poste-tag">423-ELEC</span></td>
+          <td style="font-size:11px;color:rgba(255,255,255,.45)">Condensateur 400V, fusibles</td>
+          <td><span class="b-pend">⏳ En attente</span></td>
+          <td><span style="background:#1d4ed8;color:white;border-radius:5px;padding:3px 10px;font-size:10.5px;font-weight:600">✓ Confirmer</span></td>
+        </tr>
+        <tr>
+          <td><span class="poste-tag">4529034</span></td>
+          <td>Inspection vanne régulatrice V-305</td>
+          <td><span class="poste-tag">423-REG</span></td>
+          <td style="font-size:11px;color:rgba(255,255,255,.45)">Joint PTFE, ressort de rappel</td>
+          <td><span class="b-obs">💬 Observation</span></td>
+          <td><span style="font-size:11px;color:rgba(255,255,255,.3)">✏️ Modifier</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 7 — PDR FEATURES
+══════════════════════════════════════ -->
+<div class="slide bg-dark" data-slide="7">
+  <div class="eyebrow">Module 2 — Planification · PDR</div>
+  <h2 class="slide-title">Fonctionnalités PDR</h2>
+  <p class="slide-sub">Confirmation sécurisée, rappels automatiques, filtrage par section et notifications en temps réel</p>
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="feat-icon">🔒</div>
+      <div class="feat-title">Accès sécurisé Appro</div>
+      <div class="feat-desc">Code PIN requis pour le service Approvisionnement avant toute action. Session verrouillable à tout moment.</div>
+      <ul class="feat-list">
+        <li>Lecture seule sans authentification</li>
+        <li>Code configurable depuis paramètres</li>
       </ul>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon green">✅</div>
-      <div class="feature-title">Confirmation 3 états</div>
-      <div class="feature-desc">Chaque PDR peut être confirmé disponible, en rupture (avec délai + justification) ou avec observation</div>
-      <ul class="feature-list">
+    <div class="feat-card">
+      <div class="feat-icon">✅</div>
+      <div class="feat-title">Confirmation 3 états</div>
+      <div class="feat-desc">Chaque PDR peut être confirmé avec justification, délai estimé ou simple observation.</div>
+      <ul class="feat-list">
         <li>✅ Disponible en stock</li>
-        <li>❌ Rupture + justification + délai estimé</li>
-        <li>💬 Observation sans décision de stock</li>
-        <li>Sauvegarde automatique dans Google Sheets</li>
+        <li>❌ Rupture + justification + délai</li>
+        <li>💬 Observation sans décision</li>
       </ul>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon amber">📧</div>
-      <div class="feature-title">Rappels automatiques PDR</div>
-      <div class="feature-desc">Chaque mercredi à 08h00, des emails automatiques sont envoyés aux services concernés pour les PDR non confirmés</div>
-      <ul class="feature-list">
-        <li>421-MEC → Appro mécanique + CC</li>
-        <li>421-CHAU → Appro mécanique</li>
-        <li>421-INST → Appro installation</li>
+    <div class="feat-card">
+      <div class="feat-icon">📧</div>
+      <div class="feat-title">Rappels automatiques</div>
+      <div class="feat-desc">Chaque mercredi 08h00, emails automatiques aux services pour les PDR non confirmés.</div>
+      <ul class="feat-list">
+        <li>421-MEC / 421-CHAU → Appro mécanique</li>
         <li>423-ELEC → Appro électrique</li>
         <li>423-REG → Appro instrumentation</li>
         <li>Réducteurs/pompes → Interchangeable méca</li>
       </ul>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon purple">🔍</div>
-      <div class="feature-title">Filtrage par section</div>
-      <div class="feature-desc">Barre de filtres par corps de métier avec compteur en temps réel des OTs en attente sans observation</div>
-      <ul class="feature-list">
-        <li>Tous / Mécanique / Installation</li>
-        <li>Électrique / Régulation / Bureau méthode</li>
-        <li>Compteur des OTs réellement en attente</li>
-        <li>Vert quand section entièrement confirmée</li>
+    <div class="feat-card">
+      <div class="feat-icon">🔔</div>
+      <div class="feat-title">Notifications push</div>
+      <div class="feat-desc">Après chaque confirmation, notification immédiate au profil Admin sur tous ses appareils connectés.</div>
+      <ul class="feat-list">
+        <li>Notification navigateur + inbox in-app</li>
+        <li>Broadcast multi-devices via Sheets</li>
       </ul>
     </div>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 8 — MAP
+══════════════════════════════════════ -->
+<div class="slide bg-blue" data-slide="8">
+  <div class="eyebrow">Module 2 — Planification · MAP</div>
+  <h2 class="slide-title">MAP — Maintenance à Planifier</h2>
+  <p class="slide-sub">Vue des OTs en cours (SOPL+LANC) avec saisie de réalisation par le Service Exécution et recherche combinée</p>
+  <div class="filter-demo">
+    <select class="f-select"><option>Tous postes</option><option>421-MEC</option></select>
+    <select class="f-select"><option>ZCOR</option><option>ZCON</option></select>
+    <select class="f-select"><option>Objet technique</option><option>N°OT</option><option>Avis</option><option>Désignation</option></select>
+    <input class="f-input" placeholder="Valeur…">
+    <button class="f-btn">↺ Réinitialiser</button>
+  </div>
+  <div class="map-table-wrap">
+    <table class="map-table">
+      <thead><tr><th>Ordre</th><th>Avis</th><th>Poste</th><th>Objet</th><th>Désignation</th><th>Type</th><th>Date</th><th>Réalisation</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="poste-tag">4529101</span></td>
+          <td style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:rgba(255,255,255,.4)">2001234</td>
+          <td><span class="poste-tag">421-MEC</span></td>
+          <td style="font-size:11px">M-501 COMPRESSEUR</td>
+          <td style="font-size:11px;color:rgba(255,255,255,.5)">Révision compresseur à vis</td>
+          <td><span class="zcon">ZCON</span></td>
+          <td style="font-size:11px">Lun 14/04</td>
+          <td><span class="real-y">✓ Réalisé</span></td>
+        </tr>
+        <tr>
+          <td><span class="poste-tag">4529055</span></td>
+          <td style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:rgba(255,255,255,.4)">2001189</td>
+          <td><span class="poste-tag">423-ELEC</span></td>
+          <td style="font-size:11px">TBT-202 TABLEAU</td>
+          <td style="font-size:11px;color:rgba(255,255,255,.5)">Contrôle tableau basse tension</td>
+          <td><span class="zcor">ZCOR</span></td>
+          <td style="font-size:11px">Mar 15/04</td>
+          <td><span class="real-n">✗ Non réalisé</span></td>
+        </tr>
+        <tr>
+          <td><span class="poste-tag">4529078</span></td>
+          <td style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:rgba(255,255,255,.4)">2001205</td>
+          <td><span class="poste-tag">421-INST</span></td>
+          <td style="font-size:11px">V-401 VANNE</td>
+          <td style="font-size:11px;color:rgba(255,255,255,.5)">Remplacement vanne papillon DN200</td>
+          <td><span class="zcon">ZCON</span></td>
+          <td style="font-size:11px">Mer 16/04</td>
+          <td><span class="real-p">— En attente</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
-<!-- ═══════════════════════════════ MAP ═══════════════════════════════ -->
-<div class="bg-card" id="map">
-<div class="section">
-  <div class="section-header">
-    <div class="section-eyebrow">Planification → Sous-onglet 2</div>
-    <h2 class="section-title">🗺️ MAP — Maintenance à Planifier</h2>
-    <p class="section-desc">Vue des ordres de travail en cours (statut LANC) avec saisie des réalisations par le Service Exécution</p>
-  </div>
-
-  <div class="app-frame">
-    <div class="app-frame-bar">
-      <div class="app-frame-dots">
-        <div class="app-frame-dot red"></div><div class="app-frame-dot yellow"></div><div class="app-frame-dot green"></div>
-      </div>
-      <div class="app-frame-url">Maintenance à Planifier (MAP)</div>
+<!-- ══════════════════════════════════════
+     SLIDE 9 — PLAN DE CHARGE
+══════════════════════════════════════ -->
+<div class="slide bg-dark" data-slide="9">
+  <div class="eyebrow">Module 2 — Planification · Plan de charge</div>
+  <h2 class="slide-title">Plan de Charge Hebdomadaire</h2>
+  <p class="slide-sub">Vue semaine des OTs planifiés (SOPL+LANC) · Filtres avancés · Export PDF et Excel</p>
+  <div class="feat-grid" style="max-width:860px">
+    <div class="feat-card">
+      <div class="feat-icon">📅</div>
+      <div class="feat-title">Sélecteur semaine / année</div>
+      <div class="feat-desc">Navigation semaine par semaine avec affichage de la plage de dates (Lun → Dim) et chargement automatique des données</div>
     </div>
-    <div class="app-content" style="padding:16px 24px">
-      <!-- Filtres MAP -->
-      <div class="filter-bar">
-        <select class="filter-select"><option>Tous les postes</option><option>421-MEC</option><option>423-ELEC</option></select>
-        <select class="filter-select"><option>ZCOR</option><option>ZCON</option><option>Tous</option></select>
-        <select class="filter-select"><option>Objet technique</option><option>N°OT</option><option>Avis</option><option>Désignation</option></select>
-        <input class="filter-input" placeholder="Rechercher…" value="">
-        <button class="filter-btn">↺ Réinitialiser</button>
-      </div>
-      <!-- Table MAP -->
-      <table class="map-demo-table">
-        <thead>
-          <tr>
-            <th>Ordre</th><th>Avis</th><th>Poste</th><th>Objet technique</th><th>Désignation</th><th>Type</th><th>Date</th><th>Réalisation</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><b style="font-family:monospace;font-size:11px">4529101</b></td>
-            <td style="font-family:monospace;font-size:11px">2001234</td>
-            <td><b style="font-size:11px">421-MEC</b></td>
-            <td style="font-size:11px">M-501 COMPRESSEUR</td>
-            <td style="font-size:11px;color:#4a5568">Révision compresseur à vis</td>
-            <td><span class="zcon-badge">ZCON</span></td>
-            <td style="font-size:11px">Lun 14/04</td>
-            <td><span class="real-oui">✓ Réalisé</span></td>
-          </tr>
-          <tr>
-            <td><b style="font-family:monospace;font-size:11px">4529055</b></td>
-            <td style="font-family:monospace;font-size:11px">2001189</td>
-            <td><b style="font-size:11px">423-ELEC</b></td>
-            <td style="font-size:11px">TBT-202 TABLEAU</td>
-            <td style="font-size:11px;color:#4a5568">Contrôle tableau basse tension</td>
-            <td><span class="zcor-badge">ZCOR</span></td>
-            <td style="font-size:11px">Mar 15/04</td>
-            <td><span class="real-non">✗ Non réalisé</span></td>
-          </tr>
-          <tr>
-            <td><b style="font-family:monospace;font-size:11px">4529078</b></td>
-            <td style="font-family:monospace;font-size:11px">2001205</td>
-            <td><b style="font-size:11px">421-INST</b></td>
-            <td style="font-size:11px">V-401 VANNE</td>
-            <td style="font-size:11px;color:#4a5568">Remplacement vanne papillon DN200</td>
-            <td><span class="zcon-badge">ZCON</span></td>
-            <td style="font-size:11px">Mer 16/04</td>
-            <td style="color:#8a97ab;font-size:11px">— En attente</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="feat-card">
+      <div class="feat-icon">🔍</div>
+      <div class="feat-title">Recherche combinée</div>
+      <div class="feat-desc">Dropdown de sélection du champ + zone de texte. Recherche par N°OT, Avis, Objet technique ou Désignation (PC uniquement)</div>
     </div>
-  </div>
-
-  <div class="feature-grid" style="margin-top:40px">
-    <div class="feature-card">
-      <div class="feature-icon green">✔️</div>
-      <div class="feature-title">Saisie des réalisations</div>
-      <div class="feature-desc">Le Service Exécution (authentifié) marque chaque OT comme Réalisé ou Non réalisé, données synchronisées dans Google Sheets</div>
+    <div class="feat-card">
+      <div class="feat-icon">✔️</div>
+      <div class="feat-title">Saisie des réalisations</div>
+      <div class="feat-desc">Service Exécution authentifié peut marquer chaque OT Réalisé / Non réalisé, synchronisé dans Google Sheets colonne O</div>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon blue">🔍</div>
-      <div class="feature-title">Recherche combinée (PC uniquement)</div>
-      <div class="feature-desc">Filtre avancé : choisissez le champ (N°OT / Avis / Objet technique / Désignation) puis saisissez la valeur recherchée</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon amber">📋</div>
-      <div class="feature-title">Filtres obligatoires</div>
-      <div class="feature-desc">Seuls les OTs avec statut utilisateur SOPL et statut système LANC apparaissent — données pertinentes garanties</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon purple">📤</div>
-      <div class="feature-title">Export Excel</div>
-      <div class="feature-desc">Exporter la liste MAP filtrée en fichier Excel avec toutes les colonnes, prêt pour impression ou partage</div>
+    <div class="feat-card">
+      <div class="feat-icon">📤</div>
+      <div class="feat-title">Export PDF & Excel</div>
+      <div class="feat-desc">Génération du plan de charge formaté pour impression (PDF) ou analyse (Excel), avec filtre actif appliqué à l'export</div>
     </div>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 10 — CAL ARRETS VIDEO
+══════════════════════════════════════ -->
+<div class="slide bg-purple" data-slide="10">
+  <div class="eyebrow">Module 2 — Planification · Calendrier des arrêts</div>
+  <h2 class="slide-title">Calendrier des Arrêts Préventifs</h2>
+  <p class="slide-sub">Vue mensuelle des arrêts planifiés avec codes couleurs et statistiques de réalisation</p>
+  <div class="video-container">
+    <video controls preload="metadata">
+      <source src="videos/Calendrier de maintenance.mov" type="video/mp4">
+      <source src="videos/Calendrier de maintenance.mov" type="video/quicktime">
+      <p style="color:rgba(255,255,255,.5);padding:40px;text-align:center">Votre navigateur ne supporte pas cette vidéo. <a href="videos/Calendrier de maintenance.mov" style="color:#a78bfa">Télécharger</a></p>
+    </video>
+    <div class="video-caption">📹 Enregistrement d'écran — Calendrier des arrêts préventifs</div>
+  </div>
 </div>
 
-<!-- ═══════════════════════════════ PLAN DE CHARGE ═══════════════════════════════ -->
-<div class="bg-blue" id="plancharge">
-<div class="section">
-  <div class="section-header">
-    <div class="section-eyebrow">Planification → Sous-onglet 3</div>
-    <h2 class="section-title">📋 Plan de Charge Hebdomadaire</h2>
-    <p class="section-desc">Vue semaine des OTs planifiés avec filtres avancés, saisie de réalisation et exports PDF / Excel</p>
-  </div>
-
-  <div class="app-frame">
-    <div class="app-frame-bar">
-      <div class="app-frame-dots">
-        <div class="app-frame-dot red"></div><div class="app-frame-dot yellow"></div><div class="app-frame-dot green"></div>
+<!-- ══════════════════════════════════════
+     SLIDE 11 — MOTEURS DEMANDE
+══════════════════════════════════════ -->
+<div class="slide bg-amber" data-slide="11">
+  <div class="eyebrow">Module 3 — Moteurs Électriques</div>
+  <h2 class="slide-title">Demandes de Moteurs</h2>
+  <p class="slide-sub">3 types de demandes avec formulaire intelligent, anomalies multi-sélection et suivi d'état en temps réel</p>
+  <div class="demande-demo">
+    <div class="dem-top">
+      <div>
+        <div class="dem-title">🔄 Changement de moteur — ATELIER BROYAGE</div>
+        <div class="dem-sub">M-201 MOTEUR BROYEUR · Demandé le 05/04/2025 par A. Benali · Matricule : 12345</div>
       </div>
-      <div class="app-frame-url">Plan de charge · Semaine 15 — 2025</div>
+      <span class="st-app">✓ Approuvée</span>
     </div>
-    <div class="app-content" style="padding:16px 24px">
-      <!-- Sélecteurs semaine -->
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
-        <select class="filter-select"><option>Semaine 15</option></select>
-        <select class="filter-select"><option>2025</option></select>
-        <span style="font-size:12px;font-weight:600;color:#1d4ed8;background:#eff6ff;border-radius:20px;padding:4px 14px;">Lun 07 Avr → Dim 13 Avr 2025</span>
-      </div>
-      <!-- Filtres PC -->
-      <div class="filter-bar">
-        <select class="filter-select"><option>Tous les postes</option><option selected>421-MEC</option></select>
-        <select class="filter-select"><option>Tous types</option><option>ZCOR</option></select>
-        <select class="filter-select"><option>Toutes dates</option><option>Lun 07/04</option></select>
-        <select class="filter-select"><option selected>Objet technique</option><option>N°OT</option><option>Avis</option><option>Désignation</option></select>
-        <input class="filter-input" placeholder="Valeur…" value="">
-        <button class="filter-btn">↺</button>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:12px">
-        <span style="color:#64748b"><b style="color:#1a2035">34</b> OTs affichés · Semaine 15</span>
-        <div style="display:flex;gap:6px">
-          <button style="background:white;border:1px solid #dde2ea;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;color:#4a5568;cursor:default">📄 Export PDF</button>
-          <button style="background:white;border:1px solid #dde2ea;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;color:#4a5568;cursor:default">📊 Export Excel</button>
-        </div>
-      </div>
-      <!-- Mini table PC -->
-      <table class="map-demo-table">
-        <thead><tr><th>Ordre</th><th>Avis</th><th>Poste</th><th>Objet</th><th>Désignation</th><th>Type</th><th>Date</th><th>Réalisation</th></tr></thead>
-        <tbody>
-          <tr>
-            <td><b style="font-family:monospace;font-size:11px">4529200</b></td>
-            <td style="font-family:monospace;font-size:11px">2001300</td>
-            <td><b style="font-size:11px">421-MEC</b></td>
-            <td style="font-size:11px">P-301 POMPE</td>
-            <td style="font-size:11px;color:#4a5568">Révision pompe doseuse</td>
-            <td><span class="zcon-badge">ZCON</span></td>
-            <td style="font-size:11px">Lun 07/04</td>
-            <td><span class="real-oui">✓ Réalisé</span></td>
-          </tr>
-          <tr>
-            <td><b style="font-family:monospace;font-size:11px">4529201</b></td>
-            <td style="font-family:monospace;font-size:11px">2001301</td>
-            <td><b style="font-size:11px">421-MEC</b></td>
-            <td style="font-size:11px">C-101 CONVOYEUR</td>
-            <td style="font-size:11px;color:#4a5568">Graissage convoyeur à bande</td>
-            <td><span class="zcon-badge">ZCON</span></td>
-            <td style="font-size:11px">Mar 08/04</td>
-            <td style="color:#8a97ab;font-size:11px">— En attente</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="dem-grid">
+      <div><div class="dem-f-lbl">Puissance</div><div class="dem-f-val">75 kW</div></div>
+      <div><div class="dem-f-lbl">Tension</div><div class="dem-f-val">380 V</div></div>
+      <div><div class="dem-f-lbl">Vitesse</div><div class="dem-f-val">1 450 tr/min</div></div>
+      <div><div class="dem-f-lbl">Anomalie</div><div class="dem-f-val" style="font-size:12px">Cramé, Vibration excessive</div></div>
+      <div><div class="dem-f-lbl">Remarque</div><div class="dem-f-val" style="font-size:12px">Bruit anormal depuis 3 jours</div></div>
+      <div><div class="dem-f-lbl">Installation</div><div class="dem-f-val" style="font-size:12px">ATELIER BROYAGE</div></div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.4);margin:10px 0 6px;text-transform:uppercase;letter-spacing:.4px">État du moteur déposé</div>
+    <div class="rep-bar">
+      <div class="rep-d done">✓</div><div class="rep-l done"></div>
+      <div class="rep-d act">2</div><div class="rep-l"></div>
+      <div class="rep-d">3</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:9.5px;color:rgba(255,255,255,.3);margin-top:5px">
+      <span>En attente réparation</span><span style="margin-left:20px">En réparation</span><span>Réparé</span>
     </div>
   </div>
 </div>
-</div>
 
-<!-- ═══════════════════════════════ CAL ARRETS ═══════════════════════════════ -->
-<div class="bg-dark" id="calarrets">
-<div class="section">
-  <div class="section-header">
-    <div class="section-eyebrow">Planification → Sous-onglet 4</div>
-    <h2 class="section-title">🏭 Calendrier des Arrêts Préventifs</h2>
-    <p class="section-desc">Vue calendrier mensuelle des arrêts d'équipements planifiés, avec codes couleurs et statistiques de réalisation</p>
-  </div>
-
-  <div class="app-frame">
-    <div class="app-frame-bar">
-      <div class="app-frame-dots">
-        <div class="app-frame-dot red"></div><div class="app-frame-dot yellow"></div><div class="app-frame-dot green"></div>
-      </div>
-      <div class="app-frame-url">Calendrier des arrêts préventifs · Avril 2025</div>
-    </div>
-    <div class="app-content" style="padding:16px 24px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <div style="display:flex;gap:8px">
-          <button style="background:white;border:1px solid #dde2ea;border-radius:6px;padding:6px 12px;font-size:12px;cursor:default">◀</button>
-          <span style="font-size:15px;font-weight:700;color:#1a2035;padding:6px 12px">Avril 2025</span>
-          <button style="background:white;border:1px solid #dde2ea;border-radius:6px;padding:6px 12px;font-size:12px;cursor:default">▶</button>
-        </div>
-        <div style="display:flex;gap:8px;font-size:11px">
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#1d4ed8;display:inline-block"></span>Planifié</span>
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#059669;display:inline-block"></span>Réalisé</span>
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#d97706;display:inline-block"></span>Correction</span>
-        </div>
-      </div>
-      <div class="cal-demo">
-        <div class="cal-day-hdr">Lun</div><div class="cal-day-hdr">Mar</div><div class="cal-day-hdr">Mer</div><div class="cal-day-hdr">Jeu</div><div class="cal-day-hdr">Ven</div><div class="cal-day-hdr">Sam</div><div class="cal-day-hdr">Dim</div>
-        <div class="cal-day" style="color:#8a97ab;font-size:9px">31</div>
-        <div class="cal-day">1</div>
-        <div class="cal-day">2</div>
-        <div class="cal-day has-arret">3<div class="cal-event">COMPRESSEUR</div></div>
-        <div class="cal-day">4</div>
-        <div class="cal-day weekend">5</div>
-        <div class="cal-day weekend">6</div>
-        <div class="cal-day">7<div class="cal-event planned">POMPE P-201</div></div>
-        <div class="cal-day">8</div>
-        <div class="cal-day">9</div>
-        <div class="cal-day has-arret">10<div class="cal-event">CONVOYEUR</div><div class="cal-event correction">VANNE V-5</div></div>
-        <div class="cal-day">11</div>
-        <div class="cal-day weekend">12</div>
-        <div class="cal-day weekend">13</div>
-        <div class="cal-day">14</div>
-        <div class="cal-day has-arret">15<div class="cal-event planned">TURBINE T-1</div></div>
-        <div class="cal-day">16</div>
-        <div class="cal-day">17</div>
-        <div class="cal-day">18</div>
-        <div class="cal-day weekend">19</div>
-        <div class="cal-day weekend">20</div>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- ═══════════════════════════════ MOTEURS ═══════════════════════════════ -->
-<div class="bg-card" id="moteur">
-<div class="section">
-  <div class="section-header">
-    <div class="section-eyebrow">Module 3</div>
-    <h2 class="section-title">⚡ Moteurs Électriques</h2>
-    <p class="section-desc">Gestion complète des demandes de changement, pose et réparation de moteurs électriques — de la demande à l'approbation</p>
-  </div>
-
-  <div class="app-frame">
-    <div class="app-frame-bar">
-      <div class="app-frame-dots">
-        <div class="app-frame-dot red"></div><div class="app-frame-dot yellow"></div><div class="app-frame-dot green"></div>
-      </div>
-      <div class="app-frame-url">Demandes de Moteurs Électriques</div>
-    </div>
-    <div class="app-content" style="padding:16px 24px">
-      <!-- Admin bar -->
-      <div style="background:white;border:1px solid #dde2ea;border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
-        <div style="display:flex;gap:8px">
-          <button style="padding:6px 14px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:7px;font-size:12px;font-weight:600;cursor:default">Toutes (8)</button>
-          <button style="padding:6px 14px;background:white;border:1px solid #dde2ea;border-radius:7px;font-size:12px;color:#64748b;cursor:default">En attente (3)</button>
-          <button style="padding:6px 14px;background:white;border:1px solid #dde2ea;border-radius:7px;font-size:12px;color:#64748b;cursor:default">Approuvées (4)</button>
-          <button style="padding:6px 14px;background:white;border:1px solid #dde2ea;border-radius:7px;font-size:12px;color:#64748b;cursor:default">Refusées (1)</button>
-        </div>
-        <button style="background:#1d4ed8;color:white;border:none;border-radius:7px;padding:7px 16px;font-size:12px;font-weight:600;cursor:default">+ Nouvelle demande</button>
-      </div>
-
-      <!-- Demande cards -->
-      <div class="demande-card">
-        <div class="demande-card-top">
-          <div>
-            <div class="demande-title">🔄 Changement — ATELIER BROYAGE</div>
-            <div class="demande-sub">M-201 MOTEUR BROYEUR · Demandé le 05/04/2025 par A. Benali</div>
-          </div>
-          <span class="statut-approuvee">✓ Approuvée</span>
-        </div>
-        <div class="demande-grid">
-          <div class="demande-field"><div class="demande-field-lbl">Puissance</div><div class="demande-field-val">75 kW</div></div>
-          <div class="demande-field"><div class="demande-field-lbl">Tension</div><div class="demande-field-val">380V</div></div>
-          <div class="demande-field"><div class="demande-field-lbl">Anomalie</div><div class="demande-field-val">Cramé, Vibration excessive</div></div>
-        </div>
-        <div style="margin-top:10px;font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px">État du moteur déposé</div>
-        <div class="rep-steps">
-          <div class="rep-step">
-            <div class="rep-dot done">✓</div>
-            <div class="rep-line done"></div>
-          </div>
-          <div class="rep-step">
-            <div class="rep-dot active">2</div>
-            <div class="rep-line"></div>
-          </div>
-          <div class="rep-step">
-            <div class="rep-dot">3</div>
-          </div>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:9px;color:#8a97ab;margin-top:4px">
-          <span>En attente réparation</span><span>En réparation</span><span>Réparé</span>
-        </div>
-      </div>
-
-      <div class="demande-card">
-        <div class="demande-card-top">
-          <div>
-            <div class="demande-title">➕ Pose — STATION POMPAGE SP-3</div>
-            <div class="demande-sub">P-302 POMPE · Demandé le 07/04/2025 par K. Mahdi</div>
-          </div>
-          <span class="statut-envoyee">● En attente</span>
-        </div>
-        <div class="demande-grid">
-          <div class="demande-field"><div class="demande-field-lbl">Puissance</div><div class="demande-field-val">22 kW</div></div>
-          <div class="demande-field"><div class="demande-field-lbl">Tension</div><div class="demande-field-val">380V</div></div>
-          <div class="demande-field"><div class="demande-field-lbl">Vitesse</div><div class="demande-field-val">1450 tr/min</div></div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button style="background:#ecfdf5;color:#059669;border:1px solid #a7f3d0;border-radius:6px;padding:5px 14px;font-size:11px;font-weight:700;cursor:default">✓ Approuver</button>
-          <button style="background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;padding:5px 14px;font-size:11px;font-weight:700;cursor:default">✗ Refuser</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="feature-grid" style="margin-top:40px">
-    <div class="feature-card">
-      <div class="feature-icon blue">📝</div>
-      <div class="feature-title">3 types de demandes</div>
-      <div class="feature-desc">Formulaire intelligent adapté selon le type sélectionné — champs conditionnels pour anomalies et état de réparation</div>
-      <ul class="feature-list">
-        <li>🔄 Changement de moteur</li>
-        <li>➕ Pose de moteur neuf</li>
-        <li>🔧 Réparation de moteur déposé</li>
-        <li>Anomalies multi-sélection + remarque</li>
+<!-- ══════════════════════════════════════
+     SLIDE 12 — MOTEURS WORKFLOW
+══════════════════════════════════════ -->
+<div class="slide bg-dark" data-slide="12">
+  <div class="eyebrow">Module 3 — Moteurs Électriques</div>
+  <h2 class="slide-title">Workflow d'approbation</h2>
+  <p class="slide-sub">De la soumission à l'approbation — notification push immédiate aux profils concernés</p>
+  <div class="feat-grid" style="max-width:860px">
+    <div class="feat-card">
+      <div class="feat-icon">📝</div>
+      <div class="feat-title">Formulaire intelligent</div>
+      <div class="feat-desc">Champs conditionnels selon le type. Anomalies en multi-sélection (Cramé, Vibration, Court-circuit…) + remarque libre.</div>
+      <ul class="feat-list">
+        <li>🔄 Changement · ➕ Pose · 🔧 Réparation</li>
+        <li>14 types d'anomalies sélectionnables</li>
+        <li>Remarque stockée colonne Q (Sheets)</li>
       </ul>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon green">🛡️</div>
-      <div class="feature-title">Approbation Admin</div>
-      <div class="feature-desc">L'administrateur (authentifié) approuve ou refuse chaque demande avec un motif de refus obligatoire</div>
-      <ul class="feature-list">
-        <li>Tableau de bord admin avec filtres</li>
-        <li>Approbation / Refus avec justification</li>
-        <li>Notifications push immédiates</li>
-        <li>Suivi état réparation moteur déposé</li>
+    <div class="feat-card">
+      <div class="feat-icon">🛡️</div>
+      <div class="feat-title">Approbation Admin</div>
+      <div class="feat-desc">L'administrateur visualise toutes les demandes filtrées par statut et approuve ou refuse avec motif obligatoire.</div>
+      <ul class="feat-list">
+        <li>✓ Approuver (sauf réparations)</li>
+        <li>✗ Refuser avec justification</li>
+        <li>Mise à jour Google Sheets en temps réel</li>
       </ul>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon amber">📱</div>
-      <div class="feature-title">Notifications en temps réel</div>
-      <div class="feature-desc">Les profils concernés (Électrique, Mécanique, Contrôle matériel) reçoivent les notifications d'approbation et refus</div>
-      <ul class="feature-list">
-        <li>Notification push navigateur</li>
-        <li>Inbox in-app intégrée</li>
-        <li>Broadcast multi-devices</li>
+    <div class="feat-card">
+      <div class="feat-icon">🔍</div>
+      <div class="feat-title">Contrôle Matériel (CM)</div>
+      <div class="feat-desc">Le profil Contrôle matériel peut saisir le matricule de remplacement et apposer une signature numérique.</div>
+      <ul class="feat-list">
+        <li>Accès sécurisé par code CM</li>
+        <li>Signature canvas enregistrée</li>
+        <li>Notification au demandeur</li>
       </ul>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon purple">📊</div>
-      <div class="feature-title">Suivi et statistiques</div>
-      <div class="feature-desc">Vue statistique des demandes avec graphiques : répartition par type, évolution mensuelle, taux d'approbation</div>
-      <ul class="feature-list">
-        <li>Filtrage par statut / type / installation</li>
-        <li>Suivi état réparation (3 étapes)</li>
-        <li>Contrôle matériel (CM) avec signature</li>
-        <li>Export Excel / PDF</li>
+    <div class="feat-card">
+      <div class="feat-icon">🔔</div>
+      <div class="feat-title">Notifications multi-profils</div>
+      <div class="feat-desc">L'approbation / refus déclenche des push notifications sur les profils Électrique, Mécanique et Contrôle matériel.</div>
+      <ul class="feat-list">
+        <li>⚡ Électrique · 🔧 Mécanique · 🔍 CM</li>
+        <li>Moteur réparé → notification Électrique</li>
+        <li>Broadcast tous appareils abonnés</li>
       </ul>
     </div>
   </div>
 </div>
-</div>
 
-<!-- ═══════════════════════════════ LIVRABLES ═══════════════════════════════ -->
-<div class="bg-dark" id="livrables">
-<div class="section">
-  <div class="section-header">
-    <div class="section-eyebrow">Module 4</div>
-    <h2 class="section-title">📁 Livrables</h2>
-    <p class="section-desc">Bibliothèque de documents techniques — procédures, rapports et plans téléchargeables organisés par année et mois</p>
-  </div>
-
-  <div class="app-frame">
-    <div class="app-frame-bar">
-      <div class="app-frame-dots">
-        <div class="app-frame-dot red"></div><div class="app-frame-dot yellow"></div><div class="app-frame-dot green"></div>
+<!-- ══════════════════════════════════════
+     SLIDE 13 — LIVRABLES
+══════════════════════════════════════ -->
+<div class="slide bg-slate" data-slide="13">
+  <div class="eyebrow">Module 4 — Livrables</div>
+  <h2 class="slide-title">Bibliothèque de Documents</h2>
+  <p class="slide-sub">Rapports, procédures et plans techniques — organisés par année et mois, hébergés sur GitHub privé</p>
+  <div class="livrable-list">
+    <div class="liv-item">
+      <div class="liv-ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <div style="flex:1">
+        <div class="liv-name">Rapport_Mensuel_Maintenance_Avr2025.pdf</div>
+        <div class="liv-date">Généré le 07/04/2025 · 1.2 MB</div>
       </div>
-      <div class="app-frame-url">Livrables · Documents techniques</div>
+      <button class="liv-btn">⬇ Télécharger</button>
     </div>
-    <div class="app-content" style="padding:16px 24px">
-      <div style="display:flex;gap:8px;margin-bottom:16px">
-        <select class="filter-select"><option>2025</option><option>2024</option></select>
-        <select class="filter-select"><option>Avril</option><option>Mars</option><option>Février</option></select>
+    <div class="liv-item">
+      <div class="liv-ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <div style="flex:1">
+        <div class="liv-name">Plan_Maintenance_Preventive_Q2_2025.pdf</div>
+        <div class="liv-date">Mis à jour le 01/04/2025 · 840 KB</div>
       </div>
-      <div class="livrable-item">
-        <div class="livrable-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-        <div style="flex:1">
-          <div class="livrable-name">Rapport_Mensuel_Maintenance_Avr2025.pdf</div>
-          <div class="livrable-date">Généré le 07/04/2025 · 1.2 MB</div>
-        </div>
-        <button class="livrable-btn">⬇ Télécharger</button>
+      <button class="liv-btn">⬇ Télécharger</button>
+    </div>
+    <div class="liv-item">
+      <div class="liv-ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <div style="flex:1">
+        <div class="liv-name">Indicateurs_KPI_Mars2025.xlsx</div>
+        <div class="liv-date">Mis à jour le 28/03/2025 · 320 KB</div>
       </div>
-      <div class="livrable-item">
-        <div class="livrable-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-        <div style="flex:1">
-          <div class="livrable-name">Plan_Maintenance_Preventive_Q2_2025.pdf</div>
-          <div class="livrable-date">Mis à jour le 01/04/2025 · 840 KB</div>
-        </div>
-        <button class="livrable-btn">⬇ Télécharger</button>
-      </div>
-      <div class="livrable-item">
-        <div class="livrable-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-        <div style="flex:1">
-          <div class="livrable-name">Indicateurs_KPI_Mars2025.xlsx</div>
-          <div class="livrable-date">Mis à jour le 28/03/2025 · 320 KB</div>
-        </div>
-        <button class="livrable-btn">⬇ Télécharger</button>
-      </div>
+      <button class="liv-btn">⬇ Télécharger</button>
     </div>
   </div>
-
-  <div class="callout">
-    <div class="callout-icon">ℹ️</div>
-    <div class="callout-text">Les livrables sont hébergés sur un <strong>dépôt GitHub privé</strong> (docs-mainana). L'application récupère la liste des fichiers disponibles via l'API GitHub et génère les liens de téléchargement directs. Les fichiers sont organisés par <strong>année → mois</strong>.</div>
+  <div style="margin-top:20px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:16px 20px;display:flex;gap:12px;align-items:center;width:100%;max-width:700px">
+    <span style="font-size:18px">ℹ️</span>
+    <span style="font-size:13px;color:rgba(255,255,255,.6)">Fichiers hébergés sur <strong style="color:white">GitHub privé</strong> (docs-mainana) · Accès via token API sécurisé · Sélecteur Année / Mois</span>
   </div>
 </div>
-</div>
 
-<!-- ═══════════════════════════════ PROFILS ═══════════════════════════════ -->
-<div class="bg-card" id="profils">
-<div class="section">
-  <div class="section-header">
-    <div class="section-eyebrow">Système d'accès</div>
-    <h2 class="section-title">👥 Profils & Permissions</h2>
-    <p class="section-desc">8 profils distincts avec des droits, notifications et vues adaptés à chaque rôle dans l'organisation</p>
-  </div>
-
+<!-- ══════════════════════════════════════
+     SLIDE 14 — PROFILS
+══════════════════════════════════════ -->
+<div class="slide bg-dark" data-slide="14">
+  <div class="eyebrow">Système d'accès</div>
+  <h2 class="slide-title">8 Profils & Permissions</h2>
+  <p class="slide-sub">Chaque profil donne accès à des fonctionnalités et notifications spécifiques à son rôle</p>
   <div class="profiles-grid">
-    <div class="profile-card-demo">
-      <div class="profile-emoji">⚡</div>
-      <div class="profile-name">Électrique</div>
-      <div class="profile-role">Section électrique</div>
-      <div class="profile-perms">
-        <span class="profile-perm green">✓ Dashboard</span>
-        <span class="profile-perm green">✓ Plan de charge</span>
-        <span class="profile-perm green">✓ MAP</span>
-        <span class="profile-perm blue">🔔 Approbation moteurs</span>
-        <span class="profile-perm blue">🔔 Refus moteurs</span>
-        <span class="profile-perm blue">🔔 Moteur réparé</span>
-      </div>
-    </div>
-    <div class="profile-card-demo">
-      <div class="profile-emoji">🔧</div>
-      <div class="profile-name">Mécanique</div>
-      <div class="profile-role">Section mécanique</div>
-      <div class="profile-perms">
-        <span class="profile-perm green">✓ Dashboard</span>
-        <span class="profile-perm green">✓ Plan de charge</span>
-        <span class="profile-perm green">✓ MAP</span>
-        <span class="profile-perm blue">🔔 Approbation moteurs</span>
-        <span class="profile-perm blue">🔔 Refus moteurs</span>
-      </div>
-    </div>
-    <div class="profile-card-demo">
-      <div class="profile-emoji">🏗️</div>
-      <div class="profile-name">Installation</div>
-      <div class="profile-role">Section installation</div>
-      <div class="profile-perms">
-        <span class="profile-perm green">✓ Dashboard</span>
-        <span class="profile-perm green">✓ Plan de charge</span>
-        <span class="profile-perm green">✓ MAP</span>
-        <span class="profile-perm amber">📋 Arrêts préventifs</span>
-      </div>
-    </div>
-    <div class="profile-card-demo">
-      <div class="profile-emoji">🎛️</div>
-      <div class="profile-name">Régulation</div>
-      <div class="profile-role">Section instrumentation</div>
-      <div class="profile-perms">
-        <span class="profile-perm green">✓ Dashboard</span>
-        <span class="profile-perm green">✓ Plan de charge</span>
-        <span class="profile-perm green">✓ MAP</span>
-        <span class="profile-perm amber">📋 PDR lecture</span>
-      </div>
-    </div>
-    <div class="profile-card-demo">
-      <div class="profile-emoji">⚙️</div>
-      <div class="profile-name">Exploitation</div>
-      <div class="profile-role">Production</div>
-      <div class="profile-perms">
-        <span class="profile-perm green">✓ Dashboard</span>
-        <span class="profile-perm green">✓ Planification</span>
-        <span class="profile-perm green">✓ Livrables</span>
-      </div>
-    </div>
-    <div class="profile-card-demo">
-      <div class="profile-emoji">🔍</div>
-      <div class="profile-name">Contrôle matériel</div>
-      <div class="profile-role">Service CM</div>
-      <div class="profile-perms">
-        <span class="profile-perm green">✓ Dashboard</span>
-        <span class="profile-perm purple">🔑 Saisie CM moteurs</span>
-        <span class="profile-perm blue">🔔 Approbation moteurs</span>
-        <span class="profile-perm blue">🔔 Refus moteurs</span>
-      </div>
-    </div>
-    <div class="profile-card-demo">
-      <div class="profile-emoji">🛡️</div>
-      <div class="profile-name">Admin</div>
-      <div class="profile-role">Administrateur système</div>
-      <div class="profile-perms">
-        <span class="profile-perm green">✓ Accès complet</span>
-        <span class="profile-perm red">🔑 Approbation moteurs</span>
-        <span class="profile-perm red">🔑 Gestion codes PIN</span>
-        <span class="profile-perm red">🔑 Paramètres système</span>
-      </div>
-    </div>
-    <div class="profile-card-demo">
-      <div class="profile-emoji">📋</div>
-      <div class="profile-name">Bureau méthode</div>
-      <div class="profile-role">Section planification</div>
-      <div class="profile-perms">
-        <span class="profile-perm green">✓ Dashboard complet</span>
-        <span class="profile-perm green">✓ Tous les rapports</span>
-        <span class="profile-perm green">✓ Planification</span>
-        <span class="profile-perm amber">📋 Livrables</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="callout" style="margin-top:32px">
-    <div class="callout-icon">🔑</div>
-    <div class="callout-text">Les codes d'accès (<strong>Admin, Appro, Exécution, Contrôle matériel</strong>) sont configurables depuis les paramètres ⚙️ et stockés de façon sécurisée. Le premier accès invite à choisir son profil via un écran d'accueil dédié. Les profils sont persistés en <strong>localStorage</strong> sur l'appareil.</div>
+    <div class="pcard"><div class="pcard-emoji">⚡</div><div class="pcard-name">Électrique</div><div class="pcard-role">Section électrique</div><div class="pcard-perms"><span class="pp g">✓ Dashboard</span><span class="pp g">✓ Plan charge</span><span class="pp b">🔔 Appro moteurs</span><span class="pp b">🔔 Moteur réparé</span></div></div>
+    <div class="pcard"><div class="pcard-emoji">🔧</div><div class="pcard-name">Mécanique</div><div class="pcard-role">Section mécanique</div><div class="pcard-perms"><span class="pp g">✓ Dashboard</span><span class="pp g">✓ Plan charge</span><span class="pp b">🔔 Appro moteurs</span><span class="pp b">🔔 Refus moteurs</span></div></div>
+    <div class="pcard"><div class="pcard-emoji">🏗️</div><div class="pcard-name">Installation</div><div class="pcard-role">Section installation</div><div class="pcard-perms"><span class="pp g">✓ Dashboard</span><span class="pp g">✓ Plan charge</span><span class="pp a">📋 Arrêts</span></div></div>
+    <div class="pcard"><div class="pcard-emoji">🎛️</div><div class="pcard-name">Régulation</div><div class="pcard-role">Instrumentation</div><div class="pcard-perms"><span class="pp g">✓ Dashboard</span><span class="pp g">✓ Plan charge</span><span class="pp a">📋 PDR lecture</span></div></div>
+    <div class="pcard"><div class="pcard-emoji">⚙️</div><div class="pcard-name">Exploitation</div><div class="pcard-role">Production</div><div class="pcard-perms"><span class="pp g">✓ Dashboard</span><span class="pp g">✓ Planification</span><span class="pp g">✓ Livrables</span></div></div>
+    <div class="pcard"><div class="pcard-emoji">🔍</div><div class="pcard-name">Ctrl matériel</div><div class="pcard-role">Service CM</div><div class="pcard-perms"><span class="pp g">✓ Dashboard</span><span class="pp p">🔑 Saisie CM</span><span class="pp b">🔔 Appro moteurs</span></div></div>
+    <div class="pcard"><div class="pcard-emoji">🛡️</div><div class="pcard-name">Admin</div><div class="pcard-role">Administrateur</div><div class="pcard-perms"><span class="pp g">✓ Accès complet</span><span class="pp r">🔑 Approbation</span><span class="pp r">🔑 Codes PIN</span></div></div>
+    <div class="pcard"><div class="pcard-emoji">📋</div><div class="pcard-name">Bureau méthode</div><div class="pcard-role">Section planification</div><div class="pcard-perms"><span class="pp g">✓ Dashboard</span><span class="pp g">✓ Rapports</span><span class="pp g">✓ Planification</span></div></div>
   </div>
 </div>
-</div>
 
-<!-- ═══════════════════════════════ NOTIFICATIONS ═══════════════════════════════ -->
-<div class="bg-dark" id="notifs">
-<div class="section">
-  <div class="section-header">
-    <div class="section-eyebrow">Temps réel</div>
-    <h2 class="section-title">🔔 Notifications Push</h2>
-    <p class="section-desc">Système de notifications multi-devices : push navigateur, inbox in-app, et broadcast entre appareils via Google Sheets</p>
-  </div>
-
-  <div style="max-width:560px;margin:0 auto">
-    <div class="notif-card">
-      <div class="notif-icon green">✅</div>
+<!-- ══════════════════════════════════════
+     SLIDE 15 — NOTIFICATIONS
+══════════════════════════════════════ -->
+<div class="slide bg-purple" data-slide="15">
+  <div class="eyebrow">Temps réel</div>
+  <h2 class="slide-title">Notifications Push</h2>
+  <p class="slide-sub">Système multi-devices — push navigateur, inbox in-app et broadcast via Google Sheets</p>
+  <div class="notif-list">
+    <div class="notif-c">
+      <div class="notif-ic g">✅</div>
       <div>
-        <div class="notif-title">Demande approuvée ✅</div>
-        <div class="notif-body">ATELIER BROYAGE — M-201 MOTEUR BROYEUR</div>
-        <div class="notif-time">Il y a 2 minutes · Profils : Électrique, Mécanique, Contrôle matériel</div>
+        <div class="ntitle">Demande approuvée ✅</div>
+        <div class="nbody">ATELIER BROYAGE — M-201 MOTEUR BROYEUR</div>
+        <div class="ntime">Il y a 2 min · Profils : Électrique, Mécanique, Contrôle matériel</div>
       </div>
     </div>
-    <div class="notif-card">
-      <div class="notif-icon blue">📋</div>
+    <div class="notif-c">
+      <div class="notif-ic b">📋</div>
       <div>
-        <div class="notif-title">PDR confirmé — 4529012</div>
-        <div class="notif-body">❌ Rupture · Condensateur 400V, fusibles</div>
-        <div class="notif-time">Il y a 15 minutes · Profil : Admin</div>
+        <div class="ntitle">PDR confirmé — 4529012</div>
+        <div class="nbody">❌ Rupture · Condensateur 400V, fusibles · Délai : 2 semaines</div>
+        <div class="ntime">Il y a 15 min · Profil : Admin</div>
       </div>
     </div>
-    <div class="notif-card">
-      <div class="notif-icon amber">🔧</div>
+    <div class="notif-c">
+      <div class="notif-ic a">🔧</div>
       <div>
-        <div class="notif-title">🔧 Moteur réparé</div>
-        <div class="notif-body">STATION POMPAGE SP-3 — P-302 POMPE</div>
-        <div class="notif-time">Hier 14:32 · Profil : Électrique</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="feature-grid" style="margin-top:40px">
-    <div class="feature-card">
-      <div class="feature-icon blue">📱</div>
-      <div class="feature-title">Push navigateur (PWA)</div>
-      <div class="feature-desc">Notifications natives du navigateur, même quand l'application est fermée, via Service Worker</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon green">📬</div>
-      <div class="feature-title">Inbox in-app</div>
-      <div class="feature-desc">Centre de notifications intégré, accessible depuis la topbar, avec historique des alertes reçues</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon purple">🔄</div>
-      <div class="feature-title">Broadcast multi-devices</div>
-      <div class="feature-desc">Les actions enregistrées (PDR, moteurs) déclenchent des notifications sur tous les appareils abonnés via Google Sheets</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon amber">📧</div>
-      <div class="feature-title">Emails rappels PDR</div>
-      <div class="feature-desc">Script Apps Script planifié chaque mercredi matin, envoyant les rappels PDR aux bons services avec CC configurés</div>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- ═══════════════════════════════ TECH STACK ═══════════════════════════════ -->
-<div class="bg-card" id="tech">
-<div class="section">
-  <div class="section-header">
-    <div class="section-eyebrow">Architecture</div>
-    <h2 class="section-title">⚙️ Stack Technique</h2>
-    <p class="section-desc">Application single-page déployée sur Vercel, connectée à Google Sheets comme base de données et Google Apps Script comme backend</p>
-  </div>
-
-  <div class="tech-grid" style="margin-bottom:40px">
-    <div class="tech-card"><div class="tech-icon">🌐</div><div><div class="tech-name">HTML / CSS / JS</div><div class="tech-role">Application single-file (index.html)</div></div></div>
-    <div class="tech-card"><div class="tech-icon">▲</div><div><div class="tech-name">Vercel</div><div class="tech-role">Déploiement + Serverless proxy CORS</div></div></div>
-    <div class="tech-card"><div class="tech-icon">📊</div><div><div class="tech-name">Google Sheets</div><div class="tech-role">Base de données (PDR, Moteurs, Users)</div></div></div>
-    <div class="tech-card"><div class="tech-icon">⚙️</div><div><div class="tech-name">Google Apps Script</div><div class="tech-role">Backend API (lecture/écriture Sheets)</div></div></div>
-    <div class="tech-card"><div class="tech-icon">📈</div><div><div class="tech-name">Chart.js</div><div class="tech-role">Graphiques analytiques interactifs</div></div></div>
-    <div class="tech-card"><div class="tech-icon">📋</div><div><div class="tech-name">XLSX.js</div><div class="tech-role">Lecture fichiers SAP Excel + exports</div></div></div>
-    <div class="tech-card"><div class="tech-icon">📱</div><div><div class="tech-name">PWA + Service Worker</div><div class="tech-role">Installable + notifications push</div></div></div>
-    <div class="tech-card"><div class="tech-icon">🔐</div><div><div class="tech-name">GitHub (privé)</div><div class="tech-role">Hébergement livrables + CI/CD</div></div></div>
-  </div>
-
-  <!-- Architecture diagram -->
-  <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:32px;text-align:center">
-    <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:24px">Flux de données</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;gap:4px">
-      <div style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);border-radius:10px;padding:14px 18px;text-align:center;min-width:110px">
-        <div style="font-size:20px;margin-bottom:6px">💻</div>
-        <div style="font-size:12px;font-weight:600;color:white">SAP Export</div>
-        <div style="font-size:10px;color:rgba(255,255,255,.4)">.xlsx / .csv</div>
-      </div>
-      <div style="color:rgba(255,255,255,.3);font-size:18px;padding:0 8px">→</div>
-      <div style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);border-radius:10px;padding:14px 18px;text-align:center;min-width:110px">
-        <div style="font-size:20px;margin-bottom:6px">▲</div>
-        <div style="font-size:12px;font-weight:600;color:white">Vercel Proxy</div>
-        <div style="font-size:10px;color:rgba(255,255,255,.4)">CORS resolver</div>
-      </div>
-      <div style="color:rgba(255,255,255,.3);font-size:18px;padding:0 8px">↔</div>
-      <div style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);border-radius:10px;padding:14px 18px;text-align:center;min-width:110px;border-color:rgba(124,58,237,.4)">
-        <div style="font-size:20px;margin-bottom:6px">🌐</div>
-        <div style="font-size:12px;font-weight:600;color:white">index.html</div>
-        <div style="font-size:10px;color:rgba(255,255,255,.4)">App principale</div>
-      </div>
-      <div style="color:rgba(255,255,255,.3);font-size:18px;padding:0 8px">↔</div>
-      <div style="background:rgba(5,150,105,.15);border:1px solid rgba(5,150,105,.3);border-radius:10px;padding:14px 18px;text-align:center;min-width:110px">
-        <div style="font-size:20px;margin-bottom:6px">⚙️</div>
-        <div style="font-size:12px;font-weight:600;color:white">Apps Script</div>
-        <div style="font-size:10px;color:rgba(255,255,255,.4)">WEBAPP_URL</div>
-      </div>
-      <div style="color:rgba(255,255,255,.3);font-size:18px;padding:0 8px">↔</div>
-      <div style="background:rgba(5,150,105,.15);border:1px solid rgba(5,150,105,.3);border-radius:10px;padding:14px 18px;text-align:center;min-width:110px">
-        <div style="font-size:20px;margin-bottom:6px">📊</div>
-        <div style="font-size:12px;font-weight:600;color:white">Google Sheets</div>
-        <div style="font-size:10px;color:rgba(255,255,255,.4)">Données temps réel</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Sécurité -->
-  <div style="margin-top:32px">
-    <div class="section-header" style="margin-bottom:24px">
-      <div class="section-eyebrow">Sécurité</div>
-      <h3 class="section-title" style="font-size:28px">🔐 Architecture sécurisée</h3>
-    </div>
-    <div class="timeline">
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-title">Feuille Google Sheets privée</div>
-        <div class="tl-desc">L'accès au Sheets est restreint. Toutes les requêtes passent par Google Apps Script (WEBAPP_URL) avec authentification Google, jamais en accès direct anonyme.</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-title">Dépôt GitHub privé</div>
-        <div class="tl-desc">Le code source et les livrables sont dans un dépôt privé. Vercel est configuré pour les builds automatiques depuis GitHub, avec token d'accès sécurisé.</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-title">Codes PIN par rôle</div>
-        <div class="tl-desc">4 codes distincts (Admin, Appro, Exécution, CM) contrôlent les actions sensibles. Configurables depuis les paramètres Admin uniquement.</div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot" style="background:#8b5cf6"></div>
-        <div class="tl-title">PWA installable hors connexion</div>
-        <div class="tl-desc">L'application est installable sur mobile et PC. Le Service Worker met en cache les ressources statiques pour un fonctionnement offline partiel.</div>
+        <div class="ntitle">🔧 Moteur réparé</div>
+        <div class="nbody">STATION POMPAGE SP-3 — P-302 POMPE · Réparation terminée</div>
+        <div class="ntime">Hier 14:32 · Profil : Électrique</div>
       </div>
     </div>
   </div>
 </div>
-</div>
 
-<!-- ═══════════════════════════════ FOOTER ═══════════════════════════════ -->
-<div class="footer">
-  <div class="footer-logo">Maintenance Analytics</div>
-  <div class="footer-sub" style="margin-bottom:8px">Bureau des Méthodes · Section Planification · OCP Group</div>
-  <div class="footer-sub">Application web de pilotage de la maintenance industrielle</div>
-  <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-    <span style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 12px;font-size:11px;color:rgba(255,255,255,.4)">📊 Dashboard KPIs</span>
-    <span style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 12px;font-size:11px;color:rgba(255,255,255,.4)">🔩 PDR Appro</span>
-    <span style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 12px;font-size:11px;color:rgba(255,255,255,.4)">⚡ Moteurs Électriques</span>
-    <span style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 12px;font-size:11px;color:rgba(255,255,255,.4)">📁 Livrables</span>
-    <span style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:4px 12px;font-size:11px;color:rgba(255,255,255,.4)">🔔 Notifications Push</span>
+<!-- ══════════════════════════════════════
+     SLIDE 16 — TECH STACK
+══════════════════════════════════════ -->
+<div class="slide bg-dark" data-slide="16">
+  <div class="eyebrow">Architecture technique</div>
+  <h2 class="slide-title">Stack & Déploiement</h2>
+  <p class="slide-sub">Application single-page déployée sur Vercel, connectée à Google Sheets via Apps Script</p>
+  <div class="tech-grid">
+    <div class="tech-c"><div class="tech-ic">🌐</div><div class="tech-name">HTML/CSS/JS</div><div class="tech-role">App single-file index.html</div></div>
+    <div class="tech-c"><div class="tech-ic">▲</div><div class="tech-name">Vercel</div><div class="tech-role">Déploiement + proxy CORS serverless</div></div>
+    <div class="tech-c"><div class="tech-ic">📊</div><div class="tech-name">Google Sheets</div><div class="tech-role">Base de données temps réel</div></div>
+    <div class="tech-c"><div class="tech-ic">⚙️</div><div class="tech-name">Apps Script</div><div class="tech-role">Backend API lecture / écriture</div></div>
+    <div class="tech-c"><div class="tech-ic">📈</div><div class="tech-name">Chart.js</div><div class="tech-role">Graphiques analytiques</div></div>
+    <div class="tech-c"><div class="tech-ic">📋</div><div class="tech-name">XLSX.js</div><div class="tech-role">Lecture SAP + exports Excel</div></div>
+    <div class="tech-c"><div class="tech-ic">📱</div><div class="tech-name">PWA + SW</div><div class="tech-role">Installable + push notifications</div></div>
+    <div class="tech-c"><div class="tech-ic">🔐</div><div class="tech-name">GitHub privé</div><div class="tech-role">Code + livrables + CI/CD</div></div>
+  </div>
+  <div class="arch-flow">
+    <div class="arch-node"><div class="arch-node-ic">💻</div><div class="arch-node-name">SAP Export</div><div class="arch-node-sub">.xlsx / .csv</div></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-node highlight"><div class="arch-node-ic">🌐</div><div class="arch-node-name">index.html</div><div class="arch-node-sub">Application principale</div></div>
+    <div class="arch-arrow">↔</div>
+    <div class="arch-node"><div class="arch-node-ic">⚙️</div><div class="arch-node-name">Apps Script</div><div class="arch-node-sub">WEBAPP_URL</div></div>
+    <div class="arch-arrow">↔</div>
+    <div class="arch-node"><div class="arch-node-ic">📊</div><div class="arch-node-name">Google Sheets</div><div class="arch-node-sub">Données sécurisées</div></div>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 17 — SÉCURITÉ
+══════════════════════════════════════ -->
+<div class="slide bg-slate" data-slide="17">
+  <div class="eyebrow">Sécurité</div>
+  <h2 class="slide-title">Architecture sécurisée</h2>
+  <p class="slide-sub">Accès privé, codes PIN par rôle et PWA installable — données protégées à chaque niveau</p>
+  <div class="feat-grid" style="max-width:860px">
+    <div class="feat-card">
+      <div class="feat-icon">🔒</div>
+      <div class="feat-title">Feuille Google Sheets privée</div>
+      <div class="feat-desc">Accès restreint — toutes les requêtes passent par Google Apps Script authentifié. Jamais d'accès anonyme direct.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🗝️</div>
+      <div class="feat-title">Codes PIN par rôle</div>
+      <div class="feat-desc">4 codes distincts : Admin, Appro (PDR), Exécution (réalisations) et Contrôle Matériel. Configurables depuis les paramètres Admin.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📦</div>
+      <div class="feat-title">Dépôt GitHub privé</div>
+      <div class="feat-desc">Code source et livrables dans un dépôt privé. Vercel déploie automatiquement à chaque push via token sécurisé.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📱</div>
+      <div class="feat-title">PWA installable</div>
+      <div class="feat-desc">Installable sur mobile et PC comme une application native. Service Worker pour fonctionnement offline partiel et notifications push.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SLIDE 18 — CONCLUSION
+══════════════════════════════════════ -->
+<div class="slide bg-hero" data-slide="18">
+  <div class="eyebrow">Conclusion</div>
+  <h2 class="slide-title" style="text-align:center">Un outil au service<br>de <span class="accent">la performance</span></h2>
+  <p class="slide-sub" style="text-align:center">Maintenance Analytics centralise, automatise et rend accessibles toutes les données de maintenance — en temps réel, depuis n'importe quel appareil</p>
+  <div class="concl-grid">
+    <div class="concl-c"><div class="concl-num">4</div><div class="concl-lbl">Modules intégrés</div></div>
+    <div class="concl-c"><div class="concl-num">8</div><div class="concl-lbl">Profils métier</div></div>
+    <div class="concl-c"><div class="concl-num">100%</div><div class="concl-lbl">Données temps réel</div></div>
+    <div class="concl-c"><div class="concl-num">5</div><div class="concl-lbl">Sections PDR</div></div>
+    <div class="concl-c"><div class="concl-num">3</div><div class="concl-lbl">Types de demandes moteur</div></div>
+    <div class="concl-c"><div class="concl-num">∞</div><div class="concl-lbl">Accès multi-devices PWA</div></div>
+  </div>
+  <div style="margin-top:28px;display:flex;align-items:center;gap:12px">
+    <div style="width:36px;height:36px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center">
+      <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:white;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    </div>
+    <span style="font-size:15px;font-weight:700;color:white">Maintenance Analytics</span>
+    <span style="font-size:13px;color:rgba(255,255,255,.35)">· Bureau des Méthodes · OCP Group</span>
+  </div>
+</div>
+
+</div><!-- /slideshow -->
 
 <script>
-// Active nav link on scroll
-const navLinks = document.querySelectorAll('.nav-link');
-const sections = ['dashboard','planification','pdr','map','calarrets','moteur','livrables','profils','notifs','tech'];
-function updateNav() {
-  const scrollY = window.scrollY + 120;
-  let current = 'dashboard';
-  sections.forEach(id => {
-    const el = document.getElementById(id);
-    if (el && el.offsetTop <= scrollY) current = id;
-  });
-  navLinks.forEach(l => {
-    const href = l.getAttribute('href').replace('#','');
-    l.classList.toggle('active', href === current);
-  });
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let cur = 0;
+
+// Build dots
+const dotsEl = document.getElementById('dots');
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' active' : '');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+
+function goTo(idx) {
+  if (idx < 0 || idx >= total) return;
+  // Pause any playing video on current slide
+  const curVid = slides[cur].querySelector('video');
+  if (curVid) curVid.pause();
+
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('exit-left');
+  setTimeout(() => slides[cur].classList.remove('exit-left'), 500);
+
+  cur = idx;
+  slides[cur].classList.add('active');
+
+  // Update UI
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+  document.getElementById('counter').textContent = (cur + 1) + ' / ' + total;
+  document.getElementById('pb').style.width = ((cur + 1) / total * 100) + '%';
+  document.getElementById('btnPrev').classList.toggle('disabled', cur === 0);
+  document.getElementById('btnNext').classList.toggle('disabled', cur === total - 1);
 }
-window.addEventListener('scroll', updateNav, { passive: true });
-navLinks.forEach(l => l.addEventListener('click', e => {
-  e.preventDefault();
-  const id = l.getAttribute('href').replace('#','');
-  const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior:'smooth' });
-}));
+
+function go(dir) { goTo(cur + dir); }
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    { e.preventDefault(); go(-1); }
+  if (e.key === 'Home') goTo(0);
+  if (e.key === 'End')  goTo(total - 1);
+});
+
+// Touch swipe
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive:true });
+document.addEventListener('touchend',   e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+}, { passive:true });
+
+// Init
+goTo(0);
 </script>
 </body>
 </html>
