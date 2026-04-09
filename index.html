@@ -7976,7 +7976,13 @@ async function savePDRConfirmation(key) {
     return;
   }
   // Statut "obs" = observation sans décision de stock
-  if (!status) status = 'obs';
+  // MAIS : si une confirmation nok/ok existait déjà, la préserver (ne pas rétrograder en obs)
+  if (!status) {
+    const prevConf = getPDRStore()[key];
+    status = (prevConf && (prevConf.status === 'nok' || prevConf.status === 'ok'))
+      ? prevConf.status
+      : 'obs';
+  }
 
   const disponibilite = status === 'ok' ? 'Oui' : status === 'nok' ? 'Non' : '';
 
@@ -7990,6 +7996,14 @@ async function savePDRConfirmation(key) {
   store[key] = { status, justification, delai, observation, date: now };
   savePDRStore(store);
   renderPDRTable(pdrAllRows);
+  // Rouvrir le panneau pour montrer l'état sauvegardé (évite l'impression que le délai est supprimé)
+  const _savedPanel = document.getElementById('pdr-panel-' + key);
+  if (_savedPanel) {
+    _savedPanel.style.display = 'table-row';
+    // Si statut nok, s'assurer que la section délai est visible
+    const _savedExtra = document.getElementById('pdr-extra-' + key);
+    if (_savedExtra && status === 'nok') _savedExtra.classList.add('visible');
+  }
 
   // ③ Écriture dans Google Sheets via GET + URL params (fiable, pas de CORS)
   if (!rowIdx || typeof WEBAPP_URL === 'undefined' || !WEBAPP_URL) {
