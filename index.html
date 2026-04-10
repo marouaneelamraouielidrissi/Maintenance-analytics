@@ -3850,22 +3850,15 @@ function renderKpiStars() {
     if (!valEl) return;
     const card = valEl.closest('.kpi-card');
     if (!card) return;
-    const top = card.querySelector('.kpi-card-top');
     let star = card.querySelector('.kpi-fav-star');
     if (!star) {
+      // Lever overflow:hidden pour permettre position:absolute
+      card.style.overflow = 'visible';
+      card.style.position = 'relative';
       star = document.createElement('button');
       star.className = 'kpi-fav-star';
-      if (top) {
-        // Cartes standards : injecter dans le flex row kpi-card-top
-        star.style.cssText = 'margin-left:auto;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;padding:0 0 0 4px;transition:color .15s,opacity .15s;flex-shrink:0;';
-        top.style.display = 'flex';
-        top.style.alignItems = 'center';
-        top.appendChild(star);
-      } else {
-        // Cartes Avis (pas de kpi-card-top) : float droit en premier enfant
-        star.style.cssText = 'float:right;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;padding:0;margin:0 0 2px 4px;transition:color .15s,opacity .15s;';
-        card.insertBefore(star, card.firstChild);
-      }
+      star.style.cssText = 'position:absolute;top:7px;right:9px;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;padding:0;transition:color .15s,opacity .15s;';
+      card.appendChild(star);
       card.addEventListener('mouseenter', () => { star.style.opacity='1'; });
       card.addEventListener('mouseleave', () => { if (!getKpiFavs().includes(kpiId)) star.style.opacity='0.3'; });
     }
