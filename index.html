@@ -3850,20 +3850,23 @@ function renderKpiStars() {
     if (!valEl) return;
     const card = valEl.closest('.kpi-card');
     if (!card) return;
+    // Injecter dans kpi-card-top (flex) pour éviter overflow:hidden
+    const top = card.querySelector('.kpi-card-top') || card;
     let star = card.querySelector('.kpi-fav-star');
     if (!star) {
       star = document.createElement('button');
       star.className = 'kpi-fav-star';
-      star.style.cssText = 'position:absolute;top:6px;right:8px;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;padding:2px;z-index:1;transition:opacity .15s,color .15s;';
-      card.style.position = 'relative';
-      card.appendChild(star);
+      star.style.cssText = 'margin-left:auto;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;padding:0 0 0 4px;transition:color .15s,opacity .15s;flex-shrink:0;';
+      top.style.display = 'flex';
+      top.style.alignItems = 'center';
+      top.appendChild(star);
       card.addEventListener('mouseenter', () => { star.style.opacity='1'; });
-      card.addEventListener('mouseleave', () => { if (!getKpiFavs().includes(kpiId)) star.style.opacity='0.35'; });
+      card.addEventListener('mouseleave', () => { if (!getKpiFavs().includes(kpiId)) star.style.opacity='0.3'; });
     }
     const on = favs.includes(kpiId);
     star.textContent = on ? '★' : '☆';
     star.style.color = on ? '#f59e0b' : '#9ca3af';
-    star.style.opacity = on ? '1' : '0.35';
+    star.style.opacity = on ? '1' : '0.3';
     star.title = on ? 'Retirer des favoris' : 'Ajouter aux favoris';
     star.onclick = (e) => { e.stopPropagation(); toggleKpiFavori(kpiId); };
   });
