@@ -6586,9 +6586,28 @@ function adminReset(id) {
 function adminUpdateReparation(id, val) {
   updateDemande(id, { etatReparation: val });
   renderSuiviAll();
+  const d = allDemandes.find(x => x.id === id);
+  const _body = d ? (d.installation || '') + ' — ' + (d.objetTechnique || '') : id;
   if (val === 'repare') {
-    const d = allDemandes.find(x => x.id === id);
-    sendWebPush('🔧 Moteur réparé', (d ? (d.installation || '') + ' — ' + (d.objetTechnique || '') : id), 'electrique');
+    sendWebPush('🔧 Moteur réparé', _body, 'electrique');
+  }
+  // Email au demandeur pour tout changement d'état
+  if (d && d.demandeurEmail) {
+    const etatLabels = { attente: 'En attente de réparation', en_reparation: 'En réparation', repare: 'Réparé' };
+    const params = new URLSearchParams({
+      action:         'sendEmailEtatMoteur',
+      fileId:         SHEET_ID,
+      demandeId:      id,
+      etatReparation: val,
+      etatLabel:      etatLabels[val] || val,
+      emailTo:        d.demandeurEmail,
+      demandeur:      d.demandeur      || '',
+      installation:   d.installation   || '',
+      objetTechnique: d.objetTechnique || '',
+      puissance:      d.puissance      || '',
+      matricule:      d.matricule      || '',
+    });
+    fetch(`${WEBAPP_URL}?${params}`, { mode: 'no-cors' }).catch(() => {});
   }
 }
 
