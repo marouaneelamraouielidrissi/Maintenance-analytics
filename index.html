@@ -3373,14 +3373,37 @@ const LAVERIE_INSTALLS = [
   'commun','decanteurs','mat','uf1','uf2'
 ];
 
+function normStr(s) {
+  return (s||'').toString().toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+
 function getSecteurFromInstall(install) {
-  const norm = (install || '').toLowerCase().trim()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // ignore accents
+  const norm = normStr(install);
+  if (!norm) return 'manutention';
   for (var i = 0; i < LAVERIE_INSTALLS.length; i++) {
-    const lav = LAVERIE_INSTALLS[i].normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    if (norm === lav || norm.startsWith(lav + ' ') || norm.startsWith(lav + '-')) return 'laverie';
+    const lav = normStr(LAVERIE_INSTALLS[i]);
+    if (norm === lav || norm.startsWith(lav+' ') || norm.startsWith(lav+'-') || norm.includes(lav)) return 'laverie';
   }
   return 'manutention';
+}
+
+// Détecte automatiquement la colonne installation dans les données SAP brutes
+// en cherchant la colonne qui contient des valeurs correspondant à la liste Laverie
+let _installKey = null;
+function detectInstallKey(raw) {
+  if (_installKey) return _installKey;
+  if (!raw || !raw.length) return null;
+  const keys = Object.keys(raw[0]);
+  const sample = raw.slice(0, Math.min(30, raw.length));
+  for (var ki = 0; ki < keys.length; ki++) {
+    const key = keys[ki];
+    const hits = sample.filter(row => getSecteurFromInstall(row[key]) === 'laverie').length;
+    if (hits > 0) { _installKey = key; console.log('[SAP] colonne installation détectée:', key); return key; }
+  }
+  // fallback : colonne P = index 15
+  _installKey = keys[15] || null;
+  console.log('[SAP] colonne installation (fallback col P):', _installKey);
+  return _installKey;
 }
 
 function getBaseData() {
@@ -3532,6 +3555,8 @@ async function _autoLoadSAPdirect(msgEl) {
 }
 
 function processData(raw, sourceName) {
+  _installKey = null; // reset détection à chaque chargement
+  const installKey = detectInstallKey(raw);
   allData = raw.map(row => ({
     ordre:       String(row['Ordre']||''),
     type:        row["Type d'ordre"]||'',
@@ -3543,7 +3568,7 @@ function processData(raw, sourceName) {
     poste:       (row['Poste de travail']||'').trim(),
     statutUtil:   row['Statut utilis.']||'',
     avis:         String(row['Avis']||row['N° avis']||''),
-    installation: (Object.values(row)[15] || '').toString().trim(), // colonne P
+    installation: (installKey ? row[installKey] : Object.values(row)[15] || '').toString().trim(),
   }));
   const dates = allData.map(r=>r.debut).filter(Boolean);
   const months = [...new Set(dates.map(d=>`${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`))].sort().reverse();
