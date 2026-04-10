@@ -2836,6 +2836,21 @@ td { padding: 9px 14px; vertical-align: middle; }
       </div>
     </div>
 
+    <!-- ═══════ KPIs FAVORIS ═══════ -->
+    <div id="kpi-favoris-section" style="margin:0 0 20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:7px;">
+          <span style="font-size:15px;">⭐</span>
+          <span style="font-size:13px;font-weight:700;color:var(--text);">KPIs Favoris</span>
+        </div>
+        <button onclick="openKpiFavModal()" style="display:flex;align-items:center;gap:5px;background:none;border:1px solid var(--border);border-radius:6px;padding:5px 11px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:border-color .15s;" onmouseover="this.style.borderColor='var(--blue)';this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l-.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Personnaliser
+        </button>
+      </div>
+      <div id="kpi-favoris-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;"></div>
+    </div>
+
     <!-- Calendar grid -->
     <div id="cal-container" style="display:none;">
       <div class="chart-card">
@@ -2856,21 +2871,6 @@ td { padding: 9px 14px; vertical-align: middle; }
           </table>
         </div>
       </div>
-    </div>
-
-    <!-- ═══════ KPIs FAVORIS (déplacé ici, juste sous le calendrier) ═══════ -->
-    <div id="kpi-favoris-section" style="margin:16px 0 20px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="display:flex;align-items:center;gap:7px;">
-          <span style="font-size:15px;">⭐</span>
-          <span style="font-size:13px;font-weight:700;color:var(--text);">KPIs Favoris</span>
-        </div>
-        <button onclick="openKpiFavModal()" style="display:flex;align-items:center;gap:5px;background:none;border:1px solid var(--border);border-radius:6px;padding:5px 11px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:border-color .15s;" onmouseover="this.style.borderColor='var(--blue)';this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l-.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          Personnaliser
-        </button>
-      </div>
-      <div id="kpi-favoris-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;"></div>
     </div>
 
     <!-- Taux de réalisation des arrêts préventifs -->
@@ -3603,8 +3603,9 @@ window.addEventListener('load', autoLoadSAP);
 //  KPIs FAVORIS — gestion des favoris utilisateur
 // ══════════════════════════════════════════════════════════════
 const ALL_KPIS_DEF = [
+  // ── GLOBAL ──────────────────────────────────────────────────────
   {
-    id: 'taux-real-ot', label: 'Taux de réalisation des OT', icon: '📊', color: '#1d4ed8',
+    id: 'taux-real-ot', label: 'Taux de réalisation des OT', icon: '📊', color: '#1d4ed8', cat: 'Global',
     getValue() {
       if (!allData.length) return null;
       const base = getBaseData();
@@ -3617,20 +3618,42 @@ const ALL_KPIS_DEF = [
     }
   },
   {
-    id: 'taux-real-arret', label: "Taux de réalisation des arrêts", icon: '🛑', color: '#059669',
+    id: 'total-ot', label: 'Total OT planifiés', icon: '📋', color: '#64748b', cat: 'Global',
     getValue() {
-      if (!ARRETS_DATA.length) return null;
-      const yr = currentMode === 'year' ? parseInt(document.getElementById('year-only-select')?.value) : parseInt(document.getElementById('year-select')?.value);
-      const mo = currentMode === 'month' ? parseInt(document.getElementById('month-select')?.value) : null;
-      let f = ARRETS_DATA.filter(r=>new Date(r.date).getFullYear()===yr);
-      if (currentMode === 'month' && mo !== null) f = f.filter(r=>new Date(r.date).getMonth()===mo);
-      if (!f.length) return null;
-      const real = f.filter(r=>r.statut==='realise'||r.statut==='imprevu').length;
-      return { value: pctN(real, f.length).toFixed(1)+'%', sub: `${real} / ${f.length} arrêts` };
+      const v = document.getElementById('kpi-total')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: 'Ordres de travail' };
     }
   },
   {
-    id: 'ratio-sys-cur', label: 'Ratio systématique / curatif', icon: '⚖️', color: '#7c3aed',
+    id: 'ot-realise', label: 'OT Réalisés', icon: '✅', color: '#059669', cat: 'Global',
+    getValue() {
+      const v = document.getElementById('kpi-realise')?.textContent;
+      const p = document.getElementById('kpi-realise-pct')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: `Taux : ${p||'—'}` };
+    }
+  },
+  {
+    id: 'ot-lanc', label: 'OT Lancés', icon: '⏳', color: '#d97706', cat: 'Global',
+    getValue() {
+      const v = document.getElementById('kpi-lanc')?.textContent;
+      const p = document.getElementById('kpi-lanc-pct')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: `Part : ${p||'—'}` };
+    }
+  },
+  {
+    id: 'ot-non-lanc', label: 'Non lancés (CRPR)', icon: '🚫', color: '#dc2626', cat: 'Global',
+    getValue() {
+      const v = document.getElementById('kpi-retard')?.textContent;
+      const p = document.getElementById('kpi-crpr-pct')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: `Part : ${p||'—'}` };
+    }
+  },
+  {
+    id: 'ratio-sys-cur', label: 'Ratio systématique / curatif', icon: '⚖️', color: '#7c3aed', cat: 'Global',
     getValue() {
       if (!allData.length) return null;
       const base = getBaseData();
@@ -3643,7 +3666,73 @@ const ALL_KPIS_DEF = [
     }
   },
   {
-    id: 'avis-secteur', label: 'Avis par secteur', icon: '📋', color: '#d97706',
+    id: 'ratio-prev-cor', label: 'Part préventif vs correctif', icon: '📐', color: '#0891b2', cat: 'Global',
+    getValue() {
+      const v = document.getElementById('kpi-ratio-pc')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: 'Préventif / Correctif' };
+    }
+  },
+  {
+    id: 'backlog', label: 'Backlog OT', icon: '🗂️', color: '#78716c', cat: 'Global',
+    getValue() {
+      const v = document.getElementById('kpi-backlog')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: 'ATPL + LANC' };
+    }
+  },
+  // ── PRÉVENTIF ───────────────────────────────────────────────────
+  {
+    id: 'taux-real-arret', label: 'Taux de réalisation des arrêts', icon: '🛑', color: '#059669', cat: 'Préventif',
+    getValue() {
+      if (!ARRETS_DATA.length) return null;
+      const yr = currentMode === 'year' ? parseInt(document.getElementById('year-only-select')?.value) : parseInt(document.getElementById('year-select')?.value);
+      const mo = currentMode === 'month' ? parseInt(document.getElementById('month-select')?.value) : null;
+      let f = ARRETS_DATA.filter(r=>new Date(r.date).getFullYear()===yr);
+      if (currentMode === 'month' && mo !== null) f = f.filter(r=>new Date(r.date).getMonth()===mo);
+      if (!f.length) return null;
+      const real = f.filter(r=>r.statut==='realise'||r.statut==='imprevu').length;
+      return { value: pctN(real, f.length).toFixed(1)+'%', sub: `${real} / ${f.length} arrêts` };
+    }
+  },
+  {
+    id: 'ot-sys', label: 'OT Préventif systématique', icon: '🔵', color: '#7c3aed', cat: 'Préventif',
+    getValue() {
+      const v = document.getElementById('kpi-sys')?.textContent;
+      const p = document.getElementById('kpi-sys-pct')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: `ZCON+ZEST+ZETL : ${p||'—'}` };
+    }
+  },
+  {
+    id: 'taux-prev', label: 'Taux réalisation préventif', icon: '🟢', color: '#16a34a', cat: 'Préventif',
+    getValue() {
+      const v = document.getElementById('kpi-taux-prev')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: 'CONF+TCLO+CLOT / total sys.' };
+    }
+  },
+  // ── CORRECTIF ───────────────────────────────────────────────────
+  {
+    id: 'ot-curatif', label: 'OT Correctif (ZCOR)', icon: '🔴', color: '#dc2626', cat: 'Correctif',
+    getValue() {
+      const v = document.getElementById('kpi-curatif-total')?.textContent;
+      const p = document.getElementById('kpi-curatif-pct')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: `Part : ${p||'—'}` };
+    }
+  },
+  {
+    id: 'taux-cor', label: 'Taux réalisation correctif', icon: '🔧', color: '#ea580c', cat: 'Correctif',
+    getValue() {
+      const v = document.getElementById('kpi-taux-cor')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: 'CONF+TCLO+CLOT / total ZCOR' };
+    }
+  },
+  // ── AVIS ────────────────────────────────────────────────────────
+  {
+    id: 'avis-secteur', label: 'Avis par secteur', icon: '📋', color: '#d97706', cat: 'Avis',
     getValue() {
       if (!avisData.length) return null;
       const lav = avisData.filter(r=>normStr(r.secteur)==='laverie').length;
@@ -3652,7 +3741,7 @@ const ALL_KPIS_DEF = [
     }
   },
   {
-    id: 'avis-ouvert', label: 'Avis ouverts', icon: '🔔', color: '#dc2626',
+    id: 'avis-ouvert', label: 'Avis ouverts', icon: '🔔', color: '#dc2626', cat: 'Avis',
     getValue() {
       if (!avisData.length) return null;
       const ouvert = avisData.filter(r=>r.statutABR==='AOUV'||r.statutABR==='AENC').length;
@@ -3714,12 +3803,21 @@ function renderKpiFavPicker() {
   const picker = document.getElementById('kpi-fav-picker');
   if (!picker) return;
   const favs = getKpiFavs();
-  picker.innerHTML = ALL_KPIS_DEF.map(kpi => {
-    const on = favs.includes(kpi.id);
-    return `<div onclick="toggleKpiFavori('${kpi.id}')" style="display:flex;align-items:center;gap:12px;padding:10px 13px;border-radius:8px;cursor:pointer;border:1.5px solid ${on?kpi.color:'var(--border)'};background:${on?kpi.color+'14':'var(--bg)'};transition:all .15s;">
-      <span style="font-size:18px;">${kpi.icon}</span>
-      <span style="flex:1;font-size:12.5px;font-weight:600;color:var(--text);">${kpi.label}</span>
-      <span style="font-size:17px;color:${on?'#f59e0b':'#d1d5db'};">${on?'★':'☆'}</span>
+  const catColors = { Global: '#1d4ed8', Préventif: '#059669', Correctif: '#dc2626', Avis: '#d97706' };
+  const cats = [...new Set(ALL_KPIS_DEF.map(k => k.cat))];
+  picker.innerHTML = cats.map(cat => {
+    const items = ALL_KPIS_DEF.filter(k => k.cat === cat);
+    const catColor = catColors[cat] || '#64748b';
+    return `<div style="margin-bottom:4px;">
+      <div style="font-size:10px;font-weight:700;color:${catColor};text-transform:uppercase;letter-spacing:.06em;padding:6px 2px 4px;">${cat}</div>
+      ${items.map(kpi => {
+        const on = favs.includes(kpi.id);
+        return `<div onclick="toggleKpiFavori('${kpi.id}')" style="display:flex;align-items:center;gap:12px;padding:9px 13px;border-radius:8px;cursor:pointer;border:1.5px solid ${on?kpi.color:'var(--border)'};background:${on?kpi.color+'14':'var(--bg)'};transition:all .15s;margin-bottom:5px;">
+          <span style="font-size:17px;">${kpi.icon}</span>
+          <span style="flex:1;font-size:12px;font-weight:600;color:var(--text);">${kpi.label}</span>
+          <span style="font-size:17px;color:${on?'#f59e0b':'#d1d5db'};">${on?'★':'☆'}</span>
+        </div>`;
+      }).join('')}
     </div>`;
   }).join('');
 }
