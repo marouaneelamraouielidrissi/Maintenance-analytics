@@ -2665,6 +2665,19 @@ td { padding: 9px 14px; vertical-align: middle; }
           <button class="admin-filter-btn" id="af-approuvee" onclick="adminFilter('approuvee')">Approuvées</button>
           <button class="admin-filter-btn" id="af-refusee" onclick="adminFilter('refusee')">Refusées</button>
         </div>
+        <!-- Barre de recherche avancée -->
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center;">
+          <input id="af-matricule" class="form-input" type="text" placeholder="🔍 Matricule" oninput="renderAdminList()" style="flex:1;min-width:130px;max-width:200px;font-size:12px;padding:7px 10px;">
+          <input id="af-puissance" class="form-input" type="text" placeholder="🔍 Puissance (kW)" oninput="renderAdminList()" style="flex:1;min-width:130px;max-width:200px;font-size:12px;padding:7px 10px;">
+          <input id="af-demandeur" class="form-input" type="text" placeholder="🔍 Demandeur" oninput="renderAdminList()" style="flex:1;min-width:130px;max-width:200px;font-size:12px;padding:7px 10px;">
+          <select id="af-etat-moteur" onchange="renderAdminList()" style="flex:1;min-width:150px;max-width:220px;font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);font-family:var(--font);background:var(--bg);color:var(--text);">
+            <option value="">— État moteur —</option>
+            <option value="attente">En attente de réparation</option>
+            <option value="en_reparation">En réparation</option>
+            <option value="repare">Réparé</option>
+          </select>
+          <button onclick="adminClearSearch()" style="font-size:11px;padding:7px 12px;background:none;border:1px solid var(--border);border-radius:var(--radius);color:var(--muted);cursor:pointer;font-family:var(--font);">✕ Effacer</button>
+        </div>
         <div id="admin-demandes-list"></div>
       </div>
 
@@ -6481,13 +6494,26 @@ function renderAdminStats() {
 }
 function renderAdminList() {
   renderAdminStats();
-  const filtered = adminCurrentFilter === 'all' ? allDemandes : allDemandes.filter(d => d.statut === adminCurrentFilter);
+  const matricule  = (document.getElementById('af-matricule')   ?.value || '').trim().toLowerCase();
+  const puissance  = (document.getElementById('af-puissance')   ?.value || '').trim().toLowerCase();
+  const demandeur  = (document.getElementById('af-demandeur')   ?.value || '').trim().toLowerCase();
+  const etatMoteur = (document.getElementById('af-etat-moteur') ?.value || '');
+  let filtered = adminCurrentFilter === 'all' ? allDemandes : allDemandes.filter(d => d.statut === adminCurrentFilter);
+  if (matricule)  filtered = filtered.filter(d => String(d.matricule  || '').toLowerCase().includes(matricule));
+  if (puissance)  filtered = filtered.filter(d => String(d.puissance  || '').toLowerCase().includes(puissance));
+  if (demandeur)  filtered = filtered.filter(d => String(d.demandeur  || '').toLowerCase().includes(demandeur));
+  if (etatMoteur) filtered = filtered.filter(d => d.etatReparation === etatMoteur);
   const container = document.getElementById('admin-demandes-list');
   if (!filtered.length) {
     container.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>Aucune demande dans cette catégorie.</p></div>`;
     return;
   }
   container.innerHTML = [...filtered].reverse().map(d => renderAdminCard(d)).join('');
+}
+function adminClearSearch() {
+  ['af-matricule','af-puissance','af-demandeur'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  const etat = document.getElementById('af-etat-moteur'); if (etat) etat.value = '';
+  renderAdminList();
 }
 function renderAdminCard(d) {
   const date = new Date(d.dateDemande).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' });
