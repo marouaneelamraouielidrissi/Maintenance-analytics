@@ -3823,12 +3823,59 @@ function renderKpiFavoris() {
   }).join('');
 }
 
+// Map DOM value-element IDs → ALL_KPIS_DEF id
+const KPI_CARD_MAP = {
+  'kpi-total':         'total-ot',
+  'kpi-realise':       'ot-realise',
+  'kpi-lanc':          'ot-lanc',
+  'kpi-retard':        'ot-non-lanc',
+  'kpi-sys':           'ot-sys',
+  'kpi-taux-prev':     'taux-prev',
+  'kpi-curatif-total': 'ot-curatif',
+  'kpi-taux-cor':      'taux-cor',
+  'kpi-ratio-pc':      'ratio-prev-cor',
+  'kpi-backlog':       'backlog',
+  'avis-kpi-total':    'avis-total',
+  'avis-kpi-ot':       'avis-avec-ot',
+  'avis-kpi-ouverts':  'avis-ouvert',
+  'avis-kpi-aenc':     'avis-aenc',
+  'avis-kpi-aouv':     'avis-aouv',
+  'avis-kpi-plan':     'avis-plan',
+};
+
+function renderKpiStars() {
+  const favs = getKpiFavs();
+  Object.entries(KPI_CARD_MAP).forEach(([valId, kpiId]) => {
+    const valEl = document.getElementById(valId);
+    if (!valEl) return;
+    const card = valEl.closest('.kpi-card');
+    if (!card) return;
+    let star = card.querySelector('.kpi-fav-star');
+    if (!star) {
+      star = document.createElement('button');
+      star.className = 'kpi-fav-star';
+      star.style.cssText = 'position:absolute;top:6px;right:8px;background:none;border:none;cursor:pointer;font-size:16px;line-height:1;padding:2px;z-index:1;transition:opacity .15s,color .15s;';
+      card.style.position = 'relative';
+      card.appendChild(star);
+      card.addEventListener('mouseenter', () => { star.style.opacity='1'; });
+      card.addEventListener('mouseleave', () => { if (!getKpiFavs().includes(kpiId)) star.style.opacity='0.35'; });
+    }
+    const on = favs.includes(kpiId);
+    star.textContent = on ? '★' : '☆';
+    star.style.color = on ? '#f59e0b' : '#9ca3af';
+    star.style.opacity = on ? '1' : '0.35';
+    star.title = on ? 'Retirer des favoris' : 'Ajouter aux favoris';
+    star.onclick = (e) => { e.stopPropagation(); toggleKpiFavori(kpiId); };
+  });
+}
+
 function toggleKpiFavori(id) {
   let favs = getKpiFavs();
   favs = favs.includes(id) ? favs.filter(f=>f!==id) : [...favs, id];
   setKpiFavs(favs);
   renderKpiFavoris();
   renderKpiFavPicker();
+  renderKpiStars();
 }
 
 function openKpiFavModal() {
@@ -4041,6 +4088,7 @@ function generateReport() {
 
   // KPIs Favoris
   renderKpiFavoris();
+  renderKpiStars();
 
   if (document.getElementById('nav-tab-rapport').classList.contains('active'))
     document.getElementById('dashboard').style.display='block';
@@ -4222,6 +4270,7 @@ function generateAnnualReport() {
 
   // KPIs Favoris
   renderKpiFavoris();
+  renderKpiStars();
 
   if (document.getElementById('nav-tab-rapport').classList.contains('active'))
     document.getElementById('dashboard').style.display='block';
