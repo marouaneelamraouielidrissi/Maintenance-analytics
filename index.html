@@ -6315,7 +6315,12 @@ function showAdminTab(tab) {
 function adminLogin() {
   const pwd = document.getElementById('admin-pwd-input').value;
   if (pwd === ADMIN_PASSWORD) {
-    adminLoggedIn = true;
+    adminLoggedIn      = true;
+    // Déverrouiller toutes les sections — plus besoin de re-saisir un code
+    execUnlocked       = true;
+    cmUnlocked         = true;
+    pdrApproUnlocked   = true;
+    updateExecBars();
     document.getElementById('admin-login-panel').style.display = 'none';
     document.getElementById('admin-dashboard').style.display = 'block';
     renderAdminStats();
@@ -6326,7 +6331,11 @@ function adminLogin() {
   }
 }
 function adminLogout() {
-  adminLoggedIn = false;
+  adminLoggedIn    = false;
+  execUnlocked     = false;
+  cmUnlocked       = false;
+  pdrApproUnlocked = false;
+  updateExecBars();
   document.getElementById('admin-login-panel').style.display = 'block';
   document.getElementById('admin-dashboard').style.display = 'none';
   document.getElementById('admin-pwd-input').value = '';
