@@ -3059,6 +3059,7 @@ td { padding: 9px 14px; vertical-align: middle; }
         <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         Global
       </div>
+      <div id="debug-secteur-info" style="background:#fef9c3;border:1px solid #fbbf24;border-radius:6px;padding:8px 12px;font-size:12px;margin-bottom:10px;color:#92400e;"></div>
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-card-top"><div class="kpi-icon-box blue"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div></div>
@@ -3365,17 +3366,7 @@ const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','A
 let allData = [], charts = {};
 let currentMode    = 'month'; // 'month' | 'year'
 let currentSecteur = 'tous'; // 'tous' | 'laverie' | 'manutention'
-let _secteurMap    = {};     // ordre → secteur (chargé depuis Travaux hebdomadaire)
 
-function buildSecteurMap(rawTrav) {
-  _secteurMap = {};
-  rawTrav.forEach(row => {
-    const keys  = Object.keys(row);
-    const ordre = String(row['Ordre'] || row[keys[0]] || '').trim();
-    const sect  = String(row['Secteur'] || '').trim();
-    if (ordre && sect) _secteurMap[ordre] = sect;
-  });
-}
 
 
 function normStr(s) {
@@ -3394,7 +3385,10 @@ function setSecteur(s) {
     const btn = document.getElementById(map[k]);
     if (btn) btn.classList.toggle('active', k === s);
   });
-  if (allData && allData.length > 0) generateReport();
+  if (allData && allData.length > 0) {
+    if (currentMode === 'year') generateAnnualReport();
+    else generateReport();
+  }
 }
 
 function setMode(mode) {
@@ -3481,12 +3475,6 @@ async function autoLoadSAP() {
           if (rawAvis.length > 0) processAvisData(rawAvis);
         }
 
-        // Lire 'Travaux hebdomadaire' pour la colonne Secteur (col AD)
-        const travSheet = wbA.SheetNames.find(n => n.toLowerCase().includes('travaux'));
-        if (travSheet) {
-          const rawTrav = XLSX.utils.sheet_to_json(wbA.Sheets[travSheet], { defval:'' });
-          buildSecteurMap(rawTrav);
-        }
       } catch(eA) { console.error('Erreur parsing arrêts/avis:', eA); }
     }
 
@@ -3530,31 +3518,6 @@ async function _autoLoadSAPdirect(msgEl) {
       return obj;
     });
 
-    // Charger Travaux hebdomadaire pour colonne Secteur
-    try {
-      const travUrl  = `https://docs.google.com/spreadsheets/d/${GD_ARRETS_FILE_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('Travaux hebdomadaire')}&t=${Date.now()}`;
-      const travResp = await fetch(travUrl);
-      if (travResp.ok) {
-        const travText = await travResp.text();
-        const travLines = travText.split('\n').map(line => {
-          const cols = []; let inQ = false, cur = '';
-          for (let i = 0; i < line.length; i++) {
-            const ch = line[i];
-            if (ch === '"') { inQ = !inQ; }
-            else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-            else cur += ch;
-          }
-          cols.push(cur.trim()); return cols;
-        }).filter(r => r.some(Boolean));
-        if (travLines.length > 1) {
-          const travHeaders = travLines[0];
-          const rawTrav = travLines.slice(1).map(r => {
-            const obj = {}; travHeaders.forEach((h, i) => { obj[h] = r[i] !== undefined ? r[i] : ''; }); return obj;
-          });
-          buildSecteurMap(rawTrav);
-        }
-      }
-    } catch(eTrav) { /* non bloquant */ }
 
     processData(raw, 'SAP-DATA (Google Sheets direct)');
   } catch(e) {
@@ -3575,10 +3538,22 @@ function processData(raw, sourceName) {
     poste:       (row['Poste de travail']||'').trim(),
     statutUtil:  row['Statut utilis.']||'',
     avis:        String(row['Avis']||row['N° avis']||''),
-    secteur:     '',  // rempli après via _secteurMap
+    secteur:     '',  // rempli depuis Obj. technique (col F)
   }));
-  // Injecter le secteur depuis Travaux hebdomadaire (ordre → secteur)
-  allData.forEach(r => { r.secteur = (_secteurMap[r.ordre] || '').trim(); });
+  // Dériver le secteur depuis les 7 premiers caractères de 'Obj. technique' :
+  // 'KL03-MA' → manutention, tout autre valeur → laverie
+  allData.forEach(r => {
+    r.secteur = r.objet.slice(0, 7) === 'KL03-MA' ? 'manutention' : 'laverie';
+  });
+  // ── DEBUG TEMPORAIRE : affiche la répartition des secteurs ──
+  const _dbgMan = allData.filter(r=>r.secteur==='manutention').length;
+  const _dbgLav = allData.filter(r=>r.secteur==='laverie').length;
+  const _dbgVide = allData.filter(r=>!r.secteur).length;
+  const _dbgObjVide = allData.filter(r=>!r.objet).length;
+  const _dbgSample = raw.length > 0 ? JSON.stringify(Object.keys(raw[0])) : '?';
+  const _dbgEl = document.getElementById('debug-secteur-info');
+  if (_dbgEl) _dbgEl.innerHTML = `<b>DEBUG secteur</b> — Total: ${allData.length} | Manut: ${_dbgMan} | Lav: ${_dbgLav} | Vide: ${_dbgVide} | objet vide: ${_dbgObjVide}<br><small>Colonnes: ${_dbgSample}</small>`;
+  // ── FIN DEBUG ──
   const dates = allData.map(r=>r.debut).filter(Boolean);
   const months = [...new Set(dates.map(d=>`${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`))].sort().reverse();
   const years  = [...new Set(dates.map(d=>d.getFullYear()))].sort().reverse();
