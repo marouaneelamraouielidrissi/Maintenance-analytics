@@ -110,6 +110,7 @@ select:focus { border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(59,130,
 .mode-toggle { display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 3px; gap: 2px; }
 .mode-btn { padding: 5px 14px; border-radius: 5px; border: none; background: transparent; font-family: var(--font); font-size: 12.5px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.15s; }
 .mode-btn.active { background: var(--white); color: var(--blue); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.sector-btn.active { background: var(--white); color: var(--green); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
 /* DASHBOARD */
 #dashboard { display: none; padding: 32px 40px 60px; max-width: 1600px; }
@@ -2790,6 +2791,11 @@ td { padding: 9px 14px; vertical-align: middle; }
       <button class="mode-btn active" id="btn-mode-month" onclick="setMode('month')">Mensuel</button>
       <button class="mode-btn" id="btn-mode-year" onclick="setMode('year')">Annuel</button>
     </div>
+    <div class="mode-toggle" style="margin-left:6px;">
+      <button class="mode-btn sector-btn active" id="btn-sect-tous" onclick="setSecteur('tous')">Tous</button>
+      <button class="mode-btn sector-btn" id="btn-sect-lav" onclick="setSecteur('laverie')">Laverie</button>
+      <button class="mode-btn sector-btn" id="btn-sect-man" onclick="setSecteur('manutention')">Manutention</button>
+    </div>
     <span class="ctrl-label" id="lbl-periode">Période :</span>
     <select id="month-select" onchange="generateReport()"></select>
     <select id="year-select" onchange="generateReport()"></select>
@@ -3357,7 +3363,23 @@ td { padding: 9px 14px; vertical-align: middle; }
 <script>
 const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 let allData = [], charts = {};
-let currentMode = 'month'; // 'month' | 'year'
+let currentMode    = 'month'; // 'month' | 'year'
+let currentSecteur = 'tous'; // 'tous' | 'laverie' | 'manutention'
+
+function getBaseData() {
+  if (currentSecteur === 'tous') return allData;
+  return allData.filter(r => (r.secteur || '').toLowerCase().includes(currentSecteur));
+}
+
+function setSecteur(s) {
+  currentSecteur = s;
+  const map = { tous: 'btn-sect-tous', laverie: 'btn-sect-lav', manutention: 'btn-sect-man' };
+  Object.keys(map).forEach(k => {
+    const btn = document.getElementById(map[k]);
+    if (btn) btn.classList.toggle('active', k === s);
+  });
+  if (allData && allData.length > 0) generateReport();
+}
 
 function setMode(mode) {
   currentMode = mode;
@@ -3504,6 +3526,7 @@ function processData(raw, sourceName) {
     poste:       (row['Poste de travail']||'').trim(),
     statutUtil:  row['Statut utilis.']||'',
     avis:        String(row['Avis']||row['N° avis']||''),
+    secteur:     (row['Secteur']||'').trim(),
   }));
   const dates = allData.map(r=>r.debut).filter(Boolean);
   const months = [...new Set(dates.map(d=>`${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`))].sort().reverse();
@@ -3560,7 +3583,7 @@ function generateReport() {
 
   const mo = parseInt(document.getElementById('month-select').value);
   const yr = parseInt(document.getElementById('year-select').value);
-  const filtered = allData.filter(r=>r.debut&&r.debut.getMonth()===mo&&r.debut.getFullYear()===yr);
+  const filtered = getBaseData().filter(r=>r.debut&&r.debut.getMonth()===mo&&r.debut.getFullYear()===yr);
   const total = filtered.length;
 
   const realise  = filtered.filter(isRealise).length;
@@ -3691,9 +3714,9 @@ function generateReport() {
   }).join('');
 
   // Charts multi-mois
-  const mKeys=[...new Set(allData.filter(r=>r.debut).map(r=>{const d=r.debut;return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}))].sort();
+  const mKeys=[...new Set(getBaseData().filter(r=>r.debut).map(r=>{const d=r.debut;return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}))].sort();
   const mLbls=mKeys.map(k=>{const[y,m]=k.split('-').map(Number);return `${MONTHS_FR[m-1].slice(0,3)} ${y}`;});
-  const getGrp=(key)=>{const[y,m]=key.split('-').map(Number);return allData.filter(r=>r.debut&&r.debut.getFullYear()===y&&r.debut.getMonth()===(m-1));};
+  const getGrp=(key)=>{const[y,m]=key.split('-').map(Number);return getBaseData().filter(r=>r.debut&&r.debut.getFullYear()===y&&r.debut.getMonth()===(m-1));};
 
   buildVBar('chart-realisation-mois', mLbls, mKeys.map(k=>{const g=getGrp(k);return pctN(g.filter(isRealise).length,g.length);}));
 
@@ -3715,7 +3738,7 @@ function generateReport() {
 // ─── RAPPORT ANNUEL ───
 function generateAnnualReport() {
   const yr = parseInt(document.getElementById('year-only-select').value);
-  const filtered = allData.filter(r=>r.debut&&r.debut.getFullYear()===yr);
+  const filtered = getBaseData().filter(r=>r.debut&&r.debut.getFullYear()===yr);
   const total    = filtered.length;
   const EXCLUDED_POSTES = ['425-INCD','426-EXP','428-EXP','421-GRAI','425-BDM'];
 
