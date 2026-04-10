@@ -3059,7 +3059,6 @@ td { padding: 9px 14px; vertical-align: middle; }
         <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         Global
       </div>
-      <div id="debug-secteur-info" style="background:#fef9c3;border:1px solid #fbbf24;border-radius:6px;padding:8px 12px;font-size:12px;margin-bottom:10px;color:#92400e;"></div>
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-card-top"><div class="kpi-icon-box blue"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div></div>
@@ -3545,15 +3544,6 @@ function processData(raw, sourceName) {
   allData.forEach(r => {
     r.secteur = r.objet.slice(0, 7) === 'KL03-MA' ? 'manutention' : 'laverie';
   });
-  // ── DEBUG TEMPORAIRE : affiche la répartition des secteurs ──
-  const _dbgMan = allData.filter(r=>r.secteur==='manutention').length;
-  const _dbgLav = allData.filter(r=>r.secteur==='laverie').length;
-  const _dbgVide = allData.filter(r=>!r.secteur).length;
-  const _dbgObjVide = allData.filter(r=>!r.objet).length;
-  const _dbgSample = raw.length > 0 ? JSON.stringify(Object.keys(raw[0])) : '?';
-  const _dbgEl = document.getElementById('debug-secteur-info');
-  if (_dbgEl) _dbgEl.innerHTML = `<b>DEBUG secteur</b> — Total: ${allData.length} | Manut: ${_dbgMan} | Lav: ${_dbgLav} | Vide: ${_dbgVide} | objet vide: ${_dbgObjVide}<br><small>Colonnes: ${_dbgSample}</small>`;
-  // ── FIN DEBUG ──
   const dates = allData.map(r=>r.debut).filter(Boolean);
   const months = [...new Set(dates.map(d=>`${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`))].sort().reverse();
   const years  = [...new Set(dates.map(d=>d.getFullYear()))].sort().reverse();
