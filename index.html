@@ -3365,6 +3365,17 @@ const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','A
 let allData = [], charts = {};
 let currentMode    = 'month'; // 'month' | 'year'
 let currentSecteur = 'tous'; // 'tous' | 'laverie' | 'manutention'
+let _secteurMap    = {};     // ordre → secteur (chargé depuis Travaux hebdomadaire)
+
+function buildSecteurMap(rawTrav) {
+  _secteurMap = {};
+  rawTrav.forEach(row => {
+    const keys  = Object.keys(row);
+    const ordre = String(row['Ordre'] || row[keys[0]] || '').trim();
+    const sect  = String(row['Secteur'] || '').trim();
+    if (ordre && sect) _secteurMap[ordre] = sect;
+  });
+}
 
 
 function normStr(s) {
@@ -3469,6 +3480,13 @@ async function autoLoadSAP() {
           const rawAvis = XLSX.utils.sheet_to_json(wbA.Sheets[avisSheet], { defval:'', cellDates:true });
           if (rawAvis.length > 0) processAvisData(rawAvis);
         }
+
+        // Lire 'Travaux hebdomadaire' pour la colonne Secteur (col AD)
+        const travSheet = wbA.SheetNames.find(n => n.toLowerCase().includes('travaux'));
+        if (travSheet) {
+          const rawTrav = XLSX.utils.sheet_to_json(wbA.Sheets[travSheet], { defval:'' });
+          buildSecteurMap(rawTrav);
+        }
       } catch(eA) { console.error('Erreur parsing arrêts/avis:', eA); }
     }
 
@@ -3512,6 +3530,32 @@ async function _autoLoadSAPdirect(msgEl) {
       return obj;
     });
 
+    // Charger Travaux hebdomadaire pour colonne Secteur
+    try {
+      const travUrl  = `https://docs.google.com/spreadsheets/d/${GD_ARRETS_FILE_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('Travaux hebdomadaire')}&t=${Date.now()}`;
+      const travResp = await fetch(travUrl);
+      if (travResp.ok) {
+        const travText = await travResp.text();
+        const travLines = travText.split('\n').map(line => {
+          const cols = []; let inQ = false, cur = '';
+          for (let i = 0; i < line.length; i++) {
+            const ch = line[i];
+            if (ch === '"') { inQ = !inQ; }
+            else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+            else cur += ch;
+          }
+          cols.push(cur.trim()); return cols;
+        }).filter(r => r.some(Boolean));
+        if (travLines.length > 1) {
+          const travHeaders = travLines[0];
+          const rawTrav = travLines.slice(1).map(r => {
+            const obj = {}; travHeaders.forEach((h, i) => { obj[h] = r[i] !== undefined ? r[i] : ''; }); return obj;
+          });
+          buildSecteurMap(rawTrav);
+        }
+      }
+    } catch(eTrav) { /* non bloquant */ }
+
     processData(raw, 'SAP-DATA (Google Sheets direct)');
   } catch(e) {
     console.error('Échec chargement direct:', e);
@@ -3531,8 +3575,10 @@ function processData(raw, sourceName) {
     poste:       (row['Poste de travail']||'').trim(),
     statutUtil:  row['Statut utilis.']||'',
     avis:        String(row['Avis']||row['N° avis']||''),
-    secteur:     (row['Secteur']||'').toString().trim(),
+    secteur:     '',  // rempli après via _secteurMap
   }));
+  // Injecter le secteur depuis Travaux hebdomadaire (ordre → secteur)
+  allData.forEach(r => { r.secteur = (_secteurMap[r.ordre] || '').trim(); });
   const dates = allData.map(r=>r.debut).filter(Boolean);
   const months = [...new Set(dates.map(d=>`${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`))].sort().reverse();
   const years  = [...new Set(dates.map(d=>d.getFullYear()))].sort().reverse();
