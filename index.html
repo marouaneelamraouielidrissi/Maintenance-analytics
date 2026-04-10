@@ -5925,7 +5925,7 @@ async function submitMotorRequest(e) {
       dateDemande: new Date().toISOString(),
       statut: currentDemandType === 'reparation' ? 'approuvee' : 'envoyee',
       justifRefus: '',
-      etatReparation: 'attente',
+      etatReparation: (currentDemandType === 'changement' || currentDemandType === 'reparation') ? 'attente' : '',
     };
 
     // Sauvegarde locale immédiate
@@ -6502,7 +6502,7 @@ function renderAdminList() {
   if (matricule)  filtered = filtered.filter(d => String(d.matricule  || '').toLowerCase().includes(matricule));
   if (puissance)  filtered = filtered.filter(d => String(d.puissance  || '').toLowerCase().includes(puissance));
   if (demandeur)  filtered = filtered.filter(d => String(d.demandeur  || '').toLowerCase().includes(demandeur));
-  if (etatMoteur) filtered = filtered.filter(d => d.etatReparation === etatMoteur);
+  if (etatMoteur) filtered = filtered.filter(d => (d.type === 'changement' || d.type === 'reparation') && d.etatReparation === etatMoteur);
   const container = document.getElementById('admin-demandes-list');
   if (!filtered.length) {
     container.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>Aucune demande dans cette catégorie.</p></div>`;
@@ -8579,7 +8579,7 @@ async function checkNotifications() {
           newState.seen[key] = true;
         }
         // Réparation
-        if (d.etatReparation === 'repare') {
+        if ((d.type === 'changement' || d.type === 'reparation') && d.etatReparation === 'repare') {
           const key = d.id + '_repare';
           if (!isFirstRun && !state.seen?.[key]) {
             showBrowserNotif('🔧 Moteur réparé', (d.installation || '') + ' — ' + (d.objetTechnique || ''));
