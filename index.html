@@ -2812,28 +2812,12 @@ td { padding: 9px 14px; vertical-align: middle; }
   <div id="monthly-section">
   <div class="report-page">
 
-    <!-- Banner -->
-    <div class="report-banner">
-      <div class="report-banner-left">
-        <div class="report-period-badge" id="rpt-badge">— —</div>
-        <div>
-          <h2>Rapport de Maintenance Mensuel</h2>
-        </div>
-      </div>
-      <div style="display:flex;">
-        <div class="banner-stat">
-          <div class="banner-stat-val" id="banner-realisation" style="color:var(--green);">—%</div>
-          <div class="banner-stat-lbl">Taux de réalisation OT</div>
-        </div>
-        <div class="banner-stat">
-          <div class="banner-stat-val" id="banner-arrets-real" style="color:var(--blue);">—%</div>
-          <div class="banner-stat-lbl">Réalisation arrêts</div>
-        </div>
-        <div class="banner-stat">
-          <div class="banner-stat-val" id="banner-sys-ratio" style="color:var(--purple);">—%</div>
-          <div class="banner-stat-lbl">Préventif systématique</div>
-        </div>
-      </div>
+    <!-- Banner supprimé — éléments cachés pour compatibilité JS -->
+    <div style="display:none;">
+      <span id="rpt-badge"></span>
+      <span id="banner-realisation"></span>
+      <span id="banner-arrets-real"></span>
+      <span id="banner-sys-ratio"></span>
     </div>
 
     <!-- ═══════ KPIs FAVORIS ═══════ -->
@@ -2871,17 +2855,6 @@ td { padding: 9px 14px; vertical-align: middle; }
           </table>
         </div>
       </div>
-    </div>
-
-    <!-- Taux de réalisation des arrêts préventifs -->
-    <div class="chart-card no-break" style="margin-top:12px;">
-      <div class="chart-card-hdr">
-        <div>
-          <div class="chart-card-title">Taux de réalisation des arrêts préventifs</div>
-        </div>
-        <div id="cal-chart-badge" style="font-family:var(--mono);font-size:11px;color:var(--muted);"></div>
-      </div>
-      <div style="height:220px;"><canvas id="chart-arrets-real"></canvas></div>
     </div>
 
     <!-- Modal KPIs Favoris -->
@@ -3061,6 +3034,17 @@ td { padding: 9px 14px; vertical-align: middle; }
         <div><div class="chart-card-title">Évolution quotidienne des OT</div><div class="chart-card-sub">Nombre d'ordres par jour — mois sélectionné</div></div>
       </div>
       <div style="height:180px;"><canvas id="chart-daily"></canvas></div>
+    </div>
+
+    <!-- Taux de réalisation des arrêts préventifs -->
+    <div class="chart-card no-break" style="margin-top:10px;">
+      <div class="chart-card-hdr">
+        <div>
+          <div class="chart-card-title">Taux de réalisation des arrêts préventifs</div>
+        </div>
+        <div id="cal-chart-badge" style="font-family:var(--mono);font-size:11px;color:var(--muted);"></div>
+      </div>
+      <div style="height:220px;"><canvas id="chart-arrets-real"></canvas></div>
     </div>
 
     <!-- Équipements les plus sollicités -->
