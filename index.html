@@ -3543,7 +3543,7 @@ function processData(raw, sourceName) {
     poste:       (row['Poste de travail']||'').trim(),
     statutUtil:   row['Statut utilis.']||'',
     avis:         String(row['Avis']||row['N° avis']||''),
-    installation: (row['Installation']||row['Dénomination']||row['Denomination']||'').trim(),
+    installation: (Object.values(row)[15] || '').toString().trim(), // colonne P
   }));
   const dates = allData.map(r=>r.debut).filter(Boolean);
   const months = [...new Set(dates.map(d=>`${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`))].sort().reverse();
