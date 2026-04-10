@@ -4177,7 +4177,6 @@ function buildAvisCharts() {
     filtered = avisData.filter(r => r.creeLe && r.creeLe.getMonth()===mo && r.creeLe.getFullYear()===yr);
     periodLabel = `${MONTHS_FR[mo]} ${yr}`;
     isMonthMode = true;
-    // Pour le graphique d'évolution mensuelle, on affiche les jours du mois
     evolTitle = `Avis créés en ${MONTHS_FR[mo]} ${yr} — par jour`;
     evolSub   = `Volume quotidien · distinction par statut`;
   } else {
@@ -4187,6 +4186,11 @@ function buildAvisCharts() {
     isMonthMode = false;
     evolTitle = `Évolution mensuelle des Avis — ${yr}`;
     evolSub   = `Volume d'avis créés par mois · distinction par statut`;
+  }
+
+  // Filtre secteur
+  if (currentSecteur !== 'tous') {
+    filtered = filtered.filter(r => normStr(r.secteur) === currentSecteur);
   }
 
   // Mise à jour labels période
