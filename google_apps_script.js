@@ -599,7 +599,7 @@ function sendEmailChangementStatut(id, updates) {
   if (!demande) return;
   Object.assign(demande, updates);
 
-  const emailDest = getEmailByDemandeur(demande.demandeur) || EMAIL_ADMIN;
+  const emailDest = demande.demandeurEmail || getEmailByDemandeur(demande.demandeur) || EMAIL_ADMIN;
   const statutLabel = { envoyee: '● Envoyée', approuvee: '✅ Approuvée', refusee: '❌ Refusée' };
   const etatLabel   = { attente: 'En attente de réparation', en_reparation: 'En réparation', repare: '✅ Réparé' };
 
@@ -632,13 +632,15 @@ function sendEmailChangementStatut(id, updates) {
   </div>
   <div style="background:#f1f5f9;padding:12px 24px;font-size:12px;color:#64748b;">${SENDER_NAME}</div>
 </div>`;
-    // CC pour état Réparé : Resp. électricien + Resp. méthode + Interchangeable électrique
-    var ccRepare = '';
+    // CC pour tous les états : Responsable méthode + Interchangeable électrique
+    // + Responsable électricien en plus si état = réparé
+    var ccEtat = getUserEmails(['Responsable méthode', 'Interchangeable électrique']);
     if (demande.etatReparation === 'repare') {
-      ccRepare = getUserEmails(['Responsable électricien', 'Responsable méthode', 'Interchangeable électrique']);
+      var ccExtra = getUserEmails(['Responsable électricien']);
+      if (ccExtra) ccEtat = ccEtat ? ccEtat + ',' + ccExtra : ccExtra;
     }
     var opts = { htmlBody: corps, name: SENDER_NAME };
-    if (ccRepare) opts.cc = ccRepare;
+    if (ccEtat) opts.cc = ccEtat;
     GmailApp.sendEmail(emailDest, sujet, '', opts);
 
   } else {

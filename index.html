@@ -6591,30 +6591,7 @@ function adminUpdateReparation(id, val) {
   if (val === 'repare') {
     sendWebPush('🔧 Moteur réparé', _body, 'electrique');
   }
-  // Email au demandeur + CC Responsable méthode & Interchangeable électrique
-  if (d && d.demandeurEmail) {
-    const etatLabels = { attente: 'En attente de réparation', en_reparation: 'En réparation', repare: 'Réparé' };
-    const ccFonctions = ['Responsable méthode', 'Interchangeable électrique'];
-    const ccEmails = allUsers
-      .filter(u => ccFonctions.includes(u.fonction) && u.email)
-      .map(u => u.email)
-      .filter((v, i, a) => a.indexOf(v) === i); // dédoublonner
-    const params = new URLSearchParams({
-      action:         'sendEmailEtatMoteur',
-      fileId:         SHEET_ID,
-      demandeId:      id,
-      etatReparation: val,
-      etatLabel:      etatLabels[val] || val,
-      emailTo:        d.demandeurEmail,
-      cc:             ccEmails.join(','),
-      demandeur:      d.demandeur      || '',
-      installation:   d.installation   || '',
-      objetTechnique: d.objetTechnique || '',
-      puissance:      d.puissance      || '',
-      matricule:      d.matricule      || '',
-    });
-    fetch(`${WEBAPP_URL}?${params}`, { mode: 'no-cors' }).catch(() => {});
-  }
+  // L'email est géré côté Apps Script dans sendEmailChangementStatut (doPost > action: update)
 }
 
 /* ════════════════════════════════════════════════════════════
