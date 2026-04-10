@@ -1186,7 +1186,8 @@ td { padding: 9px 14px; vertical-align: middle; }
 /* Modal paramètres */
 .settings-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 3000; display: flex; align-items: center; justify-content: center; }
 .settings-overlay.hidden { display: none; }
-.settings-modal { background: white; border-radius: 14px; width: 420px; max-width: 95vw; box-shadow: 0 8px 40px rgba(0,0,0,.2); overflow: hidden; }
+.settings-modal { background: white; border-radius: 14px; width: 420px; max-width: 95vw; box-shadow: 0 8px 40px rgba(0,0,0,.2); overflow: hidden; transition: width .2s; }
+.settings-modal.wide { width: 680px; }
 .settings-header { background: var(--blue); padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; }
 .settings-header-title { color: white; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 9px; }
 .settings-header-title svg { width: 17px; height: 17px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -1683,8 +1684,16 @@ td { padding: 9px 14px; vertical-align: middle; }
       </div>
     </div>
 
-    <!-- Étape 2 : configuration des codes -->
+    <!-- Étape 2 : configuration -->
     <div id="settings-step-config" style="display:none;">
+      <!-- Onglets -->
+      <div style="display:flex;border-bottom:1px solid var(--border);padding:0 20px;">
+        <button id="stab-codes" onclick="showSettingsTab('codes')" style="padding:10px 16px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;border-bottom:2px solid var(--blue);color:var(--blue);font-family:var(--font);">Codes d'accès</button>
+        <button id="stab-users" onclick="showSettingsTab('users')" style="padding:10px 16px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);font-family:var(--font);">Utilisateurs</button>
+      </div>
+
+      <!-- Contenu : Codes -->
+      <div id="settings-section-codes">
       <div class="settings-body">
 
         <div class="settings-section">
@@ -1761,14 +1770,56 @@ td { padding: 9px 14px; vertical-align: middle; }
 
         <div id="settings-msg" style="display:none;margin-top:14px;"></div>
       </div>
-      <div class="settings-footer">
+      <div class="settings-footer" id="settings-footer-codes">
         <button class="settings-cancel-btn" onclick="closeSettingsModal()">Fermer</button>
         <button class="settings-save-btn" onclick="saveSettingsCodes()">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:4px;"><polyline points="20 6 9 17 4 12"/></svg>
           Enregistrer
         </button>
       </div>
-    </div>
+      </div><!-- /settings-section-codes -->
+
+      <!-- Contenu : Utilisateurs -->
+      <div id="settings-section-users" style="display:none;">
+        <div class="settings-body" style="padding-top:16px;">
+          <!-- Formulaire ajout -->
+          <div class="user-form-card">
+            <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text);">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--purple);fill:none;stroke-width:2;vertical-align:middle;margin-right:6px;"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+              Ajouter un utilisateur
+            </div>
+            <div class="user-form-grid">
+              <div><label class="user-form-label">Nom *</label><input id="uf-nom" class="user-form-input" type="text" placeholder="Nom de famille"></div>
+              <div><label class="user-form-label">Prénom *</label><input id="uf-prenom" class="user-form-input" type="text" placeholder="Prénom"></div>
+              <div><label class="user-form-label">Téléphone</label><input id="uf-tel" class="user-form-input" type="tel" placeholder="06 XX XX XX XX"></div>
+              <div><label class="user-form-label">Adresse email</label><input id="uf-email" class="user-form-input" type="email" placeholder="prenom.nom@ocpgroup.ma"></div>
+              <div class="full">
+                <label class="user-form-label">Fonction *</label>
+                <select id="uf-fonction" class="user-form-select">
+                  <option value="">— Sélectionner une fonction —</option>
+                  <optgroup label="Terrain"><option>Électricien</option><option>Mécanicien</option><option>Installateur</option><option>Instrumentiste</option><option>Production</option></optgroup>
+                  <optgroup label="Responsables"><option>Responsable électricien</option><option>Responsable mécanicien</option><option>Responsable Installateur</option><option>Responsable Instrumentiste</option><option>Responsable production</option><option>Responsable Contrôle matériel</option><option>Responsable Entité</option><option>Responsable méthode</option></optgroup>
+                  <optgroup label="Approvisionnement"><option>Appro mécanique</option><option>Appro électrique</option><option>Appro Installation</option><option>Appro Instrumentation</option></optgroup>
+                  <optgroup label="Contrôle & Interchangeable"><option>Contrôle matériel</option><option>Interchangeable mécanique</option><option>Interchangeable électrique</option></optgroup>
+                </select>
+              </div>
+            </div>
+            <div style="margin-top:12px;display:flex;align-items:center;gap:10px;">
+              <button class="user-form-submit" onclick="addUser()">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Ajouter
+              </button>
+              <span id="user-form-msg" style="font-size:12px;"></span>
+            </div>
+          </div>
+          <div id="users-list-container"></div>
+        </div>
+        <div class="settings-footer">
+          <button class="settings-cancel-btn" onclick="closeSettingsModal()">Fermer</button>
+        </div>
+      </div><!-- /settings-section-users -->
+
+    </div><!-- /settings-step-config -->
 
   </div>
 </div>
@@ -2650,10 +2701,6 @@ td { padding: 9px 14px; vertical-align: middle; }
           <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:middle;margin-right:5px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           Demandes
         </button>
-        <button class="admin-subtab-btn" id="asubtab-users" onclick="showAdminTab('users')">
-          <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:middle;margin-right:5px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          Utilisateurs
-        </button>
       </div>
 
       <!-- Section Demandes -->
@@ -2682,78 +2729,6 @@ td { padding: 9px 14px; vertical-align: middle; }
         <div id="admin-demandes-list"></div>
       </div>
 
-      <!-- Section Utilisateurs -->
-      <div id="admin-section-users" style="display:none;">
-        <!-- Formulaire ajout -->
-        <div class="user-form-card">
-          <div style="font-size:14px;font-weight:700;margin-bottom:14px;color:var(--text);">
-            <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:var(--purple);fill:none;stroke-width:2;vertical-align:middle;margin-right:6px;"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-            Ajouter un utilisateur
-          </div>
-          <div class="user-form-grid">
-            <div>
-              <label class="user-form-label">Nom *</label>
-              <input id="uf-nom" class="user-form-input" type="text" placeholder="Nom de famille">
-            </div>
-            <div>
-              <label class="user-form-label">Prénom *</label>
-              <input id="uf-prenom" class="user-form-input" type="text" placeholder="Prénom">
-            </div>
-            <div>
-              <label class="user-form-label">Téléphone</label>
-              <input id="uf-tel" class="user-form-input" type="tel" placeholder="06 XX XX XX XX">
-            </div>
-            <div>
-              <label class="user-form-label">Adresse email</label>
-              <input id="uf-email" class="user-form-input" type="email" placeholder="prenom.nom@ocpgroup.ma">
-            </div>
-            <div class="full">
-              <label class="user-form-label">Fonction *</label>
-              <select id="uf-fonction" class="user-form-select">
-                <option value="">— Sélectionner une fonction —</option>
-                <optgroup label="Terrain">
-                  <option>Électricien</option>
-                  <option>Mécanicien</option>
-                  <option>Installateur</option>
-                  <option>Instrumentiste</option>
-                  <option>Production</option>
-                </optgroup>
-                <optgroup label="Responsables">
-                  <option>Responsable électricien</option>
-                  <option>Responsable mécanicien</option>
-                  <option>Responsable Installateur</option>
-                  <option>Responsable Instrumentiste</option>
-                  <option>Responsable production</option>
-                  <option>Responsable Contrôle matériel</option>
-                  <option>Responsable Entité</option>
-                  <option>Responsable méthode</option>
-                </optgroup>
-                <optgroup label="Approvisionnement">
-                  <option>Appro mécanique</option>
-                  <option>Appro électrique</option>
-                  <option>Appro Installation</option>
-                  <option>Appro Instrumentation</option>
-                </optgroup>
-                <optgroup label="Contrôle & Interchangeable">
-                  <option>Contrôle matériel</option>
-                  <option>Interchangeable mécanique</option>
-                  <option>Interchangeable électrique</option>
-                </optgroup>
-              </select>
-            </div>
-          </div>
-          <div style="margin-top:14px;display:flex;align-items:center;gap:10px;">
-            <button class="user-form-submit" onclick="addUser()">
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Ajouter
-            </button>
-            <span id="user-form-msg" style="font-size:12px;"></span>
-          </div>
-        </div>
-
-        <!-- Liste des utilisateurs -->
-        <div id="users-list-container"></div>
-      </div>
 
     </div>
   </div>
@@ -6701,10 +6676,7 @@ let _currentAdminTab = 'demandes';
 function showAdminTab(tab) {
   _currentAdminTab = tab;
   document.getElementById('asubtab-demandes').classList.toggle('active', tab === 'demandes');
-  document.getElementById('asubtab-users').classList.toggle('active', tab === 'users');
   document.getElementById('admin-section-demandes').style.display = tab === 'demandes' ? '' : 'none';
-  document.getElementById('admin-section-users').style.display   = tab === 'users'    ? '' : 'none';
-  if (tab === 'users') loadUsers();
 }
 
 function adminLogin() {
@@ -8137,15 +8109,27 @@ function openSettingsModal() {
 function closeSettingsModal() {
   document.getElementById('settings-overlay').classList.add('hidden');
 }
+function showSettingsTab(tab) {
+  const onCodes = tab === 'codes';
+  document.getElementById('settings-section-codes').style.display = onCodes ? '' : 'none';
+  document.getElementById('settings-section-users').style.display = onCodes ? 'none' : '';
+  document.getElementById('settings-footer-codes').style.display  = onCodes ? '' : 'none';
+  document.getElementById('stab-codes').style.borderBottomColor = onCodes ? 'var(--blue)' : 'transparent';
+  document.getElementById('stab-codes').style.color = onCodes ? 'var(--blue)' : 'var(--muted)';
+  document.getElementById('stab-users').style.borderBottomColor = onCodes ? 'transparent' : 'var(--blue)';
+  document.getElementById('stab-users').style.color = onCodes ? 'var(--muted)' : 'var(--blue)';
+  document.querySelector('.settings-modal').classList.toggle('wide', !onCodes);
+  if (!onCodes) loadUsers();
+}
 function verifySettingsAuth() {
   const val = document.getElementById('settings-auth-input').value.trim();
   if (val === ADMIN_PASSWORD) {
     document.getElementById('settings-step-auth').style.display = 'none';
     document.getElementById('settings-step-config').style.display = '';
-    // Pré-remplir avec les codes actuels masqués
     document.getElementById('settings-admin-input').value = '';
     document.getElementById('settings-appro-input').value = '';
     document.getElementById('settings-msg').style.display = 'none';
+    showSettingsTab('codes');
   } else {
     const errEl = document.getElementById('settings-auth-error');
     errEl.textContent = 'Code administrateur incorrect.';
