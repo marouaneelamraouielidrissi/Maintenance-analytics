@@ -3741,11 +3741,52 @@ const ALL_KPIS_DEF = [
     }
   },
   {
-    id: 'avis-ouvert', label: 'Avis ouverts', icon: '🔔', color: '#dc2626', cat: 'Avis',
+    id: 'avis-total', label: 'Total avis', icon: '📑', color: '#7c3aed', cat: 'Avis',
     getValue() {
-      if (!avisData.length) return null;
-      const ouvert = avisData.filter(r=>r.statutABR==='AOUV'||r.statutABR==='AENC').length;
-      return { value: ouvert.toLocaleString('fr-FR'), sub: `sur ${avisData.length} avis total` };
+      const v = document.getElementById('avis-kpi-total')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: 'Période sélectionnée' };
+    }
+  },
+  {
+    id: 'avis-avec-ot', label: 'Avis avec OT', icon: '🔗', color: '#059669', cat: 'Avis',
+    getValue() {
+      const v = document.getElementById('avis-kpi-ot')?.textContent;
+      const p = document.getElementById('avis-kpi-ot-pct')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: `Taux de conversion : ${p||'—'}` };
+    }
+  },
+  {
+    id: 'avis-ouvert', label: 'Avis ouverts (AOUV+AENC)', icon: '🔔', color: '#f59e0b', cat: 'Avis',
+    getValue() {
+      const v = document.getElementById('avis-kpi-ouverts')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: 'AOUV + AENC' };
+    }
+  },
+  {
+    id: 'avis-aenc', label: 'Avis AENC (en cours)', icon: '🟠', color: '#dc2626', cat: 'Avis',
+    getValue() {
+      const v = document.getElementById('avis-kpi-aenc')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: 'En cours de traitement' };
+    }
+  },
+  {
+    id: 'avis-aouv', label: 'Avis AOUV (ouverts)', icon: '🟡', color: '#d97706', cat: 'Avis',
+    getValue() {
+      const v = document.getElementById('avis-kpi-aouv')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: 'Ouverts non traités' };
+    }
+  },
+  {
+    id: 'avis-plan', label: 'Avis à planifier', icon: '📅', color: '#1d4ed8', cat: 'Avis',
+    getValue() {
+      const v = document.getElementById('avis-kpi-plan')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: 'En attente de planification' };
     }
   },
 ];
