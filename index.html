@@ -6089,7 +6089,25 @@ async function showMotorTab(tab) {
     document.getElementById('mtab-'+t).classList.toggle('active', t === tab);
     document.getElementById('motor-'+t+'-section').classList.toggle('active', t === tab);
   });
-  if (tab === 'admin') renderAdminStats();
+  if (tab === 'admin') {
+    // Auto-login si profil admin — pas besoin de re-saisir le mot de passe
+    if (!adminLoggedIn) {
+      try {
+        const p = JSON.parse(localStorage.getItem('ma_user_profile') || '{}').profile;
+        if (p === 'admin') {
+          adminLoggedIn    = true;
+          execUnlocked     = true;
+          cmUnlocked       = true;
+          pdrApproUnlocked = true;
+          updateExecBars();
+          document.getElementById('admin-login-panel').style.display = 'none';
+          document.getElementById('admin-dashboard').style.display   = 'block';
+          renderAdminList();
+        }
+      } catch(e) {}
+    }
+    renderAdminStats();
+  }
   if (tab === 'suivi') {
     await loadSavedDemandes(); // re-fetch si _demandesLoaded = false
     updateSuiviValues();
