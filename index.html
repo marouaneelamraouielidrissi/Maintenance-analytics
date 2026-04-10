@@ -3366,9 +3366,26 @@ let allData = [], charts = {};
 let currentMode    = 'month'; // 'month' | 'year'
 let currentSecteur = 'tous'; // 'tous' | 'laverie' | 'manutention'
 
+// Installations appartenant au secteur Laverie (insensible à la casse)
+const LAVERIE_INSTALLS = [
+  'adaptation','atelier','broyage ext',
+  'chaine 1','chaine 2','chaine 3','chaine 4','chaine 5','chaine 6','chaine 7',
+  'commun','decanteurs','mat','uf1','uf2'
+];
+
+function getSecteurFromInstall(install) {
+  const norm = (install || '').toLowerCase().trim()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // ignore accents
+  for (var i = 0; i < LAVERIE_INSTALLS.length; i++) {
+    const lav = LAVERIE_INSTALLS[i].normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (norm === lav || norm.startsWith(lav + ' ') || norm.startsWith(lav + '-')) return 'laverie';
+  }
+  return 'manutention';
+}
+
 function getBaseData() {
   if (currentSecteur === 'tous') return allData;
-  return allData.filter(r => (r.secteur || '').toLowerCase().includes(currentSecteur));
+  return allData.filter(r => getSecteurFromInstall(r.installation) === currentSecteur);
 }
 
 function setSecteur(s) {
@@ -3524,9 +3541,9 @@ function processData(raw, sourceName) {
     fin:         parseDate(row['Fin au plus tôt']),
     statutSys:   row['Statut système']||'',
     poste:       (row['Poste de travail']||'').trim(),
-    statutUtil:  row['Statut utilis.']||'',
-    avis:        String(row['Avis']||row['N° avis']||''),
-    secteur:     (row['Secteur']||'').trim(),
+    statutUtil:   row['Statut utilis.']||'',
+    avis:         String(row['Avis']||row['N° avis']||''),
+    installation: (row['Installation']||row['Dénomination']||row['Denomination']||'').trim(),
   }));
   const dates = allData.map(r=>r.debut).filter(Boolean);
   const months = [...new Set(dates.map(d=>`${d.getFullYear()}-${String(d.getMonth()).padStart(2,'0')}`))].sort().reverse();
