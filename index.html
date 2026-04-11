@@ -1687,7 +1687,7 @@ td { padding: 9px 14px; vertical-align: middle; }
     </div>
 
     <!-- Étape 2 : configuration -->
-    <div id="settings-step-config" style="display:none;">
+    <div id="settings-step-config" style="display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;">
       <!-- Onglets -->
       <div style="display:flex;border-bottom:1px solid var(--border);padding:0 20px;">
         <button id="stab-codes" onclick="showSettingsTab('codes')" style="padding:10px 16px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;border-bottom:2px solid var(--blue);color:var(--blue);font-family:var(--font);">Codes d'accès</button>
@@ -1695,7 +1695,7 @@ td { padding: 9px 14px; vertical-align: middle; }
       </div>
 
       <!-- Contenu : Codes -->
-      <div id="settings-section-codes">
+      <div id="settings-section-codes" style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;">
       <div class="settings-body">
 
         <div class="settings-section">
@@ -8113,7 +8113,7 @@ function closeSettingsModal() {
 }
 function showSettingsTab(tab) {
   const onCodes = tab === 'codes';
-  document.getElementById('settings-section-codes').style.display = onCodes ? '' : 'none';
+  document.getElementById('settings-section-codes').style.display = onCodes ? 'flex' : 'none';
   document.getElementById('settings-section-users').style.display = onCodes ? 'none' : 'flex';
   document.getElementById('settings-footer-codes').style.display  = onCodes ? '' : 'none';
   document.getElementById('stab-codes').style.borderBottomColor = onCodes ? 'var(--blue)' : 'transparent';
@@ -8127,7 +8127,7 @@ function verifySettingsAuth() {
   const val = document.getElementById('settings-auth-input').value.trim();
   if (val === ADMIN_PASSWORD) {
     document.getElementById('settings-step-auth').style.display = 'none';
-    document.getElementById('settings-step-config').style.display = '';
+    document.getElementById('settings-step-config').style.display = 'flex';
     document.getElementById('settings-admin-input').value = '';
     document.getElementById('settings-appro-input').value = '';
     document.getElementById('settings-msg').style.display = 'none';
