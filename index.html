@@ -1782,8 +1782,8 @@ td { padding: 9px 14px; vertical-align: middle; }
       </div><!-- /settings-section-codes -->
 
       <!-- Contenu : Utilisateurs -->
-      <div id="settings-section-users" style="display:none;">
-        <div class="settings-body" style="padding-top:16px;">
+      <div id="settings-section-users" style="display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;">
+        <div class="settings-body" style="padding-top:16px;overflow-y:auto;flex:1;min-height:0;">
           <!-- Formulaire ajout -->
           <div class="user-form-card">
             <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text);">
@@ -8114,7 +8114,7 @@ function closeSettingsModal() {
 function showSettingsTab(tab) {
   const onCodes = tab === 'codes';
   document.getElementById('settings-section-codes').style.display = onCodes ? '' : 'none';
-  document.getElementById('settings-section-users').style.display = onCodes ? 'none' : '';
+  document.getElementById('settings-section-users').style.display = onCodes ? 'none' : 'flex';
   document.getElementById('settings-footer-codes').style.display  = onCodes ? '' : 'none';
   document.getElementById('stab-codes').style.borderBottomColor = onCodes ? 'var(--blue)' : 'transparent';
   document.getElementById('stab-codes').style.color = onCodes ? 'var(--blue)' : 'var(--muted)';
