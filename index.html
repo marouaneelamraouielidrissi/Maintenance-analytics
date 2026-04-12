@@ -3702,8 +3702,15 @@ const ALL_KPIS_DEF = [
     id: 'avis-secteur', label: 'Avis par secteur', icon: '📋', color: '#d97706', cat: 'Avis',
     getValue() {
       if (!avisData.length) return null;
-      const lav = avisData.filter(r=>normStr(r.secteur)==='laverie').length;
-      const man = avisData.filter(r=>normStr(r.secteur)==='manutention').length;
+      const yr = currentMode === 'year'
+        ? parseInt(document.getElementById('year-only-select')?.value)
+        : parseInt(document.getElementById('year-select')?.value);
+      const mo = currentMode === 'month' ? parseInt(document.getElementById('month-select')?.value) : null;
+      const f = currentMode === 'year'
+        ? avisData.filter(r=>r.creeLe&&r.creeLe.getFullYear()===yr)
+        : avisData.filter(r=>r.creeLe&&r.creeLe.getFullYear()===yr&&r.creeLe.getMonth()===mo);
+      const lav = f.filter(r=>normStr(r.secteur)==='laverie').length;
+      const man = f.filter(r=>normStr(r.secteur)==='manutention').length;
       return { value: `${lav} / ${man}`, sub: 'Laverie / Manutention' };
     }
   },
