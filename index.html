@@ -1697,6 +1697,7 @@ td { padding: 9px 14px; vertical-align: middle; }
       <div style="display:flex;border-bottom:1px solid var(--border);padding:0 20px;">
         <button id="stab-codes" onclick="showSettingsTab('codes')" style="padding:10px 16px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;border-bottom:2px solid var(--blue);color:var(--blue);font-family:var(--font);">Codes d'accès</button>
         <button id="stab-users" onclick="showSettingsTab('users')" style="padding:10px 16px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);font-family:var(--font);">Utilisateurs</button>
+        <button id="stab-email" onclick="showSettingsTab('email')" style="padding:10px 16px;font-size:12px;font-weight:600;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);font-family:var(--font);">Email OCP</button>
       </div>
 
       <!-- Contenu : Codes -->
@@ -1825,6 +1826,37 @@ td { padding: 9px 14px; vertical-align: middle; }
           <button class="settings-cancel-btn" onclick="closeSettingsModal()">Fermer</button>
         </div>
       </div><!-- /settings-section-users -->
+
+      <!-- Contenu : Email OCP -->
+      <div id="settings-section-email" style="display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;">
+        <div class="settings-body" style="padding-top:24px;overflow-y:auto;flex:1;min-height:0;">
+          <div class="settings-section">
+            <div class="settings-section-title">Configuration email OCP (Exchange)</div>
+            <p style="font-size:13px;color:var(--muted);margin:0 0 20px;">
+              Le mot de passe est stocké de façon sécurisée dans les propriétés du script Google Apps Script et non dans le code source.
+            </p>
+            <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:14px 16px;margin-bottom:20px;font-size:13px;color:#0369a1;">
+              <strong>Compte expéditeur :</strong> m.elamraoui@ocpgroup.ma<br>
+              <strong>Serveur :</strong> owa.ocpgroup.ma (EWS/Exchange)
+            </div>
+            <div class="settings-row">
+              <label class="settings-label">Nouveau mot de passe OCP</label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <input type="password" id="ocp-pwd-input" placeholder="Entrez le mot de passe..." style="flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--font);">
+                <button onclick="toggleOcpPwdVisibility()" id="ocp-pwd-toggle" style="padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);cursor:pointer;font-size:13px;">👁</button>
+              </div>
+            </div>
+            <div id="ocp-pwd-msg" style="display:none;margin-top:10px;padding:10px 14px;border-radius:6px;font-size:13px;"></div>
+            <div style="margin-top:8px;">
+              <button id="ocp-pwd-status-btn" onclick="checkOcpPasswordStatus()" style="font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;">Vérifier si un mot de passe est déjà enregistré</button>
+            </div>
+          </div>
+        </div>
+        <div class="settings-footer">
+          <button class="settings-cancel-btn" onclick="closeSettingsModal()">Fermer</button>
+          <button class="settings-save-btn" onclick="saveOcpPassword()">Enregistrer</button>
+        </div>
+      </div><!-- /settings-section-email -->
 
     </div><!-- /settings-step-config -->
 
@@ -8178,16 +8210,78 @@ function closeSettingsModal() {
   document.getElementById('settings-overlay').classList.add('hidden');
 }
 function showSettingsTab(tab) {
-  const onCodes = tab === 'codes';
-  document.getElementById('settings-section-codes').style.display = onCodes ? 'flex' : 'none';
-  document.getElementById('settings-section-users').style.display = onCodes ? 'none' : 'flex';
-  document.getElementById('settings-footer-codes').style.display  = onCodes ? '' : 'none';
-  document.getElementById('stab-codes').style.borderBottomColor = onCodes ? 'var(--blue)' : 'transparent';
-  document.getElementById('stab-codes').style.color = onCodes ? 'var(--blue)' : 'var(--muted)';
-  document.getElementById('stab-users').style.borderBottomColor = onCodes ? 'transparent' : 'var(--blue)';
-  document.getElementById('stab-users').style.color = onCodes ? 'var(--muted)' : 'var(--blue)';
-  document.querySelector('.settings-modal').classList.toggle('wide', !onCodes);
-  if (!onCodes) loadUsers();
+  const tabs = ['codes', 'users', 'email'];
+  tabs.forEach(t => {
+    const sec = document.getElementById('settings-section-' + t);
+    const btn = document.getElementById('stab-' + t);
+    const active = t === tab;
+    if (sec) sec.style.display = active ? 'flex' : 'none';
+    if (btn) {
+      btn.style.borderBottomColor = active ? 'var(--blue)' : 'transparent';
+      btn.style.color = active ? 'var(--blue)' : 'var(--muted)';
+    }
+  });
+  document.getElementById('settings-footer-codes').style.display = tab === 'codes' ? '' : 'none';
+  document.querySelector('.settings-modal').classList.toggle('wide', tab !== 'codes');
+  if (tab === 'users') loadUsers();
+}
+function toggleOcpPwdVisibility() {
+  const inp = document.getElementById('ocp-pwd-input');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+async function checkOcpPasswordStatus() {
+  const btn = document.getElementById('ocp-pwd-status-btn');
+  btn.textContent = 'Vérification...';
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'getOcpPasswordStatus' })
+    });
+    const data = await res.json();
+    const msg = document.getElementById('ocp-pwd-msg');
+    msg.style.display = 'block';
+    if (data.isSet) {
+      msg.style.background = '#f0fdf4'; msg.style.color = '#15803d'; msg.style.border = '1px solid #bbf7d0';
+      msg.textContent = '✓ Un mot de passe est déjà enregistré.';
+    } else {
+      msg.style.background = '#fff7ed'; msg.style.color = '#c2410c'; msg.style.border = '1px solid #fed7aa';
+      msg.textContent = '⚠ Aucun mot de passe enregistré. Les emails ne seront pas envoyés.';
+    }
+  } catch(e) {
+    document.getElementById('ocp-pwd-msg').textContent = 'Erreur de connexion.';
+  }
+  btn.textContent = 'Vérifier si un mot de passe est déjà enregistré';
+}
+async function saveOcpPassword() {
+  const pwd = document.getElementById('ocp-pwd-input').value.trim();
+  const msg = document.getElementById('ocp-pwd-msg');
+  if (!pwd) {
+    msg.style.display = 'block'; msg.style.background = '#fff7ed'; msg.style.color = '#c2410c'; msg.style.border = '1px solid #fed7aa';
+    msg.textContent = 'Veuillez entrer un mot de passe.';
+    return;
+  }
+  msg.style.display = 'block'; msg.style.background = '#f8fafc'; msg.style.color = '#64748b'; msg.style.border = '1px solid #e2e8f0';
+  msg.textContent = 'Enregistrement...';
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'setOcpPassword', password: pwd })
+    });
+    const data = await res.json();
+    if (data.success) {
+      msg.style.background = '#f0fdf4'; msg.style.color = '#15803d'; msg.style.border = '1px solid #bbf7d0';
+      msg.textContent = '✓ Mot de passe enregistré avec succès.';
+      document.getElementById('ocp-pwd-input').value = '';
+    } else {
+      msg.style.background = '#fff7ed'; msg.style.color = '#c2410c'; msg.style.border = '1px solid #fed7aa';
+      msg.textContent = 'Erreur : ' + (data.error || 'Échec de l\'enregistrement.');
+    }
+  } catch(e) {
+    msg.style.background = '#fff7ed'; msg.style.color = '#c2410c'; msg.style.border = '1px solid #fed7aa';
+    msg.textContent = 'Erreur de connexion au script.';
+  }
 }
 function verifySettingsAuth() {
   const val = document.getElementById('settings-auth-input').value.trim();
