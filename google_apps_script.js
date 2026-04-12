@@ -1,5 +1,57 @@
 const SHEET_ID    = '1rOPljpAHYIs_uQ5-EUnL4yVwy2ciKAn20htExnU2vG4';
 const SHEET_NAME  = 'Demandes';
+
+// ── Configuration OCP Exchange (EWS) ─────────────────────────
+const OCP_EMAIL    = 'm.elamraoui@ocpgroup.ma';
+const OCP_PASSWORD = 'TON_MOT_DE_PASSE_OCP';
+const EWS_URL      = 'https://owa.ocpgroup.ma/EWS/Exchange.asmx';
+
+function sendEmailOCP(to, subject, body, options) {
+  const toList = Array.isArray(to) ? to : [to];
+  const cc = options && options.cc
+    ? (Array.isArray(options.cc) ? options.cc : options.cc.split(',').map(function(e){ return e.trim(); }).filter(Boolean))
+    : [];
+  const toRecipients = toList.map(function(e){
+    return '<t:Mailbox><t:EmailAddress>' + e + '</t:EmailAddress></t:Mailbox>';
+  }).join('');
+  const ccBlock = cc.length
+    ? '<t:CcRecipients>' + cc.map(function(e){
+        return '<t:Mailbox><t:EmailAddress>' + e + '</t:EmailAddress></t:Mailbox>';
+      }).join('') + '</t:CcRecipients>'
+    : '';
+  const fromName = (options && options.name) ? options.name : 'Maintenance Analytics';
+  const bodyType = (options && options.htmlBody) ? 'HTML' : 'Text';
+  const bodyContent = (options && options.htmlBody) ? options.htmlBody : (body || '');
+  const soap = '<?xml version="1.0" encoding="utf-8"?>'
+    + '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'
+    + ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"'
+    + ' xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages">'
+    + '<soap:Body><m:CreateItem MessageDisposition="SendAndSaveCopy">'
+    + '<m:SavedItemFolderId><t:DistinguishedFolderId Id="sentitems"/></m:SavedItemFolderId>'
+    + '<m:Items><t:Message>'
+    + '<t:Subject>' + subject + '</t:Subject>'
+    + '<t:Body BodyType="' + bodyType + '">' + bodyContent + '</t:Body>'
+    + '<t:From><t:Mailbox><t:Name>' + fromName + '</t:Name>'
+    + '<t:EmailAddress>' + OCP_EMAIL + '</t:EmailAddress></t:Mailbox></t:From>'
+    + '<t:ToRecipients>' + toRecipients + '</t:ToRecipients>'
+    + ccBlock
+    + '</t:Message></m:Items>'
+    + '</m:CreateItem></m:Body></soap:Envelope>';
+  const credentials = Utilities.base64Encode(OCP_EMAIL + ':' + OCP_PASSWORD);
+  const response = UrlFetchApp.fetch(EWS_URL, {
+    method: 'post',
+    contentType: 'text/xml; charset=utf-8',
+    headers: {
+      'Authorization': 'Basic ' + credentials,
+      'SOAPAction': 'http://schemas.microsoft.com/exchange/services/2006/messages/CreateItem'
+    },
+    payload: soap,
+    muteHttpExceptions: true
+  });
+  if (response.getResponseCode() !== 200 || response.getContentText().indexOf('NoError') === -1) {
+    throw new Error('EWS send failed (' + response.getResponseCode() + '): ' + response.getContentText().substring(0, 300));
+  }
+}
 const SHEET_INTERCH    = 'Demande des intercheable'; // feuille matricule rechange
 const COL_MATRECHANGE  = 20;                         // Colonne T (1-based)
 const SHEET_USERS      = 'Users';
@@ -321,7 +373,7 @@ function doGet(e) {
             var ccCMRest = destCMList.slice(1).join(',');
             var optsCM = { htmlBody: corps, name: SENDER_NAME };
             if (ccCMRest) optsCM.cc = ccCMRest;
-            GmailApp.sendEmail(toCM, sujet, '', optsCM);
+            sendEmailOCP(toCM, sujet, '', optsCM);
           }
         } catch(mailErr) {
           Logger.log('Erreur envoi email CM : ' + mailErr.toString());
@@ -523,7 +575,7 @@ function sendEmailNouvelleDemande(d) {
     var ccNvlleRest = destNvlleList.slice(1).join(',');
     var optsNvlle = { htmlBody: corps, name: SENDER_NAME };
     if (ccNvlleRest) optsNvlle.cc = ccNvlleRest;
-    GmailApp.sendEmail(toNvlle, sujet, '', optsNvlle);
+    sendEmailOCP(toNvlle, sujet, '', optsNvlle);
   }
 }
 
@@ -641,7 +693,7 @@ function sendEmailChangementStatut(id, updates) {
     }
     var opts = { htmlBody: corps, name: SENDER_NAME };
     if (ccEtat) opts.cc = ccEtat;
-    GmailApp.sendEmail(emailDest, sujet, '', opts);
+    sendEmailOCP(emailDest, sujet, '', opts);
 
   } else {
     const statut = statutLabel[demande.statut] || demande.statut;
@@ -682,7 +734,7 @@ function sendEmailChangementStatut(id, updates) {
     }
     var optsStatut = { htmlBody: corps, name: SENDER_NAME };
     if (ccStatut) optsStatut.cc = ccStatut;
-    GmailApp.sendEmail(emailDest, sujet, '', optsStatut);
+    sendEmailOCP(emailDest, sujet, '', optsStatut);
   }
 }
 
