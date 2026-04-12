@@ -8600,7 +8600,7 @@ function getLivrableURL(type) {
     const year = document.getElementById('arr-liv-year').value;
     const month = document.getElementById('arr-liv-month').value;
     const filename = `Planning_des_arrets_preventifs_${year}_${month}.pdf`;
-    return { url: GITHUB_BASE + filename, filename };
+    return { url: 'https://raw.githubusercontent.com/marouaneelamraouielidrissi/docs-mainana/main/planning-arrets/' + filename, filename };
   }
 }
 
