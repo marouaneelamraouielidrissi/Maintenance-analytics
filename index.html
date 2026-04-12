@@ -3393,7 +3393,11 @@ function setMode(mode) {
   document.getElementById('year-select').style.display   = mode==='month'?'':'none';
   document.getElementById('year-only-select').style.display = mode==='year'?'':'none';
   // Relancer automatiquement le rapport si les données sont déjà chargées
-  if (allData && allData.length > 0) generateReport();
+  if (allData && allData.length > 0) {
+    if (mode === 'year') generateAnnualReport();
+    else generateReport();
+  }
+  renderKpiFavoris();
 }
 
 // ─── GOOGLE SHEETS DIRECT EXPORT (via Netlify proxy pour éviter CORS) ───
