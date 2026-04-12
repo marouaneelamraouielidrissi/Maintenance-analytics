@@ -2,9 +2,11 @@ const SHEET_ID    = '1rOPljpAHYIs_uQ5-EUnL4yVwy2ciKAn20htExnU2vG4';
 const SHEET_NAME  = 'Demandes';
 
 // ── Configuration OCP Exchange (EWS) ─────────────────────────
-const OCP_EMAIL    = 'm.elamraoui@ocpgroup.ma';
-const OCP_PASSWORD = 'TON_MOT_DE_PASSE_OCP';
-const EWS_URL      = 'https://owa.ocpgroup.ma/EWS/Exchange.asmx';
+const OCP_EMAIL = 'm.elamraoui@ocpgroup.ma';
+const EWS_URL   = 'https://owa.ocpgroup.ma/EWS/Exchange.asmx';
+function getOcpPassword() {
+  return PropertiesService.getScriptProperties().getProperty('OCP_PASSWORD') || '';
+}
 
 function sendEmailOCP(to, subject, body, options) {
   const toList = Array.isArray(to) ? to : [to];
@@ -37,7 +39,7 @@ function sendEmailOCP(to, subject, body, options) {
     + ccBlock
     + '</t:Message></m:Items>'
     + '</m:CreateItem></m:Body></soap:Envelope>';
-  const credentials = Utilities.base64Encode(OCP_EMAIL + ':' + OCP_PASSWORD);
+  const credentials = Utilities.base64Encode(OCP_EMAIL + ':' + getOcpPassword());
   const response = UrlFetchApp.fetch(EWS_URL, {
     method: 'post',
     contentType: 'text/xml; charset=utf-8',
@@ -493,6 +495,13 @@ function doPost(e) {
     } else if (payload.action === 'update') {
       updateDemande(payload.id, payload.updates);
       sendEmailChangementStatut(payload.id, payload.updates);
+    } else if (payload.action === 'setOcpPassword') {
+      if (!payload.password) return jsonResponse({ success: false, error: 'Mot de passe vide.' });
+      PropertiesService.getScriptProperties().setProperty('OCP_PASSWORD', payload.password);
+      return jsonResponse({ success: true });
+    } else if (payload.action === 'getOcpPasswordStatus') {
+      const pwd = PropertiesService.getScriptProperties().getProperty('OCP_PASSWORD');
+      return jsonResponse({ success: true, isSet: !!(pwd && pwd.length > 0) });
     }
     return jsonResponse({ success: true });
   } catch(err) {

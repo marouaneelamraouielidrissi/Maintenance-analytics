@@ -5,9 +5,11 @@
 // ============================================================
 
 // ── Configuration OCP Exchange (EWS) ─────────────────────────
-const OCP_EMAIL    = 'm.elamraoui@ocpgroup.ma';
-const OCP_PASSWORD = 'TON_MOT_DE_PASSE_OCP';
-const EWS_URL      = 'https://owa.ocpgroup.ma/EWS/Exchange.asmx';
+const OCP_EMAIL = 'm.elamraoui@ocpgroup.ma';
+const EWS_URL   = 'https://owa.ocpgroup.ma/EWS/Exchange.asmx';
+function getOcpPassword() {
+  return PropertiesService.getScriptProperties().getProperty('OCP_PASSWORD') || '';
+}
 
 function sendEmailOCP(to, subject, body, options) {
   const toList = Array.isArray(to) ? to : [to];
@@ -40,7 +42,7 @@ function sendEmailOCP(to, subject, body, options) {
     + ccBlock
     + '</t:Message></m:Items>'
     + '</m:CreateItem></m:Body></soap:Envelope>';
-  const credentials = Utilities.base64Encode(OCP_EMAIL + ':' + OCP_PASSWORD);
+  const credentials = Utilities.base64Encode(OCP_EMAIL + ':' + getOcpPassword());
   const response = UrlFetchApp.fetch(EWS_URL, {
     method: 'post',
     contentType: 'text/xml; charset=utf-8',
