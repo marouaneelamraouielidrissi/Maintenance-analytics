@@ -39,6 +39,7 @@ function sendEmailOCP(to, subject, body, options) {
     + ccBlock
     + '</t:Message></m:Items>'
     + '</m:CreateItem></m:Body></soap:Envelope>';
+  Logger.log('SOAP envoyé : ' + soap.substring(0, 500));
   const credentials = Utilities.base64Encode(OCP_EMAIL + ':' + getOcpPassword());
   const response = UrlFetchApp.fetch(EWS_URL, {
     method: 'post',
@@ -50,8 +51,11 @@ function sendEmailOCP(to, subject, body, options) {
     payload: soap,
     muteHttpExceptions: true
   });
-  if (response.getResponseCode() !== 200 || response.getContentText().indexOf('NoError') === -1) {
-    throw new Error('EWS send failed (' + response.getResponseCode() + '): ' + response.getContentText().substring(0, 300));
+  const respCode = response.getResponseCode();
+  const respText = response.getContentText();
+  Logger.log('EWS response ' + respCode + ': ' + respText);
+  if (respCode !== 200 || respText.indexOf('NoError') === -1) {
+    throw new Error('EWS send failed (' + respCode + '): ' + respText);
   }
 }
 const SHEET_INTERCH    = 'Demande des intercheable'; // feuille matricule rechange
