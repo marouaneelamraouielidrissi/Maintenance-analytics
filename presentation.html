@@ -116,6 +116,26 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;
 .sol-card{transition:transform .28s ease,box-shadow .28s ease}
 .sol-card:hover{transform:translateX(6px);box-shadow:0 6px 24px rgba(46,125,50,.18)!important}
 
+/* ═══ RÉSULTAT PDR SLIDE ═══ */
+@keyframes countUp{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+@keyframes barShrink{from{width:100%}to{width:29%}}
+@keyframes barFull{from{width:0}to{width:100%}}
+@keyframes resultFadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse70{0%,100%{box-shadow:0 0 0 0 rgba(46,125,50,.4)}70%{box-shadow:0 0 0 18px rgba(46,125,50,0)}}
+@keyframes arrowBounce{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+[data-slide="pdr-result"].active .res-num{animation:countUp .7s cubic-bezier(.34,1.56,.64,1) both}
+[data-slide="pdr-result"].active .res-num:nth-child(1){animation-delay:.3s}
+[data-slide="pdr-result"].active .res-num:nth-child(2){animation-delay:.55s}
+[data-slide="pdr-result"].active .res-badge{animation:countUp .8s .8s cubic-bezier(.34,1.8,.64,1) both;animation-fill-mode:both}
+[data-slide="pdr-result"].active .res-badge{animation:pulse70 2s 1.5s ease-in-out infinite,countUp .8s .8s cubic-bezier(.34,1.8,.64,1) both}
+[data-slide="pdr-result"].active .res-bar-before{animation:barFull .6s .4s ease-out both}
+[data-slide="pdr-result"].active .res-bar-after{animation:barShrink .9s .9s cubic-bezier(.4,0,.2,1) both}
+[data-slide="pdr-result"].active .res-item{animation:resultFadeUp .5s ease both}
+[data-slide="pdr-result"].active .res-item:nth-child(1){animation-delay:1.2s}
+[data-slide="pdr-result"].active .res-item:nth-child(2){animation-delay:1.4s}
+[data-slide="pdr-result"].active .res-item:nth-child(3){animation-delay:1.6s}
+[data-slide="pdr-result"].active .res-arrow{animation:arrowBounce 1s 1.8s ease-in-out infinite}
+
 /* ═══ TYPOGRAPHY ═══ */
 .eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#43a047;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .eyebrow::before{content:'';width:20px;height:2.5px;background:#43a047;border-radius:2px}
@@ -807,6 +827,78 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;
       </p>
     </video>
     <div class="vid-cap">📹 Enregistrement d'écran — Confirmation des PDR</div>
+  </div>
+</div>
+
+<!-- ═══ RÉSULTAT PDR ═══ -->
+<div class="slide bg-dark-green" data-slide="pdr-result">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;width:100%;gap:0">
+
+    <!-- Titre -->
+    <h2 class="st2" style="color:white;margin-bottom:6px">Résultat concret</h2>
+    <p class="sdesc" style="color:rgba(255,255,255,.7);margin-bottom:28px">Confirmation PDR · Impact mesuré sur le terrain</p>
+
+    <!-- Comparaison avant / après -->
+    <div style="display:flex;align-items:center;gap:28px;margin-bottom:32px;width:100%;max-width:780px">
+
+      <!-- AVANT -->
+      <div style="flex:1;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:20px;padding:24px 20px;text-align:center">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.45);text-transform:uppercase;margin-bottom:10px">Avant</div>
+        <div class="res-num" style="font-size:clamp(48px,7vw,88px);font-weight:900;color:#ef9a9a;letter-spacing:-4px;line-height:1">2</div>
+        <div style="font-size:18px;font-weight:700;color:rgba(239,154,154,.8);margin-top:2px">semaines</div>
+        <div style="margin-top:14px;height:10px;background:rgba(255,255,255,.1);border-radius:5px;overflow:hidden">
+          <div class="res-bar-before" style="height:100%;background:linear-gradient(90deg,#ef9a9a,#e57373);border-radius:5px;width:0"></div>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:6px">Temps de préparation OTs</div>
+      </div>
+
+      <!-- FLÈCHE -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0">
+        <div class="res-arrow" style="font-size:32px;color:#66bb6a">→</div>
+        <div class="res-badge" style="background:linear-gradient(135deg,#1b5e20,#43a047);border-radius:50%;width:74px;height:74px;display:flex;align-items:center;justify-content:center;flex-direction:column;box-shadow:0 0 0 0 rgba(46,125,50,.4)">
+          <div style="font-size:22px;font-weight:900;color:white;line-height:1">-70%</div>
+          <div style="font-size:8px;color:rgba(255,255,255,.75);font-weight:600;text-transform:uppercase;letter-spacing:.5px">gain</div>
+        </div>
+        <div class="res-arrow" style="font-size:32px;color:#66bb6a">→</div>
+      </div>
+
+      <!-- APRÈS -->
+      <div style="flex:1;background:rgba(102,187,106,.15);border:1.5px solid rgba(102,187,106,.4);border-radius:20px;padding:24px 20px;text-align:center">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.55);text-transform:uppercase;margin-bottom:10px">Après</div>
+        <div class="res-num" style="font-size:clamp(48px,7vw,88px);font-weight:900;color:#a5d6a7;letter-spacing:-4px;line-height:1">4</div>
+        <div style="font-size:18px;font-weight:700;color:rgba(165,214,167,.85);margin-top:2px">jours</div>
+        <div style="margin-top:14px;height:10px;background:rgba(255,255,255,.1);border-radius:5px;overflow:hidden">
+          <div class="res-bar-after" style="height:100%;background:linear-gradient(90deg,#66bb6a,#a5d6a7);border-radius:5px;width:100%"></div>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.45);margin-top:6px">Temps de préparation OTs</div>
+      </div>
+    </div>
+
+    <!-- Points résultats -->
+    <div style="display:flex;gap:14px;width:100%;max-width:780px;justify-content:center">
+      <div class="res-item" style="flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:20px;flex-shrink:0">✅</span>
+        <div>
+          <div style="font-size:12.5px;font-weight:700;color:white;margin-bottom:3px">Confirmation traçable</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.55)">Chaque PDR confirmé avec statut et historique</div>
+        </div>
+      </div>
+      <div class="res-item" style="flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:20px;flex-shrink:0">📧</span>
+        <div>
+          <div style="font-size:12.5px;font-weight:700;color:white;margin-bottom:3px">Rappels automatiques</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.55)">Zéro oubli · Appro notifié chaque mercredi</div>
+        </div>
+      </div>
+      <div class="res-item" style="flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:20px;flex-shrink:0">🚀</span>
+        <div>
+          <div style="font-size:12.5px;font-weight:700;color:white;margin-bottom:3px">OTs mieux préparés</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.55)">Qualité des travaux nettement améliorée</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
