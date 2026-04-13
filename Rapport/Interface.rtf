@@ -1,0 +1,629 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red109\green109\blue109;\red246\green247\blue249;\red251\green0\blue7;
+\red46\green49\blue51;\red42\green42\blue42;\red20\green67\blue174;\red18\green115\blue126;\red162\green0\blue16;
+\red97\green3\blue173;\red19\green118\blue70;\red9\green60\blue148;\red77\green80\blue85;\red21\green98\blue39;
+\red186\green6\blue115;\red24\green25\blue27;}
+{\*\expandedcolortbl;;\cssrgb\c50196\c50196\c50196;\cssrgb\c97255\c97647\c98039;\cssrgb\c100000\c0\c0;
+\cssrgb\c23529\c25098\c26275;\cssrgb\c21961\c21961\c21961;\cssrgb\c9412\c35294\c73725;\cssrgb\c3529\c52157\c56863;\cssrgb\c70196\c7843\c7059;
+\cssrgb\c46275\c15294\c73333;\cssrgb\c3529\c52549\c34510;\cssrgb\c1569\c31765\c64706;\cssrgb\c37255\c38824\c40784;\cssrgb\c7451\c45098\c20000;
+\cssrgb\c78824\c15294\c52549;\cssrgb\c12549\c12941\c14118;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs26 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 <!DOCTYPE\cf4 \strokec4  html\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf6 \cb3 \strokec6 <\cf7 \strokec7 html\cf5 \strokec5  \cf8 \strokec8 lang\cf6 \strokec6 =\cf9 \strokec9 "fr"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cf6 \cb3 \strokec6 <\cf7 \strokec7 head\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3   \cf6 \strokec6 <\cf7 \strokec7 meta\cf5 \strokec5  \cf8 \strokec8 charset\cf6 \strokec6 =\cf9 \strokec9 "UTF-8"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3   \cf6 \strokec6 <\cf7 \strokec7 meta\cf5 \strokec5  \cf8 \strokec8 name\cf6 \strokec6 =\cf9 \strokec9 "viewport"\cf5 \strokec5  \cf8 \strokec8 content\cf6 \strokec6 =\cf9 \strokec9 "width=device-width, initial-scale=1.0"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3   \cf6 \strokec6 <\cf7 \strokec7 title\cf6 \strokec6 >\cf5 \strokec5 Rapport de Maintenance \'97 Bureau des M\'e9thodes Daoui\cf6 \strokec6 </\cf7 \strokec7 title\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3   \cf6 \strokec6 <\cf7 \strokec7 style\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 *\cf5 \strokec5  \{ \cf8 \strokec8 box-sizing:\cf5 \strokec5  \cf9 \strokec9 border-box\cf5 \strokec5 ; \cf8 \strokec8 margin:\cf5 \strokec5  \cf11 \strokec11 0\cf5 \strokec5 ; \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 0\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 body\cf5 \strokec5  \{ \cf8 \strokec8 font-family:\cf5 \strokec5  \cf9 \strokec9 Arial\cf5 \strokec5 , \cf9 \strokec9 Helvetica\cf5 \strokec5 , \cf9 \strokec9 sans-serif\cf5 \strokec5 ; \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #F4F6F9\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #1A2035\cf5 \strokec5 ; \cf8 \strokec8 min-height:\cf5 \strokec5  \cf11 \strokec11 100vh\cf5 \strokec5 ; \}\cb1 \
+\
+\cb3     \cf13 \strokec13 /* \uc0\u9472 \u9472  Header \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 .header\cf5 \strokec5  \{\cb1 \
+\cb3       \cf8 \strokec8 background:\cf5 \strokec5  \cf9 \strokec9 linear-gradient(\cf11 \strokec11 135deg\cf5 \strokec5 , \cf12 \strokec12 #1D4ED8\cf5 \strokec5  \cf11 \strokec11 0%\cf5 \strokec5 , \cf12 \strokec12 #1e40af\cf5 \strokec5  \cf11 \strokec11 100%\cf9 \strokec9 )\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 22px\cf5 \strokec5  \cf11 \strokec11 32px\cf5 \strokec5 ;\cb1 \
+\cb3     \}\cb1 \
+\cb3     \cf10 \strokec10 .header-inner\cf5 \strokec5  \{ \cf8 \strokec8 max-width:\cf5 \strokec5  \cf11 \strokec11 860px\cf5 \strokec5 ; \cf8 \strokec8 margin:\cf5 \strokec5  \cf11 \strokec11 0\cf5 \strokec5  \cf9 \strokec9 auto\cf5 \strokec5 ; \cf8 \strokec8 display:\cf5 \strokec5  \cf9 \strokec9 flex\cf5 \strokec5 ; \cf8 \strokec8 align-items:\cf5 \strokec5  \cf9 \strokec9 center\cf5 \strokec5 ; \cf8 \strokec8 justify-content:\cf5 \strokec5  \cf9 \strokec9 space-between\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .header\cf5 \strokec5  \cf10 \strokec10 h1\cf5 \strokec5  \{ \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 18px\cf5 \strokec5 ; \cf8 \strokec8 font-weight:\cf5 \strokec5  \cf11 \strokec11 700\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #fff\cf5 \strokec5 ; \cf8 \strokec8 letter-spacing:\cf5 \strokec5  \cf11 \strokec11 -0.3px\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .header\cf5 \strokec5  \cf10 \strokec10 p\cf5 \strokec5   \{ \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 11px\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #BFDBFE\cf5 \strokec5 ; \cf8 \strokec8 margin-top:\cf5 \strokec5  \cf11 \strokec11 3px\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .header-badge\cf5 \strokec5  \{ \cf8 \strokec8 background:\cf5 \strokec5  \cf9 \strokec9 rgba(\cf11 \strokec11 255\cf5 \strokec5 ,\cf11 \strokec11 255\cf5 \strokec5 ,\cf11 \strokec11 255\cf5 \strokec5 ,\cf11 \strokec11 0.15\cf9 \strokec9 )\cf5 \strokec5 ; \cf8 \strokec8 border:\cf5 \strokec5  \cf11 \strokec11 1px\cf5 \strokec5  \cf9 \strokec9 solid\cf5 \strokec5  \cf9 \strokec9 rgba(\cf11 \strokec11 255\cf5 \strokec5 ,\cf11 \strokec11 255\cf5 \strokec5 ,\cf11 \strokec11 255\cf5 \strokec5 ,\cf11 \strokec11 0.25\cf9 \strokec9 )\cf5 \strokec5 ; \cf8 \strokec8 border-radius:\cf5 \strokec5  \cf11 \strokec11 6px\cf5 \strokec5 ; \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 6px\cf5 \strokec5  \cf11 \strokec11 14px\cf5 \strokec5 ; \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 12px\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #fff\cf5 \strokec5 ; \cf8 \strokec8 font-weight:\cf5 \strokec5  \cf11 \strokec11 600\cf5 \strokec5 ; \cf8 \strokec8 white-space:\cf5 \strokec5  \cf9 \strokec9 nowrap\cf5 \strokec5 ; \}\cb1 \
+\
+\cb3     \cf13 \strokec13 /* \uc0\u9472 \u9472  Container \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 .container\cf5 \strokec5  \{ \cf8 \strokec8 max-width:\cf5 \strokec5  \cf11 \strokec11 860px\cf5 \strokec5 ; \cf8 \strokec8 margin:\cf5 \strokec5  \cf11 \strokec11 0\cf5 \strokec5  \cf9 \strokec9 auto\cf5 \strokec5 ; \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 24px\cf5 \strokec5  \cf11 \strokec11 16px\cf5 \strokec5  \cf11 \strokec11 48px\cf5 \strokec5 ; \}\cb1 \
+\
+\cb3     \cf13 \strokec13 /* \uc0\u9472 \u9472  Cards \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 .card\cf5 \strokec5  \{ \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #fff\cf5 \strokec5 ; \cf8 \strokec8 border-radius:\cf5 \strokec5  \cf11 \strokec11 10px\cf5 \strokec5 ; \cf8 \strokec8 border:\cf5 \strokec5  \cf11 \strokec11 1px\cf5 \strokec5  \cf9 \strokec9 solid\cf5 \strokec5  \cf12 \strokec12 #DDE2EA\cf5 \strokec5 ; \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 22px\cf5 \strokec5  \cf11 \strokec11 24px\cf5 \strokec5 ; \cf8 \strokec8 margin-bottom:\cf5 \strokec5  \cf11 \strokec11 16px\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .card-title\cf5 \strokec5  \{\cb1 \
+\cb3       \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 9px\cf5 \strokec5 ; \cf8 \strokec8 font-weight:\cf5 \strokec5  \cf11 \strokec11 700\cf5 \strokec5 ; \cf8 \strokec8 letter-spacing:\cf5 \strokec5  \cf11 \strokec11 1.4px\cf5 \strokec5 ; \cf8 \strokec8 text-transform:\cf5 \strokec5  \cf9 \strokec9 uppercase\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #8A97AB\cf5 \strokec5 ; \cf8 \strokec8 margin-bottom:\cf5 \strokec5  \cf11 \strokec11 16px\cf5 \strokec5 ; \cf8 \strokec8 padding-bottom:\cf5 \strokec5  \cf11 \strokec11 10px\cf5 \strokec5 ; \cf8 \strokec8 border-bottom:\cf5 \strokec5  \cf11 \strokec11 1px\cf5 \strokec5  \cf9 \strokec9 solid\cf5 \strokec5  \cf12 \strokec12 #F1F5F9\cf5 \strokec5 ;\cb1 \
+\cb3     \}\cb1 \
+\
+\cb3     \cf13 \strokec13 /* \uc0\u9472 \u9472  Form \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 .form-row\cf5 \strokec5  \{ \cf8 \strokec8 display:\cf5 \strokec5  \cf9 \strokec9 flex\cf5 \strokec5 ; \cf8 \strokec8 gap:\cf5 \strokec5  \cf11 \strokec11 12px\cf5 \strokec5 ; \cf8 \strokec8 flex-wrap:\cf5 \strokec5  \cf9 \strokec9 wrap\cf5 \strokec5 ; \cf8 \strokec8 margin-bottom:\cf5 \strokec5  \cf11 \strokec11 14px\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .form-row:last-child\cf5 \strokec5  \{ \cf8 \strokec8 margin-bottom:\cf5 \strokec5  \cf11 \strokec11 0\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .fg\cf5 \strokec5  \{ \cf8 \strokec8 flex:\cf5 \strokec5  \cf11 \strokec11 1\cf5 \strokec5 ; \cf8 \strokec8 min-width:\cf5 \strokec5  \cf11 \strokec11 130px\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .fg.full\cf5 \strokec5  \{ \cf8 \strokec8 flex:\cf5 \strokec5  \cf11 \strokec11 1\cf5 \strokec5  \cf11 \strokec11 1\cf5 \strokec5  \cf11 \strokec11 100%\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .fg\cf5 \strokec5  \cf10 \strokec10 label\cf5 \strokec5  \{ \cf8 \strokec8 display:\cf5 \strokec5  \cf9 \strokec9 block\cf5 \strokec5 ; \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 11px\cf5 \strokec5 ; \cf8 \strokec8 font-weight:\cf5 \strokec5  \cf11 \strokec11 700\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #475569\cf5 \strokec5 ; \cf8 \strokec8 margin-bottom:\cf5 \strokec5  \cf11 \strokec11 5px\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .fg\cf5 \strokec5  \cf10 \strokec10 select\cf5 \strokec5 , \cf10 \strokec10 .fg\cf5 \strokec5  \cf10 \strokec10 input\cf5 \strokec5 [\cf9 \strokec9 type\cf5 \strokec5 =\cf9 \strokec9 number\cf5 \strokec5 ], \cf10 \strokec10 .fg\cf5 \strokec5  \cf10 \strokec10 input\cf5 \strokec5 [\cf9 \strokec9 type\cf5 \strokec5 =\cf9 \strokec9 text\cf5 \strokec5 ],\cb1 \
+\cb3     \cf10 \strokec10 .fg\cf5 \strokec5  \cf10 \strokec10 input\cf5 \strokec5 [\cf9 \strokec9 type\cf5 \strokec5 =\cf9 \strokec9 email\cf5 \strokec5 ], \cf10 \strokec10 .fg\cf5 \strokec5  \cf10 \strokec10 input\cf5 \strokec5 [\cf9 \strokec9 type\cf5 \strokec5 =\cf9 \strokec9 datetime-local\cf5 \strokec5 ] \{\cb1 \
+\cb3       \cf8 \strokec8 width:\cf5 \strokec5  \cf11 \strokec11 100%\cf5 \strokec5 ; \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 9px\cf5 \strokec5  \cf11 \strokec11 11px\cf5 \strokec5 ; \cf8 \strokec8 border:\cf5 \strokec5  \cf11 \strokec11 1px\cf5 \strokec5  \cf9 \strokec9 solid\cf5 \strokec5  \cf12 \strokec12 #DDE2EA\cf5 \strokec5 ; \cf8 \strokec8 border-radius:\cf5 \strokec5  \cf11 \strokec11 6px\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 13px\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #1A2035\cf5 \strokec5 ; \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #FAFBFC\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 transition:\cf5 \strokec5  \cf9 \strokec9 border-color\cf5 \strokec5  \cf11 \strokec11 0.15s\cf5 \strokec5 , \cf9 \strokec9 box-shadow\cf5 \strokec5  \cf11 \strokec11 0.15s\cf5 \strokec5 ;\cb1 \
+\cb3     \}\cb1 \
+\cb3     \cf10 \strokec10 .fg\cf5 \strokec5  \cf10 \strokec10 select:focus\cf5 \strokec5 , \cf10 \strokec10 .fg\cf5 \strokec5  \cf10 \strokec10 input:focus\cf5 \strokec5  \{\cb1 \
+\cb3       \cf8 \strokec8 outline:\cf5 \strokec5  \cf9 \strokec9 none\cf5 \strokec5 ; \cf8 \strokec8 border-color:\cf5 \strokec5  \cf12 \strokec12 #1D4ED8\cf5 \strokec5 ; \cf8 \strokec8 box-shadow:\cf5 \strokec5  \cf11 \strokec11 0\cf5 \strokec5  \cf11 \strokec11 0\cf5 \strokec5  \cf11 \strokec11 0\cf5 \strokec5  \cf11 \strokec11 3px\cf5 \strokec5  \cf12 \strokec12 #DBEAFE\cf5 \strokec5 ; \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #fff\cf5 \strokec5 ;\cb1 \
+\cb3     \}\cb1 \
+\
+\cb3     \cf13 \strokec13 /* \uc0\u9472 \u9472  Grid \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 .grid-2\cf5 \strokec5  \{ \cf8 \strokec8 display:\cf5 \strokec5  \cf9 \strokec9 grid\cf5 \strokec5 ; \cf8 \strokec8 grid-template-columns:\cf5 \strokec5  \cf11 \strokec11 1fr\cf5 \strokec5  \cf11 \strokec11 1fr\cf5 \strokec5 ; \cf8 \strokec8 gap:\cf5 \strokec5  \cf11 \strokec11 16px\cf5 \strokec5 ; \}\cb1 \
+\cb3     @\cf10 \strokec10 media\cf5 \strokec5  (\cf10 \strokec10 max-width:\cf5 \strokec5  620\cf10 \strokec10 px\cf5 \strokec5 ) \{ .grid-2 \{ \cf8 \strokec8 grid-template-columns:\cf5 \strokec5  \cf11 \strokec11 1fr\cf5 \strokec5 ; \} \}\cb1 \
+\
+\cb3     \cf13 \strokec13 /* \uc0\u9472 \u9472  Buttons \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 .btn\cf5 \strokec5  \{\cb1 \
+\cb3       \cf8 \strokec8 display:\cf5 \strokec5  \cf9 \strokec9 inline-flex\cf5 \strokec5 ; \cf8 \strokec8 align-items:\cf5 \strokec5  \cf9 \strokec9 center\cf5 \strokec5 ; \cf8 \strokec8 justify-content:\cf5 \strokec5  \cf9 \strokec9 center\cf5 \strokec5 ; \cf8 \strokec8 gap:\cf5 \strokec5  \cf11 \strokec11 6px\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 10px\cf5 \strokec5  \cf11 \strokec11 18px\cf5 \strokec5 ; \cf8 \strokec8 border:\cf5 \strokec5  \cf9 \strokec9 none\cf5 \strokec5 ; \cf8 \strokec8 border-radius:\cf5 \strokec5  \cf11 \strokec11 7px\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 13px\cf5 \strokec5 ; \cf8 \strokec8 font-weight:\cf5 \strokec5  \cf11 \strokec11 700\cf5 \strokec5 ; \cf8 \strokec8 cursor:\cf5 \strokec5  \cf9 \strokec9 pointer\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 transition:\cf5 \strokec5  \cf9 \strokec9 opacity\cf5 \strokec5  \cf11 \strokec11 0.15s\cf5 \strokec5 , \cf9 \strokec9 transform\cf5 \strokec5  \cf11 \strokec11 0.1s\cf5 \strokec5 ;\cb1 \
+\cb3     \}\cb1 \
+\cb3     \cf10 \strokec10 .btn:hover:not\cf5 \strokec5 (\cf10 \strokec10 :disabled\cf5 \strokec5 ) \{ \cf8 \strokec8 opacity:\cf5 \strokec5  \cf11 \strokec11 0.88\cf5 \strokec5 ; \cf8 \strokec8 transform:\cf5 \strokec5  \cf9 \strokec9 translateY(\cf11 \strokec11 -1px\cf9 \strokec9 )\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .btn:active:not\cf5 \strokec5 (\cf10 \strokec10 :disabled\cf5 \strokec5 ) \{ \cf8 \strokec8 transform:\cf5 \strokec5  \cf9 \strokec9 translateY(\cf11 \strokec11 0\cf9 \strokec9 )\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .btn:disabled\cf5 \strokec5  \{ \cf8 \strokec8 opacity:\cf5 \strokec5  \cf11 \strokec11 0.45\cf5 \strokec5 ; \cf8 \strokec8 cursor:\cf5 \strokec5  \cf9 \strokec9 not-allowed\cf5 \strokec5 ; \cf8 \strokec8 transform:\cf5 \strokec5  \cf9 \strokec9 none\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .btn-blue\cf5 \strokec5   \{ \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #1D4ED8\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #fff\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .btn-green\cf5 \strokec5  \{ \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #059669\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #fff\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .btn-red\cf5 \strokec5    \{ \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #FEF2F2\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #DC2626\cf5 \strokec5 ; \cf8 \strokec8 border:\cf5 \strokec5  \cf11 \strokec11 1px\cf5 \strokec5  \cf9 \strokec9 solid\cf5 \strokec5  \cf12 \strokec12 #FECACA\cf5 \strokec5 ; \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 5px\cf5 \strokec5  \cf11 \strokec11 10px\cf5 \strokec5 ; \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 11px\cf5 \strokec5 ; \cf8 \strokec8 font-weight:\cf5 \strokec5  \cf11 \strokec11 700\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .btn-ghost\cf5 \strokec5  \{ \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #F1F5F9\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #475569\cf5 \strokec5 ; \cf8 \strokec8 border:\cf5 \strokec5  \cf11 \strokec11 1px\cf5 \strokec5  \cf9 \strokec9 solid\cf5 \strokec5  \cf12 \strokec12 #DDE2EA\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .btn-full\cf5 \strokec5   \{ \cf8 \strokec8 width:\cf5 \strokec5  \cf11 \strokec11 100%\cf5 \strokec5 ; \cf8 \strokec8 margin-top:\cf5 \strokec5  \cf11 \strokec11 12px\cf5 \strokec5 ; \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 11px\cf5 \strokec5 ; \}\cb1 \
+\
+\cb3     \cf13 \strokec13 /* \uc0\u9472 \u9472  Frequency tabs \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 .freq-tabs\cf5 \strokec5  \{ \cf8 \strokec8 display:\cf5 \strokec5  \cf9 \strokec9 flex\cf5 \strokec5 ; \cf8 \strokec8 gap:\cf5 \strokec5  \cf11 \strokec11 6px\cf5 \strokec5 ; \cf8 \strokec8 margin-bottom:\cf5 \strokec5  \cf11 \strokec11 16px\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .freq-tab\cf5 \strokec5  \{\cb1 \
+\cb3       \cf8 \strokec8 flex:\cf5 \strokec5  \cf11 \strokec11 1\cf5 \strokec5 ; \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 8px\cf5 \strokec5  \cf11 \strokec11 6px\cf5 \strokec5 ; \cf8 \strokec8 text-align:\cf5 \strokec5  \cf9 \strokec9 center\cf5 \strokec5 ; \cf8 \strokec8 border:\cf5 \strokec5  \cf11 \strokec11 1px\cf5 \strokec5  \cf9 \strokec9 solid\cf5 \strokec5  \cf12 \strokec12 #DDE2EA\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 border-radius:\cf5 \strokec5  \cf11 \strokec11 7px\cf5 \strokec5 ; \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 12px\cf5 \strokec5 ; \cf8 \strokec8 font-weight:\cf5 \strokec5  \cf11 \strokec11 700\cf5 \strokec5 ; \cf8 \strokec8 cursor:\cf5 \strokec5  \cf9 \strokec9 pointer\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #8A97AB\cf5 \strokec5 ; \cf8 \strokec8 transition:\cf5 \strokec5  \cf9 \strokec9 all\cf5 \strokec5  \cf11 \strokec11 0.15s\cf5 \strokec5 ;\cb1 \
+\cb3     \}\cb1 \
+\cb3     \cf10 \strokec10 .freq-tab:hover\cf5 \strokec5  \{ \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #F8FAFC\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .freq-tab.active\cf5 \strokec5  \{ \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #EFF6FF\cf5 \strokec5 ; \cf8 \strokec8 border-color:\cf5 \strokec5  \cf12 \strokec12 #1D4ED8\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #1D4ED8\cf5 \strokec5 ; \}\cb1 \
+\
+\cb3     \cf10 \strokec10 .freq-panel\cf5 \strokec5  \{ \cf8 \strokec8 display:\cf5 \strokec5  \cf9 \strokec9 none\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .freq-panel.active\cf5 \strokec5  \{ \cf8 \strokec8 display:\cf5 \strokec5  \cf9 \strokec9 block\cf5 \strokec5 ; \}\cb1 \
+\
+\cb3     \cf13 \strokec13 /* \uc0\u9472 \u9472  Period note \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 .period-note\cf5 \strokec5  \{\cb1 \
+\cb3       \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #F8FAFC\cf5 \strokec5 ; \cf8 \strokec8 border:\cf5 \strokec5  \cf11 \strokec11 1px\cf5 \strokec5  \cf9 \strokec9 solid\cf5 \strokec5  \cf12 \strokec12 #E8ECF2\cf5 \strokec5 ; \cf8 \strokec8 border-radius:\cf5 \strokec5  \cf11 \strokec11 6px\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 8px\cf5 \strokec5  \cf11 \strokec11 12px\cf5 \strokec5 ; \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 11px\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #475569\cf5 \strokec5 ; \cf8 \strokec8 margin-bottom:\cf5 \strokec5  \cf11 \strokec11 12px\cf5 \strokec5 ;\cb1 \
+\cb3     \}\cb1 \
+\cb3     \cf10 \strokec10 .period-note\cf5 \strokec5  \cf10 \strokec10 b\cf5 \strokec5  \{ \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #1D4ED8\cf5 \strokec5 ; \}\cb1 \
+\
+\cb3     \cf13 \strokec13 /* \uc0\u9472 \u9472  Table \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 .table-wrap\cf5 \strokec5  \{ \cf8 \strokec8 overflow-x:\cf5 \strokec5  \cf9 \strokec9 auto\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 table\cf5 \strokec5  \{ \cf8 \strokec8 width:\cf5 \strokec5  \cf11 \strokec11 100%\cf5 \strokec5 ; \cf8 \strokec8 border-collapse:\cf5 \strokec5  \cf9 \strokec9 collapse\cf5 \strokec5 ; \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 12px\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 th\cf5 \strokec5  \{\cb1 \
+\cb3       \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 9px\cf5 \strokec5  \cf11 \strokec11 12px\cf5 \strokec5 ; \cf8 \strokec8 text-align:\cf5 \strokec5  \cf9 \strokec9 left\cf5 \strokec5 ; \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #F8FAFC\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 10px\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #8A97AB\cf5 \strokec5 ; \cf8 \strokec8 font-weight:\cf5 \strokec5  \cf11 \strokec11 700\cf5 \strokec5 ; \cf8 \strokec8 letter-spacing:\cf5 \strokec5  \cf11 \strokec11 0.5px\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 text-transform:\cf5 \strokec5  \cf9 \strokec9 uppercase\cf5 \strokec5 ; \cf8 \strokec8 border-bottom:\cf5 \strokec5  \cf11 \strokec11 2px\cf5 \strokec5  \cf9 \strokec9 solid\cf5 \strokec5  \cf12 \strokec12 #E8ECF2\cf5 \strokec5 ;\cb1 \
+\cb3     \}\cb1 \
+\cb3     \cf10 \strokec10 td\cf5 \strokec5  \{ \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 10px\cf5 \strokec5  \cf11 \strokec11 12px\cf5 \strokec5 ; \cf8 \strokec8 border-bottom:\cf5 \strokec5  \cf11 \strokec11 1px\cf5 \strokec5  \cf9 \strokec9 solid\cf5 \strokec5  \cf12 \strokec12 #F1F5F9\cf5 \strokec5 ; \cf8 \strokec8 vertical-align:\cf5 \strokec5  \cf9 \strokec9 middle\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 tr:last-child\cf5 \strokec5  \cf10 \strokec10 td\cf5 \strokec5  \{ \cf8 \strokec8 border-bottom:\cf5 \strokec5  \cf9 \strokec9 none\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 tr:hover\cf5 \strokec5  \cf10 \strokec10 td\cf5 \strokec5  \{ \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #FAFBFC\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .empty-state\cf5 \strokec5  \{ \cf8 \strokec8 text-align:\cf5 \strokec5  \cf9 \strokec9 center\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #94A3B8\cf5 \strokec5 ; \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 28px\cf5 \strokec5 ; \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 12px\cf5 \strokec5 ; \}\cb1 \
+\
+\cb3     \cf13 \strokec13 /* \uc0\u9472 \u9472  Badges \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 .badge\cf5 \strokec5  \{\cb1 \
+\cb3       \cf8 \strokec8 display:\cf5 \strokec5  \cf9 \strokec9 inline-block\cf5 \strokec5 ; \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 2px\cf5 \strokec5  \cf11 \strokec11 9px\cf5 \strokec5 ; \cf8 \strokec8 border-radius:\cf5 \strokec5  \cf11 \strokec11 4px\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 10px\cf5 \strokec5 ; \cf8 \strokec8 font-weight:\cf5 \strokec5  \cf11 \strokec11 700\cf5 \strokec5 ; \cf8 \strokec8 white-space:\cf5 \strokec5  \cf9 \strokec9 nowrap\cf5 \strokec5 ;\cb1 \
+\cb3     \}\cb1 \
+\cb3     \cf10 \strokec10 .badge-blue\cf5 \strokec5    \{ \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #EFF6FF\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #1D4ED8\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .badge-green\cf5 \strokec5   \{ \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #ECFDF5\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #059669\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 .badge-orange\cf5 \strokec5  \{ \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #FFFBEB\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #D97706\cf5 \strokec5 ; \}\cb1 \
+\
+\cb3     \cf13 \strokec13 /* \uc0\u9472 \u9472  Toast \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 #toast\cf5 \strokec5  \{\cb1 \
+\cb3       \cf8 \strokec8 position:\cf5 \strokec5  \cf9 \strokec9 fixed\cf5 \strokec5 ; \cf8 \strokec8 bottom:\cf5 \strokec5  \cf11 \strokec11 24px\cf5 \strokec5 ; \cf8 \strokec8 right:\cf5 \strokec5  \cf11 \strokec11 24px\cf5 \strokec5 ; \cf8 \strokec8 z-index:\cf5 \strokec5  \cf11 \strokec11 9999\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 padding:\cf5 \strokec5  \cf11 \strokec11 12px\cf5 \strokec5  \cf11 \strokec11 18px\cf5 \strokec5 ; \cf8 \strokec8 border-radius:\cf5 \strokec5  \cf11 \strokec11 8px\cf5 \strokec5 ; \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 13px\cf5 \strokec5 ; \cf8 \strokec8 font-weight:\cf5 \strokec5  \cf11 \strokec11 600\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #fff\cf5 \strokec5 ; \cf8 \strokec8 display:\cf5 \strokec5  \cf9 \strokec9 none\cf5 \strokec5 ; \cf8 \strokec8 max-width:\cf5 \strokec5  \cf11 \strokec11 360px\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 box-shadow:\cf5 \strokec5  \cf11 \strokec11 0\cf5 \strokec5  \cf11 \strokec11 6px\cf5 \strokec5  \cf11 \strokec11 20px\cf5 \strokec5  \cf9 \strokec9 rgba(\cf11 \strokec11 0\cf5 \strokec5 ,\cf11 \strokec11 0\cf5 \strokec5 ,\cf11 \strokec11 0\cf5 \strokec5 ,\cf11 \strokec11 0.18\cf9 \strokec9 )\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 animation:\cf5 \strokec5  \cf9 \strokec9 slideIn\cf5 \strokec5  \cf11 \strokec11 0.25s\cf5 \strokec5  \cf9 \strokec9 ease\cf5 \strokec5 ;\cb1 \
+\cb3     \}\cb1 \
+\cb3     \cf7 \strokec7 @keyframes\cf5 \strokec5  \cf9 \strokec9 slideIn\cf5 \strokec5  \{ \cf9 \strokec9 from\cf5 \strokec5  \{ \cf8 \strokec8 transform:\cf5 \strokec5  \cf9 \strokec9 translateY(\cf11 \strokec11 16px\cf9 \strokec9 )\cf5 \strokec5 ; \cf8 \strokec8 opacity:\cf5 \strokec5  \cf11 \strokec11 0\cf5 \strokec5 ; \} \cf9 \strokec9 to\cf5 \strokec5  \{ \cf8 \strokec8 transform:\cf5 \strokec5  \cf9 \strokec9 none\cf5 \strokec5 ; \cf8 \strokec8 opacity:\cf5 \strokec5  \cf11 \strokec11 1\cf5 \strokec5 ; \} \}\cb1 \
+\cb3     \cf10 \strokec10 #toast.success\cf5 \strokec5  \{ \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #059669\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 #toast.error\cf5 \strokec5    \{ \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #DC2626\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf10 \strokec10 #toast.info\cf5 \strokec5     \{ \cf8 \strokec8 background:\cf5 \strokec5  \cf12 \strokec12 #1D4ED8\cf5 \strokec5 ; \}\cb1 \
+\
+\cb3     \cf13 \strokec13 /* \uc0\u9472 \u9472  Spinner \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 .spin\cf5 \strokec5  \{\cb1 \
+\cb3       \cf8 \strokec8 display:\cf5 \strokec5  \cf9 \strokec9 inline-block\cf5 \strokec5 ; \cf8 \strokec8 width:\cf5 \strokec5  \cf11 \strokec11 13px\cf5 \strokec5 ; \cf8 \strokec8 height:\cf5 \strokec5  \cf11 \strokec11 13px\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 border:\cf5 \strokec5  \cf11 \strokec11 2px\cf5 \strokec5  \cf9 \strokec9 solid\cf5 \strokec5  \cf9 \strokec9 rgba(\cf11 \strokec11 255\cf5 \strokec5 ,\cf11 \strokec11 255\cf5 \strokec5 ,\cf11 \strokec11 255\cf5 \strokec5 ,\cf11 \strokec11 0.4\cf9 \strokec9 )\cf5 \strokec5 ; \cf8 \strokec8 border-top-color:\cf5 \strokec5  \cf12 \strokec12 #fff\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 border-radius:\cf5 \strokec5  \cf11 \strokec11 50%\cf5 \strokec5 ; \cf8 \strokec8 animation:\cf5 \strokec5  \cf9 \strokec9 rotate\cf5 \strokec5  \cf11 \strokec11 0.7s\cf5 \strokec5  \cf9 \strokec9 linear\cf5 \strokec5  \cf9 \strokec9 infinite\cf5 \strokec5 ;\cb1 \
+\cb3     \}\cb1 \
+\cb3     \cf7 \strokec7 @keyframes\cf5 \strokec5  \cf9 \strokec9 rotate\cf5 \strokec5  \{ \cf9 \strokec9 to\cf5 \strokec5  \{ \cf8 \strokec8 transform:\cf5 \strokec5  \cf9 \strokec9 rotate(\cf11 \strokec11 360deg\cf9 \strokec9 )\cf5 \strokec5 ; \} \}\cb1 \
+\
+\cb3     \cf13 \strokec13 /* \uc0\u9472 \u9472  Preview link \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 .preview-link\cf5 \strokec5  \{\cb1 \
+\cb3       \cf8 \strokec8 display:\cf5 \strokec5  \cf9 \strokec9 inline-flex\cf5 \strokec5 ; \cf8 \strokec8 align-items:\cf5 \strokec5  \cf9 \strokec9 center\cf5 \strokec5 ; \cf8 \strokec8 gap:\cf5 \strokec5  \cf11 \strokec11 5px\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 11px\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #1D4ED8\cf5 \strokec5 ; \cf8 \strokec8 text-decoration:\cf5 \strokec5  \cf9 \strokec9 none\cf5 \strokec5 ; \cf8 \strokec8 font-weight:\cf5 \strokec5  \cf11 \strokec11 600\cf5 \strokec5 ;\cb1 \
+\cb3       \cf8 \strokec8 margin-top:\cf5 \strokec5  \cf11 \strokec11 8px\cf5 \strokec5 ;\cb1 \
+\cb3     \}\cb1 \
+\cb3     \cf10 \strokec10 .preview-link:hover\cf5 \strokec5  \{ \cf8 \strokec8 text-decoration:\cf5 \strokec5  \cf9 \strokec9 underline\cf5 \strokec5 ; \}\cb1 \
+\
+\cb3     \cf13 \strokec13 /* \uc0\u9472 \u9472  Divider \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 .divider\cf5 \strokec5  \{ \cf8 \strokec8 border:\cf5 \strokec5  \cf9 \strokec9 none\cf5 \strokec5 ; \cf8 \strokec8 border-top:\cf5 \strokec5  \cf11 \strokec11 1px\cf5 \strokec5  \cf9 \strokec9 solid\cf5 \strokec5  \cf12 \strokec12 #F1F5F9\cf5 \strokec5 ; \cf8 \strokec8 margin:\cf5 \strokec5  \cf11 \strokec11 14px\cf5 \strokec5  \cf11 \strokec11 0\cf5 \strokec5 ; \}\cb1 \
+\
+\cb3     \cf13 \strokec13 /* \uc0\u9472 \u9472  Info row \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  */\cf5 \cb1 \strokec5 \
+\cb3     \cf10 \strokec10 .info-row\cf5 \strokec5  \{ \cf8 \strokec8 font-size:\cf5 \strokec5  \cf11 \strokec11 11px\cf5 \strokec5 ; \cf8 \strokec8 color:\cf5 \strokec5  \cf12 \strokec12 #8A97AB\cf5 \strokec5 ; \cf8 \strokec8 margin-top:\cf5 \strokec5  \cf11 \strokec11 6px\cf5 \strokec5 ; \}\cb1 \
+\cb3   \cf6 \strokec6 </\cf7 \strokec7 style\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf6 \cb3 \strokec6 </\cf7 \strokec7 head\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cf6 \cb3 \strokec6 <\cf7 \strokec7 body\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf14 \cb3 \strokec14 <!-- \uc0\u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  HEADER \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  -->\cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf6 \cb3 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "header"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3   \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "header-inner"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 <\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 h1\cf6 \strokec6 >\cf5 \strokec5 Rapport de Maintenance\cf6 \strokec6 </\cf7 \strokec7 h1\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 p\cf6 \strokec6 >\cf5 \strokec5 Bureau des M\'e9thodes Daoui \'b7 OCP Group Khouribga\cf6 \strokec6 </\cf7 \strokec7 p\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "header-badge"\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "lbl-periode"\cf6 \strokec6 >\cf5 \strokec5 \'97\cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3   \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf6 \cb3 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\
+\cf6 \cb3 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "container"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3   \cf14 \strokec14 <!-- \uc0\u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  PARAM\'c8TRES \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  -->\cf5 \cb1 \strokec5 \
+\cb3   \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "card"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "card-title"\cf6 \strokec6 >\cf5 \strokec5 Param\'e8tres du rapport\cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "form-row"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "fg"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \strokec5 Mois\cf6 \strokec6 </\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 select\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "sel-mois"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "0"\cf6 \strokec6 >\cf5 \strokec5 Janvier\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 ><\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "1"\cf6 \strokec6 >\cf5 \strokec5 F\'e9vrier\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "2"\cf6 \strokec6 >\cf5 \strokec5 Mars\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 ><\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "3"\cf6 \strokec6 >\cf5 \strokec5 Avril\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "4"\cf6 \strokec6 >\cf5 \strokec5 Mai\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 ><\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "5"\cf6 \strokec6 >\cf5 \strokec5 Juin\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "6"\cf6 \strokec6 >\cf5 \strokec5 Juillet\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 ><\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "7"\cf6 \strokec6 >\cf5 \strokec5 Ao\'fbt\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "8"\cf6 \strokec6 >\cf5 \strokec5 Septembre\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 ><\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "9"\cf6 \strokec6 >\cf5 \strokec5 Octobre\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "10"\cf6 \strokec6 >\cf5 \strokec5 Novembre\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 ><\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "11"\cf6 \strokec6 >\cf5 \strokec5 D\'e9cembre\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 </\cf7 \strokec7 select\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "fg"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \strokec5 Ann\'e9e\cf6 \strokec6 </\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 input\cf5 \strokec5  \cf8 \strokec8 type\cf6 \strokec6 =\cf9 \strokec9 "number"\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "inp-annee"\cf5 \strokec5  \cf8 \strokec8 min\cf6 \strokec6 =\cf9 \strokec9 "2020"\cf5 \strokec5  \cf8 \strokec8 max\cf6 \strokec6 =\cf9 \strokec9 "2099"\cf5 \strokec5  \cf6 \strokec6 />\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "fg"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \strokec5 Mode\cf6 \strokec6 </\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 select\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "sel-mode"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "month"\cf6 \strokec6 >\cf5 \strokec5 Mensuel\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "year"\cf6 \strokec6 >\cf5 \strokec5 Annuel\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 </\cf7 \strokec7 select\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "form-row"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "fg full"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \strokec5 Destinataires (s\'e9par\'e9s par des virgules)\cf6 \strokec6 </\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 input\cf5 \strokec5  \cf8 \strokec8 type\cf6 \strokec6 =\cf9 \strokec9 "text"\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "inp-emails"\cf5 \strokec5  \cf8 \strokec8 placeholder\cf6 \strokec6 =\cf9 \strokec9 "email@ocp.ma, autre@ocp.ma"\cf5 \strokec5  \cf6 \strokec6 />\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3   \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\
+\cb3   \cf14 \strokec14 <!-- \uc0\u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  ACTIONS (GRILLE 2 COL) \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  -->\cf5 \cb1 \strokec5 \
+\cb3   \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "grid-2"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\
+\cb3     \cf14 \strokec14 <!-- \uc0\u9472 \u9472 \u9472  Envoi instantan\'e9 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  -->\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "card"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "card-title"\cf6 \strokec6 >\cf5 \strokec5 Envoi instantan\'e9\cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 p\cf5 \strokec5  \cf8 \strokec8 style\cf6 \strokec6 =\cf9 \strokec9 "font-size:12px;color:#475569;line-height:1.6;"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         G\'e9n\'e8re et envoie le rapport pour la p\'e9riode s\'e9lectionn\'e9e ci-dessus.\cb1 \
+\cb3       \cf6 \strokec6 </\cf7 \strokec7 p\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 hr\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "divider"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "preview-row"\cf5 \strokec5  \cf8 \strokec8 style\cf6 \strokec6 =\cf9 \strokec9 "margin-bottom:10px;display:none;"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 a\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "preview-link"\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "preview-link"\cf5 \strokec5  \cf8 \strokec8 href\cf6 \strokec6 =\cf9 \strokec9 "#"\cf5 \strokec5  \cf8 \strokec8 target\cf6 \strokec6 =\cf9 \strokec9 "_blank"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \uc0\u8599  Pr\'e9visualiser le rapport\cb1 \
+\cb3         \cf6 \strokec6 </\cf7 \strokec7 a\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 button\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "btn-envoyer"\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "btn btn-blue btn-full"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \uc0\u9654  Envoyer maintenant\cb1 \
+\cb3       \cf6 \strokec6 </\cf7 \strokec7 button\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 p\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "info-row"\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "last-sent"\cf6 \strokec6 ></\cf7 \strokec7 p\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\
+\cb3     \cf14 \strokec14 <!-- \uc0\u9472 \u9472 \u9472  Planification \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472  -->\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "card"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "card-title"\cf6 \strokec6 >\cf5 \strokec5 Planification automatique\cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\
+\cb3       \cf14 \strokec14 <!-- Tabs fr\'e9quence -->\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "freq-tabs"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "freq-tab active"\cf5 \strokec5  \cf8 \strokec8 data-freq\cf6 \strokec6 =\cf9 \strokec9 "unique"\cf6 \strokec6 >\cf5 \strokec5 Unique\cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "freq-tab"\cf5 \strokec5  \cf8 \strokec8 data-freq\cf6 \strokec6 =\cf9 \strokec9 "mensuel"\cf6 \strokec6 >\cf5 \strokec5 Mensuel\cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "freq-tab"\cf5 \strokec5  \cf8 \strokec8 data-freq\cf6 \strokec6 =\cf9 \strokec9 "hebdomadaire"\cf6 \strokec6 >\cf5 \strokec5 Hebdo\cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\
+\cb3       \cf14 \strokec14 <!-- Panel : Unique -->\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "panel-unique"\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "freq-panel active"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "period-note"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           Le rapport sera envoy\'e9 \cf6 \strokec6 <\cf7 \strokec7 b\cf6 \strokec6 >\cf5 \strokec5 une seule fois\cf6 \strokec6 </\cf7 \strokec7 b\cf6 \strokec6 >\cf5 \strokec5  \'e0 la date et l'heure choisies,\cb1 \
+\cb3           pour la p\'e9riode s\'e9lectionn\'e9e dans les param\'e8tres.\cb1 \
+\cb3         \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "fg"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \strokec5 Date et heure d'envoi\cf6 \strokec6 </\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 input\cf5 \strokec5  \cf8 \strokec8 type\cf6 \strokec6 =\cf9 \strokec9 "datetime-local"\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "inp-datetime-unique"\cf5 \strokec5  \cf6 \strokec6 />\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\
+\cb3       \cf14 \strokec14 <!-- Panel : Mensuel -->\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "panel-mensuel"\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "freq-panel"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "period-note"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           Le rapport sera envoy\'e9 \cf6 \strokec6 <\cf7 \strokec7 b\cf6 \strokec6 >\cf5 \strokec5 chaque mois\cf6 \strokec6 </\cf7 \strokec7 b\cf6 \strokec6 >\cf5 \strokec5 , le jour choisi.\cb1 \
+\cb3         \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "form-row"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "fg"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3             \cf6 \strokec6 <\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \strokec5 Jour du mois\cf6 \strokec6 </\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3             \cf6 \strokec6 <\cf7 \strokec7 input\cf5 \strokec5  \cf8 \strokec8 type\cf6 \strokec6 =\cf9 \strokec9 "number"\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "inp-jour-mois"\cf5 \strokec5  \cf8 \strokec8 min\cf6 \strokec6 =\cf9 \strokec9 "1"\cf5 \strokec5  \cf8 \strokec8 max\cf6 \strokec6 =\cf9 \strokec9 "28"\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "1"\cf5 \strokec5  \cf6 \strokec6 />\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "fg"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3             \cf6 \strokec6 <\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \strokec5 Heure (0\'9623)\cf6 \strokec6 </\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3             \cf6 \strokec6 <\cf7 \strokec7 input\cf5 \strokec5  \cf8 \strokec8 type\cf6 \strokec6 =\cf9 \strokec9 "number"\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "inp-heure-mensuel"\cf5 \strokec5  \cf8 \strokec8 min\cf6 \strokec6 =\cf9 \strokec9 "0"\cf5 \strokec5  \cf8 \strokec8 max\cf6 \strokec6 =\cf9 \strokec9 "23"\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "8"\cf5 \strokec5  \cf6 \strokec6 />\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "fg"\cf5 \strokec5  \cf8 \strokec8 style\cf6 \strokec6 =\cf9 \strokec9 "margin-bottom:4px;"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \strokec5 P\'e9riode du rapport\cf6 \strokec6 </\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 select\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "sel-mo-relatif-mensuel"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3             \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "0"\cf6 \strokec6 >\cf5 \strokec5 Mois courant (lors de l'ex\'e9cution)\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3             \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "-1"\cf6 \strokec6 >\cf5 \strokec5 Mois pr\'e9c\'e9dent\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 </\cf7 \strokec7 select\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\
+\cb3       \cf14 \strokec14 <!-- Panel : Hebdomadaire -->\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "panel-hebdomadaire"\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "freq-panel"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "period-note"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           Le rapport sera envoy\'e9 \cf6 \strokec6 <\cf7 \strokec7 b\cf6 \strokec6 >\cf5 \strokec5 chaque semaine\cf6 \strokec6 </\cf7 \strokec7 b\cf6 \strokec6 >\cf5 \strokec5 , le jour choisi.\cb1 \
+\cb3         \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "form-row"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "fg"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3             \cf6 \strokec6 <\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \strokec5 Jour de la semaine\cf6 \strokec6 </\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3             \cf6 \strokec6 <\cf7 \strokec7 select\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "sel-jour-semaine"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3               \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "MONDAY"\cf6 \strokec6 >\cf5 \strokec5 Lundi\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3               \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "TUESDAY"\cf6 \strokec6 >\cf5 \strokec5 Mardi\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3               \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "WEDNESDAY"\cf6 \strokec6 >\cf5 \strokec5 Mercredi\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3               \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "THURSDAY"\cf6 \strokec6 >\cf5 \strokec5 Jeudi\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3               \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "FRIDAY"\cf6 \strokec6 >\cf5 \strokec5 Vendredi\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3             \cf6 \strokec6 </\cf7 \strokec7 select\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "fg"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3             \cf6 \strokec6 <\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \strokec5 Heure (0\'9623)\cf6 \strokec6 </\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3             \cf6 \strokec6 <\cf7 \strokec7 input\cf5 \strokec5  \cf8 \strokec8 type\cf6 \strokec6 =\cf9 \strokec9 "number"\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "inp-heure-hebdo"\cf5 \strokec5  \cf8 \strokec8 min\cf6 \strokec6 =\cf9 \strokec9 "0"\cf5 \strokec5  \cf8 \strokec8 max\cf6 \strokec6 =\cf9 \strokec9 "23"\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "8"\cf5 \strokec5  \cf6 \strokec6 />\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "fg"\cf5 \strokec5  \cf8 \strokec8 style\cf6 \strokec6 =\cf9 \strokec9 "margin-bottom:4px;"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \strokec5 P\'e9riode du rapport\cf6 \strokec6 </\cf7 \strokec7 label\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 <\cf7 \strokec7 select\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "sel-mo-relatif-hebdo"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3             \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "0"\cf6 \strokec6 >\cf5 \strokec5 Mois courant (lors de l'ex\'e9cution)\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3             \cf6 \strokec6 <\cf7 \strokec7 option\cf5 \strokec5  \cf8 \strokec8 value\cf6 \strokec6 =\cf9 \strokec9 "-1"\cf6 \strokec6 >\cf5 \strokec5 Mois pr\'e9c\'e9dent\cf6 \strokec6 </\cf7 \strokec7 option\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3           \cf6 \strokec6 </\cf7 \strokec7 select\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 button\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "btn-planifier"\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "btn btn-green btn-full"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \uc0\u9201  Planifier l'envoi\cb1 \
+\cb3       \cf6 \strokec6 </\cf7 \strokec7 button\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\
+\cb3   \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\
+\cb3   \cf14 \strokec14 <!-- \uc0\u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  PLANIFICATIONS ACTIVES \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  -->\cf5 \cb1 \strokec5 \
+\cb3   \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "card"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 style\cf6 \strokec6 =\cf9 \strokec9 "display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "card-title"\cf5 \strokec5  \cf8 \strokec8 style\cf6 \strokec6 =\cf9 \strokec9 "margin-bottom:0;border-bottom:none;padding-bottom:0;"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         Planifications actives\cb1 \
+\cb3       \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 button\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "btn btn-ghost"\cf5 \strokec5  \cf8 \strokec8 style\cf6 \strokec6 =\cf9 \strokec9 "font-size:11px;padding:6px 12px;"\cf5 \strokec5  \cf8 \strokec8 onclick\cf6 \strokec6 =\cf9 \strokec9 "chargerPlanifications()"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3         \uc0\u8634  Actualiser\cb1 \
+\cb3       \cf6 \strokec6 </\cf7 \strokec7 button\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "planif-container"\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "table-wrap"\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3       \cf6 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 class\cf6 \strokec6 =\cf9 \strokec9 "empty-state"\cf6 \strokec6 >\cf5 \strokec5 Chargement\'85\cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3     \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cb3   \cf6 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf6 \cb3 \strokec6 </\cf7 \strokec7 div\cf6 \strokec6 >\cf14 \strokec14 <!-- /container -->\cf5 \cb1 \strokec5 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf14 \cb3 \strokec14 <!-- Toast -->\cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf6 \cb3 \strokec6 <\cf7 \strokec7 div\cf5 \strokec5  \cf8 \strokec8 id\cf6 \strokec6 =\cf9 \strokec9 "toast"\cf6 \strokec6 ></\cf7 \strokec7 div\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf14 \cb3 \strokec14 <!-- \uc0\u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  SCRIPTS \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  -->\cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf6 \cb3 \strokec6 <\cf7 \strokec7 script\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf13 \cb3 \strokec13 // \uc0\u9472 \u9472  Constantes \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb3 \strokec7 var\cf5 \strokec5  \cf15 \strokec15 MOIS_FR\cf5 \strokec5  = [\cf9 \strokec9 'Janvier'\cf5 \strokec5 ,\cf9 \strokec9 'F\'e9vrier'\cf5 \strokec5 ,\cf9 \strokec9 'Mars'\cf5 \strokec5 ,\cf9 \strokec9 'Avril'\cf5 \strokec5 ,\cf9 \strokec9 'Mai'\cf5 \strokec5 ,\cf9 \strokec9 'Juin'\cf5 \strokec5 ,\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3                \cf9 \strokec9 'Juillet'\cf5 \strokec5 ,\cf9 \strokec9 'Ao\'fbt'\cf5 \strokec5 ,\cf9 \strokec9 'Septembre'\cf5 \strokec5 ,\cf9 \strokec9 'Octobre'\cf5 \strokec5 ,\cf9 \strokec9 'Novembre'\cf5 \strokec5 ,\cf9 \strokec9 'D\'e9cembre'\cf5 \strokec5 ];\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb3 \strokec7 var\cf5 \strokec5  \cf15 \strokec15 JOURS_FR\cf5 \strokec5  = \{ \cf15 \strokec15 MONDAY\cf5 \strokec5 :\cf9 \strokec9 'Lundi'\cf5 \strokec5 , \cf15 \strokec15 TUESDAY\cf5 \strokec5 :\cf9 \strokec9 'Mardi'\cf5 \strokec5 , \cf15 \strokec15 WEDNESDAY\cf5 \strokec5 :\cf9 \strokec9 'Mercredi'\cf5 \strokec5 ,\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3                  \cf15 \strokec15 THURSDAY\cf5 \strokec5 :\cf9 \strokec9 'Jeudi'\cf5 \strokec5 , \cf15 \strokec15 FRIDAY\cf5 \strokec5 :\cf9 \strokec9 'Vendredi'\cf5 \strokec5 , \cf15 \strokec15 SATURDAY\cf5 \strokec5 :\cf9 \strokec9 'Samedi'\cf5 \strokec5 , \cf15 \strokec15 SUNDAY\cf5 \strokec5 :\cf9 \strokec9 'Dimanche'\cf5 \strokec5  \};\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb3 \strokec7 var\cf5 \strokec5  \cf15 \strokec15 FREQ_FR\cf5 \strokec5   = \{ \cf16 \strokec16 unique\cf5 \strokec5 :\cf9 \strokec9 'Unique'\cf5 \strokec5 , \cf16 \strokec16 mensuel\cf5 \strokec5 :\cf9 \strokec9 'Mensuel'\cf5 \strokec5 , \cf16 \strokec16 hebdomadaire\cf5 \strokec5 :\cf9 \strokec9 'Hebdomadaire'\cf5 \strokec5  \};\cb1 \
+\cf7 \cb3 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 currentFreq\cf5 \strokec5  = \cf9 \strokec9 'unique'\cf5 \strokec5 ;\cb1 \
+\cf7 \cb3 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 webAppUrl\cf5 \strokec5    = \cf9 \strokec9 ''\cf5 \strokec5 ;   \cf13 \strokec13 // sera rempli dynamiquement\cf5 \cb1 \strokec5 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf13 \cb3 \strokec13 // \uc0\u9472 \u9472  Toast \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb3 \strokec7 function\cf5 \strokec5  \cf16 \strokec16 toast\cf5 \strokec5 (\cf16 \strokec16 msg\cf5 \strokec5 , \cf16 \strokec16 type\cf5 \strokec5 ) \{\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3   \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 el\cf5 \strokec5  = \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'toast'\cf5 \strokec5 );\cb1 \
+\cb3   \cf16 \strokec16 el\cf5 \strokec5 .\cf16 \strokec16 textContent\cf5 \strokec5  = \cf16 \strokec16 msg\cf5 \strokec5 ;\cb1 \
+\cb3   \cf16 \strokec16 el\cf5 \strokec5 .\cf16 \strokec16 className\cf5 \strokec5    = \cf16 \strokec16 type\cf5 \strokec5  || \cf9 \strokec9 'info'\cf5 \strokec5 ;\cb1 \
+\cb3   \cf16 \strokec16 el\cf5 \strokec5 .\cf16 \strokec16 style\cf5 \strokec5 .\cf16 \strokec16 display\cf5 \strokec5  = \cf9 \strokec9 'block'\cf5 \strokec5 ;\cb1 \
+\cb3   \cf16 \strokec16 clearTimeout\cf5 \strokec5 (\cf16 \strokec16 el\cf5 \strokec5 .\cf16 \strokec16 _t\cf5 \strokec5 );\cb1 \
+\cb3   \cf16 \strokec16 el\cf5 \strokec5 .\cf16 \strokec16 _t\cf5 \strokec5  = \cf16 \strokec16 setTimeout\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 () \{ \cf16 \strokec16 el\cf5 \strokec5 .\cf16 \strokec16 style\cf5 \strokec5 .\cf16 \strokec16 display\cf5 \strokec5  = \cf9 \strokec9 'none'\cf5 \strokec5 ; \}, \cf8 \strokec8 4500\cf5 \strokec5 );\cb1 \
+\cb3 \}\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf13 \cb3 \strokec13 // \uc0\u9472 \u9472  P\'e9riode en cours \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb3 \strokec7 function\cf5 \strokec5  \cf16 \strokec16 updatePeriodeLabel\cf5 \strokec5 () \{\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3   \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 mo\cf5 \strokec5    = \cf16 \strokec16 parseInt\cf5 \strokec5 (\cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'sel-mois'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5 );\cb1 \
+\cb3   \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 yr\cf5 \strokec5    = \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'inp-annee'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5 ;\cb1 \
+\cb3   \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 mode\cf5 \strokec5  = \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'sel-mode'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5 ;\cb1 \
+\cb3   \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 lbl\cf5 \strokec5   = \cf16 \strokec16 mode\cf5 \strokec5  === \cf9 \strokec9 'year'\cf5 \strokec5  ? \cf9 \strokec9 'Ann\'e9e '\cf5 \strokec5  + \cf16 \strokec16 yr\cf5 \strokec5  : \cf15 \strokec15 MOIS_FR\cf5 \strokec5 [\cf16 \strokec16 mo\cf5 \strokec5 ] + \cf9 \strokec9 ' '\cf5 \strokec5  + \cf16 \strokec16 yr\cf5 \strokec5 ;\cb1 \
+\cb3   \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'lbl-periode'\cf5 \strokec5 ).\cf16 \strokec16 textContent\cf5 \strokec5  = \cf16 \strokec16 lbl\cf5 \strokec5 ;\cb1 \
+\cb3   \cf13 \strokec13 // Pr\'e9visualisation\cf5 \cb1 \strokec5 \
+\cb3   \cf7 \strokec7 if\cf5 \strokec5  (\cf16 \strokec16 webAppUrl\cf5 \strokec5 ) \{\cb1 \
+\cb3     \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 link\cf5 \strokec5  = \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'preview-link'\cf5 \strokec5 );\cb1 \
+\cb3     \cf16 \strokec16 link\cf5 \strokec5 .\cf16 \strokec16 href\cf5 \strokec5  = \cf16 \strokec16 webAppUrl\cf5 \strokec5  + \cf9 \strokec9 '?action=preview&mo='\cf5 \strokec5  + \cf16 \strokec16 mo\cf5 \strokec5  + \cf9 \strokec9 '&yr='\cf5 \strokec5  + \cf16 \strokec16 yr\cf5 \strokec5  + \cf9 \strokec9 '&mode='\cf5 \strokec5  + \cf16 \strokec16 mode\cf5 \strokec5 ;\cb1 \
+\cb3     \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'preview-row'\cf5 \strokec5 ).\cf16 \strokec16 style\cf5 \strokec5 .\cf16 \strokec16 display\cf5 \strokec5  = \cf9 \strokec9 'block'\cf5 \strokec5 ;\cb1 \
+\cb3   \}\cb1 \
+\cb3 \}\cb1 \
+\cb3 [\cf9 \strokec9 'sel-mois'\cf5 \strokec5 ,\cf9 \strokec9 'inp-annee'\cf5 \strokec5 ,\cf9 \strokec9 'sel-mode'\cf5 \strokec5 ].\cf16 \strokec16 forEach\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 id\cf5 \strokec5 ) \{\cb1 \
+\cb3   \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf16 \strokec16 id\cf5 \strokec5 ).\cf16 \strokec16 addEventListener\cf5 \strokec5 (\cf9 \strokec9 'change'\cf5 \strokec5 , \cf16 \strokec16 updatePeriodeLabel\cf5 \strokec5 );\cb1 \
+\cb3 \});\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf13 \cb3 \strokec13 // \uc0\u9472 \u9472  Tabs fr\'e9quence \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf16 \cb3 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 querySelectorAll\cf5 \strokec5 (\cf9 \strokec9 '.freq-tab'\cf5 \strokec5 ).\cf16 \strokec16 forEach\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 tab\cf5 \strokec5 ) \{\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3   \cf16 \strokec16 tab\cf5 \strokec5 .\cf16 \strokec16 addEventListener\cf5 \strokec5 (\cf9 \strokec9 'click'\cf5 \strokec5 , \cf7 \strokec7 function\cf5 \strokec5 () \{\cb1 \
+\cb3     \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 querySelectorAll\cf5 \strokec5 (\cf9 \strokec9 '.freq-tab'\cf5 \strokec5 ).\cf16 \strokec16 forEach\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 t\cf5 \strokec5 ) \{ \cf16 \strokec16 t\cf5 \strokec5 .\cf16 \strokec16 classList\cf5 \strokec5 .\cf16 \strokec16 remove\cf5 \strokec5 (\cf9 \strokec9 'active'\cf5 \strokec5 ); \});\cb1 \
+\cb3     \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 querySelectorAll\cf5 \strokec5 (\cf9 \strokec9 '.freq-panel'\cf5 \strokec5 ).\cf16 \strokec16 forEach\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 p\cf5 \strokec5 ) \{ \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 classList\cf5 \strokec5 .\cf16 \strokec16 remove\cf5 \strokec5 (\cf9 \strokec9 'active'\cf5 \strokec5 ); \});\cb1 \
+\cb3     \cf16 \strokec16 tab\cf5 \strokec5 .\cf16 \strokec16 classList\cf5 \strokec5 .\cf16 \strokec16 add\cf5 \strokec5 (\cf9 \strokec9 'active'\cf5 \strokec5 );\cb1 \
+\cb3     \cf16 \strokec16 currentFreq\cf5 \strokec5  = \cf16 \strokec16 tab\cf5 \strokec5 .\cf16 \strokec16 dataset\cf5 \strokec5 .\cf16 \strokec16 freq\cf5 \strokec5 ;\cb1 \
+\cb3     \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'panel-'\cf5 \strokec5  + \cf16 \strokec16 currentFreq\cf5 \strokec5 ).\cf16 \strokec16 classList\cf5 \strokec5 .\cf16 \strokec16 add\cf5 \strokec5 (\cf9 \strokec9 'active'\cf5 \strokec5 );\cb1 \
+\cb3   \});\cb1 \
+\cb3 \});\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf13 \cb3 \strokec13 // \uc0\u9472 \u9472  Chargement des d\'e9fauts \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf16 \cb3 \strokec16 google\cf5 \strokec5 .\cf16 \strokec16 script\cf5 \strokec5 .\cf16 \strokec16 run\cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3   .\cf16 \strokec16 withSuccessHandler\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 cfg\cf5 \strokec5 ) \{\cb1 \
+\cb3     \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 now\cf5 \strokec5  = \cf7 \strokec7 new\cf5 \strokec5  \cf15 \strokec15 Date\cf5 \strokec5 ();\cb1 \
+\cb3     \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'sel-mois'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5   = \cf16 \strokec16 cfg\cf5 \strokec5 .\cf16 \strokec16 mo\cf5 \strokec5  !== \cf7 \strokec7 undefined\cf5 \strokec5  ? \cf16 \strokec16 cfg\cf5 \strokec5 .\cf16 \strokec16 mo\cf5 \strokec5  : \cf16 \strokec16 now\cf5 \strokec5 .\cf16 \strokec16 getMonth\cf5 \strokec5 ();\cb1 \
+\cb3     \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'inp-annee'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5  = \cf16 \strokec16 cfg\cf5 \strokec5 .\cf16 \strokec16 yr\cf5 \strokec5   || \cf16 \strokec16 now\cf5 \strokec5 .\cf16 \strokec16 getFullYear\cf5 \strokec5 ();\cb1 \
+\cb3     \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'sel-mode'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5   = \cf16 \strokec16 cfg\cf5 \strokec5 .\cf16 \strokec16 mode\cf5 \strokec5  || \cf9 \strokec9 'month'\cf5 \strokec5 ;\cb1 \
+\cb3     \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'inp-emails'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5  = \cf16 \strokec16 cfg\cf5 \strokec5 .\cf16 \strokec16 emails\cf5 \strokec5  || \cf9 \strokec9 ''\cf5 \strokec5 ;\cb1 \
+\cb3     \cf13 \strokec13 // Date par d\'e9faut pour "unique" = maintenant + 10 min\cf5 \cb1 \strokec5 \
+\cb3     \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 d\cf5 \strokec5  = \cf7 \strokec7 new\cf5 \strokec5  \cf15 \strokec15 Date\cf5 \strokec5 (\cf16 \strokec16 now\cf5 \strokec5 .\cf16 \strokec16 getTime\cf5 \strokec5 () + \cf8 \strokec8 10\cf5 \strokec5  * \cf8 \strokec8 60000\cf5 \strokec5 );\cb1 \
+\cb3     \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'inp-datetime-unique'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5  =\cb1 \
+\cb3       \cf16 \strokec16 d\cf5 \strokec5 .\cf16 \strokec16 getFullYear\cf5 \strokec5 () + \cf9 \strokec9 '-'\cf5 \strokec5  + \cf16 \strokec16 pad\cf5 \strokec5 (\cf16 \strokec16 d\cf5 \strokec5 .\cf16 \strokec16 getMonth\cf5 \strokec5 ()+\cf8 \strokec8 1\cf5 \strokec5 ) + \cf9 \strokec9 '-'\cf5 \strokec5  + \cf16 \strokec16 pad\cf5 \strokec5 (\cf16 \strokec16 d\cf5 \strokec5 .\cf16 \strokec16 getDate\cf5 \strokec5 ()) +\cb1 \
+\cb3       \cf9 \strokec9 'T'\cf5 \strokec5  + \cf16 \strokec16 pad\cf5 \strokec5 (\cf16 \strokec16 d\cf5 \strokec5 .\cf16 \strokec16 getHours\cf5 \strokec5 ()) + \cf9 \strokec9 ':'\cf5 \strokec5  + \cf16 \strokec16 pad\cf5 \strokec5 (\cf16 \strokec16 d\cf5 \strokec5 .\cf16 \strokec16 getMinutes\cf5 \strokec5 ());\cb1 \
+\cb3     \cf16 \strokec16 updatePeriodeLabel\cf5 \strokec5 ();\cb1 \
+\cb3   \})\cb1 \
+\cb3   .\cf16 \strokec16 withFailureHandler\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 e\cf5 \strokec5 ) \{ \cf16 \strokec16 console\cf5 \strokec5 .\cf16 \strokec16 error\cf5 \strokec5 (\cf9 \strokec9 'getConfigInterfaceDefaut:'\cf5 \strokec5 , \cf16 \strokec16 e\cf5 \strokec5 ); \})\cb1 \
+\cb3   .\cf16 \strokec16 getConfigInterfaceDefaut\cf5 \strokec5 ();\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf13 \cb3 \strokec13 // R\'e9cup\'e9rer l'URL du Web App (pour le lien de pr\'e9visualisation)\cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb3 \strokec7 try\cf5 \strokec5  \{\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3   \cf16 \strokec16 webAppUrl\cf5 \strokec5  = \cf16 \strokec16 google\cf5 \strokec5 .\cf16 \strokec16 script\cf5 \strokec5 .\cf16 \strokec16 getScriptUrl\cf5 \strokec5  ? \cf16 \strokec16 google\cf5 \strokec5 .\cf16 \strokec16 script\cf5 \strokec5 .\cf16 \strokec16 getScriptUrl\cf5 \strokec5 () : \cf9 \strokec9 ''\cf5 \strokec5 ;\cb1 \
+\cb3 \} \cf7 \strokec7 catch\cf5 \strokec5 (\cf16 \strokec16 e\cf5 \strokec5 ) \{\}\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf16 \cb3 \strokec16 google\cf5 \strokec5 .\cf16 \strokec16 script\cf5 \strokec5 .\cf16 \strokec16 url\cf5 \strokec5 .\cf16 \strokec16 getLocation\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 loc\cf5 \strokec5 ) \{\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3   \cf16 \strokec16 webAppUrl\cf5 \strokec5  = \cf16 \strokec16 loc\cf5 \strokec5 .\cf16 \strokec16 href\cf5 \strokec5 .\cf16 \strokec16 split\cf5 \strokec5 (\cf9 \strokec9 '?'\cf5 \strokec5 )[\cf8 \strokec8 0\cf5 \strokec5 ];\cb1 \
+\cb3   \cf16 \strokec16 updatePeriodeLabel\cf5 \strokec5 ();\cb1 \
+\cb3 \});\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb3 \strokec7 function\cf5 \strokec5  \cf16 \strokec16 pad\cf5 \strokec5 (\cf16 \strokec16 n\cf5 \strokec5 ) \{ \cf7 \strokec7 return\cf5 \strokec5  \cf15 \strokec15 String\cf5 \strokec5 (\cf16 \strokec16 n\cf5 \strokec5 ).\cf16 \strokec16 padStart\cf5 \strokec5 (\cf8 \strokec8 2\cf5 \strokec5 , \cf9 \strokec9 '0'\cf5 \strokec5 ); \}\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf13 \cb3 \strokec13 // \uc0\u9472 \u9472  Collecte des param\'e8tres de base \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb3 \strokec7 function\cf5 \strokec5  \cf16 \strokec16 getBaseParams\cf5 \strokec5 () \{\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3   \cf7 \strokec7 return\cf5 \strokec5  \{\cb1 \
+\cb3     \cf16 \strokec16 mo\cf5 \strokec5 :     \cf16 \strokec16 parseInt\cf5 \strokec5 (\cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'sel-mois'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5 ),\cb1 \
+\cb3     \cf16 \strokec16 yr\cf5 \strokec5 :     \cf16 \strokec16 parseInt\cf5 \strokec5 (\cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'inp-annee'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5 ),\cb1 \
+\cb3     \cf16 \strokec16 mode\cf5 \strokec5 :   \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'sel-mode'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5 ,\cb1 \
+\cb3     \cf16 \strokec16 emails\cf5 \strokec5 : \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'inp-emails'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5 .\cf16 \strokec16 trim\cf5 \strokec5 ()\cb1 \
+\cb3   \};\cb1 \
+\cb3 \}\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf13 \cb3 \strokec13 // \uc0\u9472 \u9472  Envoi instantan\'e9 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf16 \cb3 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'btn-envoyer'\cf5 \strokec5 ).\cf16 \strokec16 addEventListener\cf5 \strokec5 (\cf9 \strokec9 'click'\cf5 \strokec5 , \cf7 \strokec7 function\cf5 \strokec5 () \{\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3   \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 p\cf5 \strokec5  = \cf16 \strokec16 getBaseParams\cf5 \strokec5 ();\cb1 \
+\cb3   \cf7 \strokec7 if\cf5 \strokec5  (!\cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 emails\cf5 \strokec5 ) \{ \cf16 \strokec16 toast\cf5 \strokec5 (\cf9 \strokec9 'Veuillez saisir au moins un destinataire.'\cf5 \strokec5 , \cf9 \strokec9 'error'\cf5 \strokec5 ); \cf7 \strokec7 return\cf5 \strokec5 ; \}\cb1 \
+\
+\cb3   \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 btn\cf5 \strokec5  = \cf7 \strokec7 this\cf5 \strokec5 ;\cb1 \
+\cb3   \cf16 \strokec16 btn\cf5 \strokec5 .\cf16 \strokec16 disabled\cf5 \strokec5  = \cf7 \strokec7 true\cf5 \strokec5 ;\cb1 \
+\cb3   \cf16 \strokec16 btn\cf5 \strokec5 .\cf16 \strokec16 innerHTML\cf5 \strokec5  = \cf9 \strokec9 '<span class="spin"></span> G\'e9n\'e9ration en cours\'85'\cf5 \strokec5 ;\cb1 \
+\
+\cb3   \cf16 \strokec16 google\cf5 \strokec5 .\cf16 \strokec16 script\cf5 \strokec5 .\cf16 \strokec16 run\cf5 \cb1 \strokec5 \
+\cb3     .\cf16 \strokec16 withSuccessHandler\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 res\cf5 \strokec5 ) \{\cb1 \
+\cb3       \cf16 \strokec16 btn\cf5 \strokec5 .\cf16 \strokec16 disabled\cf5 \strokec5  = \cf7 \strokec7 false\cf5 \strokec5 ;\cb1 \
+\cb3       \cf16 \strokec16 btn\cf5 \strokec5 .\cf16 \strokec16 innerHTML\cf5 \strokec5  = \cf9 \strokec9 '\uc0\u9654  Envoyer maintenant'\cf5 \strokec5 ;\cb1 \
+\cb3       \cf7 \strokec7 if\cf5 \strokec5  (\cf16 \strokec16 res\cf5 \strokec5 .\cf16 \strokec16 ok\cf5 \strokec5 ) \{\cb1 \
+\cb3         \cf16 \strokec16 toast\cf5 \strokec5 (\cf16 \strokec16 res\cf5 \strokec5 .\cf16 \strokec16 msg\cf5 \strokec5 , \cf9 \strokec9 'success'\cf5 \strokec5 );\cb1 \
+\cb3         \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'last-sent'\cf5 \strokec5 ).\cf16 \strokec16 textContent\cf5 \strokec5  =\cb1 \
+\cb3           \cf9 \strokec9 'Dernier envoi : '\cf5 \strokec5  + \cf7 \strokec7 new\cf5 \strokec5  \cf15 \strokec15 Date\cf5 \strokec5 ().\cf16 \strokec16 toLocaleString\cf5 \strokec5 (\cf9 \strokec9 'fr-FR'\cf5 \strokec5 );\cb1 \
+\cb3       \} \cf7 \strokec7 else\cf5 \strokec5  \{\cb1 \
+\cb3         \cf16 \strokec16 toast\cf5 \strokec5 (\cf9 \strokec9 'Erreur : '\cf5 \strokec5  + \cf16 \strokec16 res\cf5 \strokec5 .\cf16 \strokec16 msg\cf5 \strokec5 , \cf9 \strokec9 'error'\cf5 \strokec5 );\cb1 \
+\cb3       \}\cb1 \
+\cb3     \})\cb1 \
+\cb3     .\cf16 \strokec16 withFailureHandler\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 e\cf5 \strokec5 ) \{\cb1 \
+\cb3       \cf16 \strokec16 btn\cf5 \strokec5 .\cf16 \strokec16 disabled\cf5 \strokec5  = \cf7 \strokec7 false\cf5 \strokec5 ;\cb1 \
+\cb3       \cf16 \strokec16 btn\cf5 \strokec5 .\cf16 \strokec16 innerHTML\cf5 \strokec5  = \cf9 \strokec9 '\uc0\u9654  Envoyer maintenant'\cf5 \strokec5 ;\cb1 \
+\cb3       \cf16 \strokec16 toast\cf5 \strokec5 (\cf9 \strokec9 'Erreur serveur : '\cf5 \strokec5  + \cf16 \strokec16 e\cf5 \strokec5 .\cf16 \strokec16 message\cf5 \strokec5 , \cf9 \strokec9 'error'\cf5 \strokec5 );\cb1 \
+\cb3     \})\cb1 \
+\cb3     .\cf16 \strokec16 envoyerRapportDepuisInterface\cf5 \strokec5 (\cf16 \strokec16 p\cf5 \strokec5 );\cb1 \
+\cb3 \});\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf13 \cb3 \strokec13 // \uc0\u9472 \u9472  Planification \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf16 \cb3 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'btn-planifier'\cf5 \strokec5 ).\cf16 \strokec16 addEventListener\cf5 \strokec5 (\cf9 \strokec9 'click'\cf5 \strokec5 , \cf7 \strokec7 function\cf5 \strokec5 () \{\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3   \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 p\cf5 \strokec5  = \cf16 \strokec16 getBaseParams\cf5 \strokec5 ();\cb1 \
+\cb3   \cf7 \strokec7 if\cf5 \strokec5  (!\cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 emails\cf5 \strokec5 ) \{ \cf16 \strokec16 toast\cf5 \strokec5 (\cf9 \strokec9 'Veuillez saisir au moins un destinataire.'\cf5 \strokec5 , \cf9 \strokec9 'error'\cf5 \strokec5 ); \cf7 \strokec7 return\cf5 \strokec5 ; \}\cb1 \
+\
+\cb3   \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 frequence\cf5 \strokec5  = \cf16 \strokec16 currentFreq\cf5 \strokec5 ;\cb1 \
+\
+\cb3   \cf7 \strokec7 if\cf5 \strokec5  (\cf16 \strokec16 currentFreq\cf5 \strokec5  === \cf9 \strokec9 'unique'\cf5 \strokec5 ) \{\cb1 \
+\cb3     \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 dt\cf5 \strokec5  = \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'inp-datetime-unique'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5 ;\cb1 \
+\cb3     \cf7 \strokec7 if\cf5 \strokec5  (!\cf16 \strokec16 dt\cf5 \strokec5 ) \{ \cf16 \strokec16 toast\cf5 \strokec5 (\cf9 \strokec9 'Veuillez s\'e9lectionner une date et une heure.'\cf5 \strokec5 , \cf9 \strokec9 'error'\cf5 \strokec5 ); \cf7 \strokec7 return\cf5 \strokec5 ; \}\cb1 \
+\cb3     \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 dateHeure\cf5 \strokec5  = \cf7 \strokec7 new\cf5 \strokec5  \cf15 \strokec15 Date\cf5 \strokec5 (\cf16 \strokec16 dt\cf5 \strokec5 ).\cf16 \strokec16 toISOString\cf5 \strokec5 ();\cb1 \
+\
+\cb3   \} \cf7 \strokec7 else\cf5 \strokec5  \cf7 \strokec7 if\cf5 \strokec5  (\cf16 \strokec16 currentFreq\cf5 \strokec5  === \cf9 \strokec9 'mensuel'\cf5 \strokec5 ) \{\cb1 \
+\cb3     \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 jourMois\cf5 \strokec5   = \cf16 \strokec16 parseInt\cf5 \strokec5 (\cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'inp-jour-mois'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5 )     || \cf8 \strokec8 1\cf5 \strokec5 ;\cb1 \
+\cb3     \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 heure\cf5 \strokec5      = \cf16 \strokec16 parseInt\cf5 \strokec5 (\cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'inp-heure-mensuel'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5 )  || \cf8 \strokec8 8\cf5 \strokec5 ;\cb1 \
+\cb3     \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 moRelatif\cf5 \strokec5  = \cf16 \strokec16 parseInt\cf5 \strokec5 (\cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'sel-mo-relatif-mensuel'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5 ) || \cf8 \strokec8 0\cf5 \strokec5 ;\cb1 \
+\
+\cb3   \} \cf7 \strokec7 else\cf5 \strokec5  \cf7 \strokec7 if\cf5 \strokec5  (\cf16 \strokec16 currentFreq\cf5 \strokec5  === \cf9 \strokec9 'hebdomadaire'\cf5 \strokec5 ) \{\cb1 \
+\cb3     \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 jourSemaine\cf5 \strokec5  = \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'sel-jour-semaine'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5 ;\cb1 \
+\cb3     \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 heure\cf5 \strokec5        = \cf16 \strokec16 parseInt\cf5 \strokec5 (\cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'inp-heure-hebdo'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5 ) || \cf8 \strokec8 8\cf5 \strokec5 ;\cb1 \
+\cb3     \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 moRelatif\cf5 \strokec5    = \cf16 \strokec16 parseInt\cf5 \strokec5 (\cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'sel-mo-relatif-hebdo'\cf5 \strokec5 ).\cf16 \strokec16 value\cf5 \strokec5 ) || \cf8 \strokec8 0\cf5 \strokec5 ;\cb1 \
+\cb3   \}\cb1 \
+\
+\cb3   \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 btn\cf5 \strokec5  = \cf7 \strokec7 this\cf5 \strokec5 ;\cb1 \
+\cb3   \cf16 \strokec16 btn\cf5 \strokec5 .\cf16 \strokec16 disabled\cf5 \strokec5  = \cf7 \strokec7 true\cf5 \strokec5 ;\cb1 \
+\cb3   \cf16 \strokec16 btn\cf5 \strokec5 .\cf16 \strokec16 innerHTML\cf5 \strokec5  = \cf9 \strokec9 '<span class="spin"></span> Planification\'85'\cf5 \strokec5 ;\cb1 \
+\
+\cb3   \cf16 \strokec16 google\cf5 \strokec5 .\cf16 \strokec16 script\cf5 \strokec5 .\cf16 \strokec16 run\cf5 \cb1 \strokec5 \
+\cb3     .\cf16 \strokec16 withSuccessHandler\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 res\cf5 \strokec5 ) \{\cb1 \
+\cb3       \cf16 \strokec16 btn\cf5 \strokec5 .\cf16 \strokec16 disabled\cf5 \strokec5  = \cf7 \strokec7 false\cf5 \strokec5 ;\cb1 \
+\cb3       \cf16 \strokec16 btn\cf5 \strokec5 .\cf16 \strokec16 innerHTML\cf5 \strokec5  = \cf9 \strokec9 '\uc0\u9201  Planifier l\\'envoi'\cf5 \strokec5 ;\cb1 \
+\cb3       \cf7 \strokec7 if\cf5 \strokec5  (\cf16 \strokec16 res\cf5 \strokec5 .\cf16 \strokec16 ok\cf5 \strokec5 ) \{ \cf16 \strokec16 toast\cf5 \strokec5 (\cf16 \strokec16 res\cf5 \strokec5 .\cf16 \strokec16 msg\cf5 \strokec5 , \cf9 \strokec9 'success'\cf5 \strokec5 ); \cf16 \strokec16 chargerPlanifications\cf5 \strokec5 (); \}\cb1 \
+\cb3       \cf7 \strokec7 else\cf5 \strokec5          \cf16 \strokec16 toast\cf5 \strokec5 (\cf9 \strokec9 'Erreur : '\cf5 \strokec5  + \cf16 \strokec16 res\cf5 \strokec5 .\cf16 \strokec16 msg\cf5 \strokec5 , \cf9 \strokec9 'error'\cf5 \strokec5 );\cb1 \
+\cb3     \})\cb1 \
+\cb3     .\cf16 \strokec16 withFailureHandler\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 e\cf5 \strokec5 ) \{\cb1 \
+\cb3       \cf16 \strokec16 btn\cf5 \strokec5 .\cf16 \strokec16 disabled\cf5 \strokec5  = \cf7 \strokec7 false\cf5 \strokec5 ;\cb1 \
+\cb3       \cf16 \strokec16 btn\cf5 \strokec5 .\cf16 \strokec16 innerHTML\cf5 \strokec5  = \cf9 \strokec9 '\uc0\u9201  Planifier l\\'envoi'\cf5 \strokec5 ;\cb1 \
+\cb3       \cf16 \strokec16 toast\cf5 \strokec5 (\cf9 \strokec9 'Erreur serveur : '\cf5 \strokec5  + \cf16 \strokec16 e\cf5 \strokec5 .\cf16 \strokec16 message\cf5 \strokec5 , \cf9 \strokec9 'error'\cf5 \strokec5 );\cb1 \
+\cb3     \})\cb1 \
+\cb3     .\cf16 \strokec16 planifierRapportInterface\cf5 \strokec5 (\cf16 \strokec16 p\cf5 \strokec5 );\cb1 \
+\cb3 \});\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf13 \cb3 \strokec13 // \uc0\u9472 \u9472  Liste des planifications \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb3 \strokec7 function\cf5 \strokec5  \cf16 \strokec16 chargerPlanifications\cf5 \strokec5 () \{\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3   \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'planif-container'\cf5 \strokec5 ).\cf16 \strokec16 innerHTML\cf5 \strokec5  =\cb1 \
+\cb3     \cf9 \strokec9 '<div class="empty-state">Chargement\'85</div>'\cf5 \strokec5 ;\cb1 \
+\
+\cb3   \cf16 \strokec16 google\cf5 \strokec5 .\cf16 \strokec16 script\cf5 \strokec5 .\cf16 \strokec16 run\cf5 \cb1 \strokec5 \
+\cb3     .\cf16 \strokec16 withSuccessHandler\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 list\cf5 \strokec5 ) \{\cb1 \
+\cb3       \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 c\cf5 \strokec5  = \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'planif-container'\cf5 \strokec5 );\cb1 \
+\cb3       \cf7 \strokec7 if\cf5 \strokec5  (!\cf16 \strokec16 list\cf5 \strokec5  || !\cf16 \strokec16 list\cf5 \strokec5 .\cf16 \strokec16 length\cf5 \strokec5 ) \{\cb1 \
+\cb3         \cf16 \strokec16 c\cf5 \strokec5 .\cf16 \strokec16 innerHTML\cf5 \strokec5  = \cf9 \strokec9 '<div class="empty-state">Aucune planification active.</div>'\cf5 \strokec5 ;\cb1 \
+\cb3         \cf7 \strokec7 return\cf5 \strokec5 ;\cb1 \
+\cb3       \}\cb1 \
+\cb3       \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 rows\cf5 \strokec5  = \cf16 \strokec16 list\cf5 \strokec5 .\cf16 \strokec16 map\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 p\cf5 \strokec5 ) \{\cb1 \
+\cb3         \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 freq\cf5 \strokec5    = \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 frequence\cf5 \strokec5  || \cf9 \strokec9 '\'97'\cf5 \strokec5 ;\cb1 \
+\cb3         \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 badge\cf5 \strokec5   = \cf16 \strokec16 freq\cf5 \strokec5  === \cf9 \strokec9 'unique'\cf5 \strokec5  ? \cf9 \strokec9 'badge-orange'\cf5 \strokec5  : \cf16 \strokec16 freq\cf5 \strokec5  === \cf9 \strokec9 'mensuel'\cf5 \strokec5  ? \cf9 \strokec9 'badge-blue'\cf5 \strokec5  : \cf9 \strokec9 'badge-green'\cf5 \strokec5 ;\cb1 \
+\cb3         \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 detail\cf5 \strokec5  = \cf9 \strokec9 ''\cf5 \strokec5 ;\cb1 \
+\cb3         \cf7 \strokec7 if\cf5 \strokec5  (\cf16 \strokec16 freq\cf5 \strokec5  === \cf9 \strokec9 'unique'\cf5 \strokec5 ) \{\cb1 \
+\cb3           \cf16 \strokec16 detail\cf5 \strokec5  = \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 dateHeure\cf5 \strokec5  ? \cf7 \strokec7 new\cf5 \strokec5  \cf15 \strokec15 Date\cf5 \strokec5 (\cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 dateHeure\cf5 \strokec5 ).\cf16 \strokec16 toLocaleString\cf5 \strokec5 (\cf9 \strokec9 'fr-FR'\cf5 \strokec5 ) : \cf9 \strokec9 '\'97'\cf5 \strokec5 ;\cb1 \
+\cb3         \} \cf7 \strokec7 else\cf5 \strokec5  \cf7 \strokec7 if\cf5 \strokec5  (\cf16 \strokec16 freq\cf5 \strokec5  === \cf9 \strokec9 'mensuel'\cf5 \strokec5 ) \{\cb1 \
+\cb3           \cf16 \strokec16 detail\cf5 \strokec5  = \cf9 \strokec9 'Jour '\cf5 \strokec5  + (\cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 jourMois\cf5 \strokec5  || \cf8 \strokec8 1\cf5 \strokec5 ) + \cf9 \strokec9 ' du mois \'97 '\cf5 \strokec5  + (\cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 heure\cf5 \strokec5  || \cf8 \strokec8 8\cf5 \strokec5 ) + \cf9 \strokec9 'h00'\cf5 \strokec5 ;\cb1 \
+\cb3         \} \cf7 \strokec7 else\cf5 \strokec5  \cf7 \strokec7 if\cf5 \strokec5  (\cf16 \strokec16 freq\cf5 \strokec5  === \cf9 \strokec9 'hebdomadaire'\cf5 \strokec5 ) \{\cb1 \
+\cb3           \cf16 \strokec16 detail\cf5 \strokec5  = (\cf15 \strokec15 JOURS_FR\cf5 \strokec5 [\cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 jourSemaine\cf5 \strokec5 ] || \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 jourSemaine\cf5 \strokec5 ) + \cf9 \strokec9 ' \'97 '\cf5 \strokec5  + (\cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 heure\cf5 \strokec5  || \cf8 \strokec8 8\cf5 \strokec5 ) + \cf9 \strokec9 'h00'\cf5 \strokec5 ;\cb1 \
+\cb3         \}\cb1 \
+\cb3         \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 periodeStr\cf5 \strokec5 ;\cb1 \
+\cb3         \cf7 \strokec7 if\cf5 \strokec5  (\cf16 \strokec16 freq\cf5 \strokec5  === \cf9 \strokec9 'unique'\cf5 \strokec5  && \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 mo\cf5 \strokec5  !== \cf7 \strokec7 undefined\cf5 \strokec5  && \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 yr\cf5 \strokec5 ) \{\cb1 \
+\cb3           \cf16 \strokec16 periodeStr\cf5 \strokec5  = \cf15 \strokec15 MOIS_FR\cf5 \strokec5 [\cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 mo\cf5 \strokec5 ] + \cf9 \strokec9 ' '\cf5 \strokec5  + \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 yr\cf5 \strokec5  + (\cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 mode\cf5 \strokec5  === \cf9 \strokec9 'year'\cf5 \strokec5  ? \cf9 \strokec9 ' (annuel)'\cf5 \strokec5  : \cf9 \strokec9 ''\cf5 \strokec5 );\cb1 \
+\cb3         \} \cf7 \strokec7 else\cf5 \strokec5  \{\cb1 \
+\cb3           \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 rel\cf5 \strokec5  = \cf16 \strokec16 parseInt\cf5 \strokec5 (\cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 moRelatif\cf5 \strokec5  || \cf8 \strokec8 0\cf5 \strokec5 );\cb1 \
+\cb3           \cf16 \strokec16 periodeStr\cf5 \strokec5  = \cf16 \strokec16 rel\cf5 \strokec5  === -\cf8 \strokec8 1\cf5 \strokec5  ? \cf9 \strokec9 'Mois pr\'e9c\'e9dent'\cf5 \strokec5  : \cf9 \strokec9 'Mois courant'\cf5 \strokec5 ;\cb1 \
+\cb3           \cf7 \strokec7 if\cf5 \strokec5  (\cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 mode\cf5 \strokec5  === \cf9 \strokec9 'year'\cf5 \strokec5 ) \cf16 \strokec16 periodeStr\cf5 \strokec5  = \cf9 \strokec9 'Ann\'e9e courante'\cf5 \strokec5 ;\cb1 \
+\cb3         \}\cb1 \
+\cb3         \cf7 \strokec7 var\cf5 \strokec5  \cf16 \strokec16 emails\cf5 \strokec5  = (\cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 emails\cf5 \strokec5  || \cf9 \strokec9 '\'97'\cf5 \strokec5 );\cb1 \
+\cb3         \cf7 \strokec7 if\cf5 \strokec5  (\cf16 \strokec16 emails\cf5 \strokec5 .\cf16 \strokec16 length\cf5 \strokec5  > \cf8 \strokec8 30\cf5 \strokec5 ) \cf16 \strokec16 emails\cf5 \strokec5  = \cf16 \strokec16 emails\cf5 \strokec5 .\cf16 \strokec16 substring\cf5 \strokec5 (\cf8 \strokec8 0\cf5 \strokec5 , \cf8 \strokec8 28\cf5 \strokec5 ) + \cf9 \strokec9 '\'85'\cf5 \strokec5 ;\cb1 \
+\
+\cb3         \cf7 \strokec7 return\cf5 \strokec5  \cf9 \strokec9 '<tr>'\cf5 \strokec5  +\cb1 \
+\cb3           \cf9 \strokec9 '<td><span class="badge '\cf5 \strokec5  + \cf16 \strokec16 badge\cf5 \strokec5  + \cf9 \strokec9 '">'\cf5 \strokec5  + (\cf15 \strokec15 FREQ_FR\cf5 \strokec5 [\cf16 \strokec16 freq\cf5 \strokec5 ] || \cf16 \strokec16 freq\cf5 \strokec5 ) + \cf9 \strokec9 '</span></td>'\cf5 \strokec5  +\cb1 \
+\cb3           \cf9 \strokec9 '<td>'\cf5 \strokec5  + \cf16 \strokec16 detail\cf5 \strokec5  + \cf9 \strokec9 '</td>'\cf5 \strokec5  +\cb1 \
+\cb3           \cf9 \strokec9 '<td>'\cf5 \strokec5  + \cf16 \strokec16 periodeStr\cf5 \strokec5  + \cf9 \strokec9 '</td>'\cf5 \strokec5  +\cb1 \
+\cb3           \cf9 \strokec9 '<td style="color:#475569;">'\cf5 \strokec5  + \cf16 \strokec16 emails\cf5 \strokec5  + \cf9 \strokec9 '</td>'\cf5 \strokec5  +\cb1 \
+\cb3           \cf9 \strokec9 '<td><button class="btn btn-red" onclick="supprimerPlanif(\\''\cf5 \strokec5  + \cf16 \strokec16 p\cf5 \strokec5 .\cf16 \strokec16 triggerId\cf5 \strokec5  + \cf9 \strokec9 '\\')">\uc0\u10005  Suppr.</button></td>'\cf5 \strokec5  +\cb1 \
+\cb3           \cf9 \strokec9 '</tr>'\cf5 \strokec5 ;\cb1 \
+\cb3       \}).\cf16 \strokec16 join\cf5 \strokec5 (\cf9 \strokec9 ''\cf5 \strokec5 );\cb1 \
+\
+\cb3       \cf16 \strokec16 c\cf5 \strokec5 .\cf16 \strokec16 innerHTML\cf5 \strokec5  =\cb1 \
+\cb3         \cf9 \strokec9 '<table>'\cf5 \strokec5  +\cb1 \
+\cb3           \cf9 \strokec9 '<thead><tr>'\cf5 \strokec5  +\cb1 \
+\cb3             \cf9 \strokec9 '<th>Fr\'e9quence</th>'\cf5 \strokec5  +\cb1 \
+\cb3             \cf9 \strokec9 '<th>Ex\'e9cution</th>'\cf5 \strokec5  +\cb1 \
+\cb3             \cf9 \strokec9 '<th>P\'e9riode rapport\'e9e</th>'\cf5 \strokec5  +\cb1 \
+\cb3             \cf9 \strokec9 '<th>Destinataires</th>'\cf5 \strokec5  +\cb1 \
+\cb3             \cf9 \strokec9 '<th></th>'\cf5 \strokec5  +\cb1 \
+\cb3           \cf9 \strokec9 '</tr></thead>'\cf5 \strokec5  +\cb1 \
+\cb3           \cf9 \strokec9 '<tbody>'\cf5 \strokec5  + \cf16 \strokec16 rows\cf5 \strokec5  + \cf9 \strokec9 '</tbody>'\cf5 \strokec5  +\cb1 \
+\cb3         \cf9 \strokec9 '</table>'\cf5 \strokec5 ;\cb1 \
+\cb3     \})\cb1 \
+\cb3     .\cf16 \strokec16 withFailureHandler\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 e\cf5 \strokec5 ) \{\cb1 \
+\cb3       \cf16 \strokec16 document\cf5 \strokec5 .\cf16 \strokec16 getElementById\cf5 \strokec5 (\cf9 \strokec9 'planif-container'\cf5 \strokec5 ).\cf16 \strokec16 innerHTML\cf5 \strokec5  =\cb1 \
+\cb3         \cf9 \strokec9 '<div class="empty-state">Erreur de chargement : '\cf5 \strokec5  + \cf16 \strokec16 e\cf5 \strokec5 .\cf16 \strokec16 message\cf5 \strokec5  + \cf9 \strokec9 '</div>'\cf5 \strokec5 ;\cb1 \
+\cb3     \})\cb1 \
+\cb3     .\cf16 \strokec16 obtenirPlanificationsInterface\cf5 \strokec5 ();\cb1 \
+\cb3 \}\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf13 \cb3 \strokec13 // \uc0\u9472 \u9472  Suppression d'une planification \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf7 \cb3 \strokec7 function\cf5 \strokec5  \cf16 \strokec16 supprimerPlanif\cf5 \strokec5 (\cf16 \strokec16 triggerId\cf5 \strokec5 ) \{\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb3   \cf7 \strokec7 if\cf5 \strokec5  (!\cf16 \strokec16 confirm\cf5 \strokec5 (\cf9 \strokec9 'Supprimer cette planification ?'\cf5 \strokec5 )) \cf7 \strokec7 return\cf5 \strokec5 ;\cb1 \
+\cb3   \cf16 \strokec16 google\cf5 \strokec5 .\cf16 \strokec16 script\cf5 \strokec5 .\cf16 \strokec16 run\cf5 \cb1 \strokec5 \
+\cb3     .\cf16 \strokec16 withSuccessHandler\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 res\cf5 \strokec5 ) \{\cb1 \
+\cb3       \cf7 \strokec7 if\cf5 \strokec5  (\cf16 \strokec16 res\cf5 \strokec5 .\cf16 \strokec16 ok\cf5 \strokec5 ) \{ \cf16 \strokec16 toast\cf5 \strokec5 (\cf16 \strokec16 res\cf5 \strokec5 .\cf16 \strokec16 msg\cf5 \strokec5 , \cf9 \strokec9 'success'\cf5 \strokec5 ); \cf16 \strokec16 chargerPlanifications\cf5 \strokec5 (); \}\cb1 \
+\cb3       \cf7 \strokec7 else\cf5 \strokec5          \cf16 \strokec16 toast\cf5 \strokec5 (\cf9 \strokec9 'Erreur : '\cf5 \strokec5  + \cf16 \strokec16 res\cf5 \strokec5 .\cf16 \strokec16 msg\cf5 \strokec5 , \cf9 \strokec9 'error'\cf5 \strokec5 );\cb1 \
+\cb3     \})\cb1 \
+\cb3     .\cf16 \strokec16 withFailureHandler\cf5 \strokec5 (\cf7 \strokec7 function\cf5 \strokec5 (\cf16 \strokec16 e\cf5 \strokec5 ) \{ \cf16 \strokec16 toast\cf5 \strokec5 (\cf9 \strokec9 'Erreur : '\cf5 \strokec5  + \cf16 \strokec16 e\cf5 \strokec5 .\cf16 \strokec16 message\cf5 \strokec5 , \cf9 \strokec9 'error'\cf5 \strokec5 ); \})\cb1 \
+\cb3     .\cf16 \strokec16 supprimerPlanificationInterface\cf5 \strokec5 (\cf16 \strokec16 triggerId\cf5 \strokec5 );\cb1 \
+\cb3 \}\cb1 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf13 \cb3 \strokec13 // Chargement initial de la liste\cf5 \cb1 \strokec5 \
+\pard\pardeftab720\partightenfactor0
+\cf16 \cb3 \strokec16 chargerPlanifications\cf5 \strokec5 ();\cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf6 \cb3 \strokec6 </\cf7 \strokec7 script\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cf6 \cb3 \strokec6 </\cf7 \strokec7 body\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+\cf6 \cb3 \strokec6 </\cf7 \strokec7 html\cf6 \strokec6 >\cf5 \cb1 \strokec5 \
+}

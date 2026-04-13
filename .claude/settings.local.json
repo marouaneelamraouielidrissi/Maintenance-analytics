@@ -3,5 +3,19 @@
     "allow": [
       "mcp__Claude_Preview__preview_start"
     ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/mounaim/Desktop/mainAna && git add -A && git diff --cached --quiet || (git commit -m \"auto: task completed\" && git push)",
+            "statusMessage": "💾 Push automatique en cours...",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
   }
 }
