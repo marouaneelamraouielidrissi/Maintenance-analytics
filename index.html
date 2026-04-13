@@ -8231,15 +8231,12 @@ function toggleOcpPwdVisibility() {
 }
 async function checkOcpPasswordStatus() {
   const btn = document.getElementById('ocp-pwd-status-btn');
+  const msg = document.getElementById('ocp-pwd-msg');
   btn.textContent = 'Vérification...';
   try {
-    const res = await fetch(WEBAPP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'getOcpPasswordStatus' })
-    });
+    const params = new URLSearchParams({ action: 'getOcpPasswordStatus' });
+    const res = await fetch(WEBAPP_URL + '?' + params);
     const data = await res.json();
-    const msg = document.getElementById('ocp-pwd-msg');
     msg.style.display = 'block';
     if (data.isSet) {
       msg.style.background = '#f0fdf4'; msg.style.color = '#15803d'; msg.style.border = '1px solid #bbf7d0';
@@ -8249,7 +8246,8 @@ async function checkOcpPasswordStatus() {
       msg.textContent = '⚠ Aucun mot de passe enregistré. Les emails ne seront pas envoyés.';
     }
   } catch(e) {
-    document.getElementById('ocp-pwd-msg').textContent = 'Erreur de connexion.';
+    msg.style.display = 'block'; msg.style.background = '#fff7ed'; msg.style.color = '#c2410c'; msg.style.border = '1px solid #fed7aa';
+    msg.textContent = 'Erreur de connexion au script.';
   }
   btn.textContent = 'Vérifier si un mot de passe est déjà enregistré';
 }
@@ -8264,11 +8262,8 @@ async function saveOcpPassword() {
   msg.style.display = 'block'; msg.style.background = '#f8fafc'; msg.style.color = '#64748b'; msg.style.border = '1px solid #e2e8f0';
   msg.textContent = 'Enregistrement...';
   try {
-    const res = await fetch(WEBAPP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'setOcpPassword', password: pwd })
-    });
+    const params = new URLSearchParams({ action: 'setOcpPassword', password: pwd });
+    const res = await fetch(WEBAPP_URL + '?' + params);
     const data = await res.json();
     if (data.success) {
       msg.style.background = '#f0fdf4'; msg.style.color = '#15803d'; msg.style.border = '1px solid #bbf7d0';
