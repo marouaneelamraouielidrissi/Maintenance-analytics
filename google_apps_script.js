@@ -24,15 +24,17 @@ function sendEmailOCP(to, subject, body, options) {
   const fromName = (options && options.name) ? options.name : 'Maintenance Analytics';
   const bodyType = (options && options.htmlBody) ? 'HTML' : 'Text';
   const bodyContent = (options && options.htmlBody) ? options.htmlBody : (body || '');
+  function xmlEsc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   const soap = '<?xml version="1.0" encoding="utf-8"?>'
     + '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'
     + ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"'
     + ' xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages">'
+    + '<soap:Header><t:RequestServerVersion Version="Exchange2010_SP2"/></soap:Header>'
     + '<soap:Body><m:CreateItem MessageDisposition="SendAndSaveCopy">'
     + '<m:SavedItemFolderId><t:DistinguishedFolderId Id="sentitems"/></m:SavedItemFolderId>'
     + '<m:Items><t:Message>'
-    + '<t:Subject>' + subject.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</t:Subject>'
-    + '<t:Body BodyType="' + bodyType + '"><![CDATA[' + bodyContent + ']]></t:Body>'
+    + '<t:Subject>' + xmlEsc(subject) + '</t:Subject>'
+    + '<t:Body BodyType="' + bodyType + '">' + xmlEsc(bodyContent) + '</t:Body>'
     + '<t:ToRecipients>' + toRecipients + '</t:ToRecipients>'
     + ccBlock
     + '</t:Message></m:Items>'
