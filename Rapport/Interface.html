@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rapport de Maintenance — Bureau des Méthodes Daoui</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, Helvetica, sans-serif; background: #F4F6F9; color: #1A2035; min-height: 100vh; }
+
+    /* ── Header ─────────────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, #1D4ED8 0%, #1e40af 100%);
+      padding: 22px 32px;
+    }
+    .header-inner { max-width: 860px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .header h1 { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+    .header p  { font-size: 11px; color: #BFDBFE; margin-top: 3px; }
+    .header-badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; padding: 6px 14px; font-size: 12px; color: #fff; font-weight: 600; white-space: nowrap; }
+
+    /* ── Container ──────────────────────────────────────── */
+    .container { max-width: 860px; margin: 0 auto; padding: 24px 16px 48px; }
+
+    /* ── Cards ──────────────────────────────────────────── */
+    .card { background: #fff; border-radius: 10px; border: 1px solid #DDE2EA; padding: 22px 24px; margin-bottom: 16px; }
+    .card-title {
+      font-size: 9px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+      color: #8A97AB; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #F1F5F9;
+    }
+
+    /* ── Form ───────────────────────────────────────────── */
+    .form-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    .form-row:last-child { margin-bottom: 0; }
+    .fg { flex: 1; min-width: 130px; }
+    .fg.full { flex: 1 1 100%; }
+    .fg label { display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 5px; }
+    .fg select, .fg input[type=number], .fg input[type=text],
+    .fg input[type=email], .fg input[type=datetime-local] {
+      width: 100%; padding: 9px 11px; border: 1px solid #DDE2EA; border-radius: 6px;
+      font-size: 13px; color: #1A2035; background: #FAFBFC;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .fg select:focus, .fg input:focus {
+      outline: none; border-color: #1D4ED8; box-shadow: 0 0 0 3px #DBEAFE; background: #fff;
+    }
+
+    /* ── Grid ───────────────────────────────────────────── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 620px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* ── Buttons ────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px 18px; border: none; border-radius: 7px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+    .btn:active:not(:disabled) { transform: translateY(0); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .btn-blue  { background: #1D4ED8; color: #fff; }
+    .btn-green { background: #059669; color: #fff; }
+    .btn-red   { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; padding: 5px 10px; font-size: 11px; font-weight: 700; }
+    .btn-ghost { background: #F1F5F9; color: #475569; border: 1px solid #DDE2EA; }
+    .btn-full  { width: 100%; margin-top: 12px; padding: 11px; }
+
+    /* ── Frequency tabs ─────────────────────────────────── */
+    .freq-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+    .freq-tab {
+      flex: 1; padding: 8px 6px; text-align: center; border: 1px solid #DDE2EA;
+      border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer;
+      color: #8A97AB; transition: all 0.15s;
+    }
+    .freq-tab:hover { background: #F8FAFC; }
+    .freq-tab.active { background: #EFF6FF; border-color: #1D4ED8; color: #1D4ED8; }
+
+    .freq-panel { display: none; }
+    .freq-panel.active { display: block; }
+
+    /* ── Period note ────────────────────────────────────── */
+    .period-note {
+      background: #F8FAFC; border: 1px solid #E8ECF2; border-radius: 6px;
+      padding: 8px 12px; font-size: 11px; color: #475569; margin-bottom: 12px;
+    }
+    .period-note b { color: #1D4ED8; }
+
+    /* ── Table ──────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th {
+      padding: 9px 12px; text-align: left; background: #F8FAFC;
+      font-size: 10px; color: #8A97AB; font-weight: 700; letter-spacing: 0.5px;
+      text-transform: uppercase; border-bottom: 2px solid #E8ECF2;
+    }
+    td { padding: 10px 12px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #FAFBFC; }
+    .empty-state { text-align: center; color: #94A3B8; padding: 28px; font-size: 12px; }
+
+    /* ── Badges ─────────────────────────────────────────── */
+    .badge {
+      display: inline-block; padding: 2px 9px; border-radius: 4px;
+      font-size: 10px; font-weight: 700; white-space: nowrap;
+    }
+    .badge-blue   { background: #EFF6FF; color: #1D4ED8; }
+    .badge-green  { background: #ECFDF5; color: #059669; }
+    .badge-orange { background: #FFFBEB; color: #D97706; }
+
+    /* ── Toast ──────────────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      padding: 12px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      color: #fff; display: none; max-width: 360px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+      animation: slideIn 0.25s ease;
+    }
+    @keyframes slideIn { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+    #toast.success { background: #059669; }
+    #toast.error   { background: #DC2626; }
+    #toast.info    { background: #1D4ED8; }
+
+    /* ── Spinner ────────────────────────────────────────── */
+    .spin {
+      display: inline-block; width: 13px; height: 13px;
+      border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+      border-radius: 50%; animation: rotate 0.7s linear infinite;
+    }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+
+    /* ── Preview link ───────────────────────────────────── */
+    .preview-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; color: #1D4ED8; text-decoration: none; font-weight: 600;
+      margin-top: 8px;
+    }
+    .preview-link:hover { text-decoration: underline; }
+
+    /* ── Divider ────────────────────────────────────────── */
+    .divider { border: none; border-top: 1px solid #F1F5F9; margin: 14px 0; }
+
+    /* ── Info row ───────────────────────────────────────── */
+    .info-row { font-size: 11px; color: #8A97AB; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ HEADER ════════════════════════════════════════════ -->
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <h1>Rapport de Maintenance</h1>
+      <p>Bureau des Méthodes Daoui · OCP Group Khouribga</p>
+    </div>
+    <div class="header-badge" id="lbl-periode">—</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ═══════════ PARAMÈTRES ══════════════════════════════════════════ -->
+  <div class="card">
+    <div class="card-title">Paramètres du rapport</div>
+    <div class="form-row">
+      <div class="fg">
+        <label>Mois</label>
+        <select id="sel-mois">
+          <option value="0">Janvier</option><option value="1">Février</option>
+          <option value="2">Mars</option><option value="3">Avril</option>
+          <option value="4">Mai</option><option value="5">Juin</option>
+          <option value="6">Juillet</option><option value="7">Août</option>
+          <option value="8">Septembre</option><option value="9">Octobre</option>
+          <option value="10">Novembre</option><option value="11">Décembre</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Année</label>
+        <input type="number" id="inp-annee" min="2020" max="2099" />
+      </div>
+      <div class="fg">
+        <label>Mode</label>
+        <select id="sel-mode">
+          <option value="month">Mensuel</option>
+          <option value="year">Annuel</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg full">
+        <label>Destinataires (séparés par des virgules)</label>
+        <input type="text" id="inp-emails" placeholder="email@ocp.ma, autre@ocp.ma" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ ACTIONS (GRILLE 2 COL) ══════════════════════════════ -->
+  <div class="grid-2">
+
+    <!-- ─── Envoi instantané ──────────────────────────────────────── -->
+    <div class="card">
+      <div class="card-title">Envoi instantané</div>
+      <p style="font-size:12px;color:#475569;line-height:1.6;">
+        Génère et envoie le rapport pour la période sélectionnée ci-dessus.
+      </p>
+      <hr class="divider">
+      <div id="preview-row" style="margin-bottom:10px;display:none;">
+        <a id="preview-link" class="preview-link" href="#" target="_blank">
+          ↗ Prévisualiser le rapport
+        </a>
+      </div>
+      <button id="btn-envoyer" class="btn btn-blue btn-full">
+        ▶ Envoyer maintenant
+      </button>
+      <p class="info-row" id="last-sent"></p>
+    </div>
+
+    <!-- ─── Planification ─────────────────────────────────────────── -->
+    <div class="card">
+      <div class="card-title">Planification automatique</div>
+
+      <!-- Tabs fréquence -->
+      <div class="freq-tabs">
+        <div class="freq-tab active" data-freq="unique">Unique</div>
+        <div class="freq-tab" data-freq="mensuel">Mensuel</div>
+        <div class="freq-tab" data-freq="hebdomadaire">Hebdo</div>
+      </div>
+
+      <!-- Panel : Unique -->
+      <div id="panel-unique" class="freq-panel active">
+        <div class="period-note">
+          Le rapport sera envoyé <b>une seule fois</b> à la date et l'heure choisies,
+          pour la période sélectionnée dans les paramètres.
+        </div>
+        <div class="fg">
+          <label>Date et heure d'envoi</label>
+          <input type="datetime-local" id="inp-datetime-unique" />
+        </div>
+      </div>
+
+      <!-- Panel : Mensuel -->
+      <div id="panel-mensuel" class="freq-panel">
+        <div class="period-note">
+          Le rapport sera envoyé <b>chaque mois</b>, le jour choisi.
+        </div>
+        <div class="form-row">
+          <div class="fg">
+            <label>Jour du mois</label>
+            <input type="number" id="inp-jour-mois" min="1" max="28" value="1" />
+          </div>
+          <div class="fg">
+            <label>Heure (0–23)</label>
+            <input type="number" id="inp-heure-mensuel" min="0" max="23" value="8" />
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:4px;">
+          <label>Période du rapport</label>
+          <select id="sel-mo-relatif-mensuel">
+            <option value="0">Mois courant (lors de l'exécution)</option>
+            <option value="-1">Mois précédent</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Panel : Hebdomadaire -->
+      <div id="panel-hebdomadaire" class="freq-panel">
+        <div class="period-note">
+          Le rapport sera envoyé <b>chaque semaine</b>, le jour choisi.
+        </div>
+        <div class="form-row">
+          <div class="fg">
+            <label>Jour de la semaine</label>
+            <select id="sel-jour-semaine">
+              <option value="MONDAY">Lundi</option>
+              <option value="TUESDAY">Mardi</option>
+              <option value="WEDNESDAY">Mercredi</option>
+              <option value="THURSDAY">Jeudi</option>
+              <option value="FRIDAY">Vendredi</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Heure (0–23)</label>
+            <input type="number" id="inp-heure-hebdo" min="0" max="23" value="8" />
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:4px;">
+          <label>Période du rapport</label>
+          <select id="sel-mo-relatif-hebdo">
+            <option value="0">Mois courant (lors de l'exécution)</option>
+            <option value="-1">Mois précédent</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="btn-planifier" class="btn btn-green btn-full">
+        ⏱ Planifier l'envoi
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ═══════════ PLANIFICATIONS ACTIVES ══════════════════════════════ -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div class="card-title" style="margin-bottom:0;border-bottom:none;padding-bottom:0;">
+        Planifications actives
+      </div>
+      <button class="btn btn-ghost" style="font-size:11px;padding:6px 12px;" onclick="chargerPlanifications()">
+        ↺ Actualiser
+      </button>
+    </div>
+    <div id="planif-container" class="table-wrap">
+      <div class="empty-state">Chargement…</div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- ═══════════════════════════ SCRIPTS ══════════════════════════════════ -->
+<script>
+// ── Constantes ──────────────────────────────────────────────────────────
+var MOIS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin',
+               'Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+var JOURS_FR = { MONDAY:'Lundi', TUESDAY:'Mardi', WEDNESDAY:'Mercredi',
+                 THURSDAY:'Jeudi', FRIDAY:'Vendredi', SATURDAY:'Samedi', SUNDAY:'Dimanche' };
+var FREQ_FR  = { unique:'Unique', mensuel:'Mensuel', hebdomadaire:'Hebdomadaire' };
+var currentFreq = 'unique';
+var webAppUrl   = '';   // sera rempli dynamiquement
+
+// ── Toast ────────────────────────────────────────────────────────────────
+function toast(msg, type) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = type || 'info';
+  el.style.display = 'block';
+  clearTimeout(el._t);
+  el._t = setTimeout(function() { el.style.display = 'none'; }, 4500);
+}
+
+// ── Période en cours ─────────────────────────────────────────────────────
+function updatePeriodeLabel() {
+  var mo   = parseInt(document.getElementById('sel-mois').value);
+  var yr   = document.getElementById('inp-annee').value;
+  var mode = document.getElementById('sel-mode').value;
+  var lbl  = mode === 'year' ? 'Année ' + yr : MOIS_FR[mo] + ' ' + yr;
+  document.getElementById('lbl-periode').textContent = lbl;
+  // Prévisualisation
+  if (webAppUrl) {
+    var link = document.getElementById('preview-link');
+    link.href = webAppUrl + '?action=preview&mo=' + mo + '&yr=' + yr + '&mode=' + mode;
+    document.getElementById('preview-row').style.display = 'block';
+  }
+}
+['sel-mois','inp-annee','sel-mode'].forEach(function(id) {
+  document.getElementById(id).addEventListener('change', updatePeriodeLabel);
+});
+
+// ── Tabs fréquence ───────────────────────────────────────────────────────
+document.querySelectorAll('.freq-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.freq-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.freq-panel').forEach(function(p) { p.classList.remove('active'); });
+    tab.classList.add('active');
+    currentFreq = tab.dataset.freq;
+    document.getElementById('panel-' + currentFreq).classList.add('active');
+  });
+});
+
+// ── Chargement des défauts ───────────────────────────────────────────────
+google.script.run
+  .withSuccessHandler(function(cfg) {
+    var now = new Date();
+    document.getElementById('sel-mois').value  = cfg.mo !== undefined ? cfg.mo : now.getMonth();
+    document.getElementById('inp-annee').value = cfg.yr  || now.getFullYear();
+    document.getElementById('sel-mode').value  = cfg.mode || 'month';
+    document.getElementById('inp-emails').value = cfg.emails || '';
+    // Date par défaut pour "unique" = maintenant + 10 min
+    var d = new Date(now.getTime() + 10 * 60000);
+    document.getElementById('inp-datetime-unique').value =
+      d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) +
+      'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    updatePeriodeLabel();
+  })
+  .withFailureHandler(function(e) { console.error('getConfigInterfaceDefaut:', e); })
+  .getConfigInterfaceDefaut();
+
+// Récupérer l'URL du Web App (pour le lien de prévisualisation)
+try {
+  webAppUrl = google.script.getScriptUrl ? google.script.getScriptUrl() : '';
+} catch(e) {}
+google.script.url.getLocation(function(loc) {
+  webAppUrl = loc.href.split('?')[0];
+  updatePeriodeLabel();
+});
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
+// ── Collecte des paramètres de base ─────────────────────────────────────
+function getBaseParams() {
+  return {
+    mo:     parseInt(document.getElementById('sel-mois').value),
+    yr:     parseInt(document.getElementById('inp-annee').value),
+    mode:   document.getElementById('sel-mode').value,
+    emails: document.getElementById('inp-emails').value.trim()
+  };
+}
+
+// ── Envoi instantané ─────────────────────────────────────────────────────
+document.getElementById('btn-envoyer').addEventListener('click', function() {
+  var p = getBaseParams();
+  if (!p.emails) { toast('Veuillez saisir au moins un destinataire.', 'error'); return; }
+
+  var btn = this;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Génération en cours…';
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      btn.disabled = false;
+      btn.innerHTML = '▶ Envoyer maintenant';
+      if (res.ok) {
+        toast(res.msg, 'success');
+        document.getElementById('last-sent').textContent =
+          'Dernier envoi : ' + new Date().toLocaleString('fr-FR');
+      } else {
+        toast('Erreur : ' + res.msg, 'error');
+      }
+    })
+    .withFailureHandler(function(e) {
+      btn.disabled = false;
+      btn.innerHTML = '▶ Envoyer maintenant';
+      toast('Erreur serveur : ' + e.message, 'error');
+    })
+    .envoyerRapportDepuisInterface(p);
+});
+
+// ── Planification ────────────────────────────────────────────────────────
+document.getElementById('btn-planifier').addEventListener('click', function() {
+  var p = getBaseParams();
+  if (!p.emails) { toast('Veuillez saisir au moins un destinataire.', 'error'); return; }
+
+  p.frequence = currentFreq;
+
+  if (currentFreq === 'unique') {
+    var dt = document.getElementById('inp-datetime-unique').value;
+    if (!dt) { toast('Veuillez sélectionner une date et une heure.', 'error'); return; }
+    p.dateHeure = new Date(dt).toISOString();
+
+  } else if (currentFreq === 'mensuel') {
+    p.jourMois  = parseInt(document.getElementById('inp-jour-mois').value)     || 1;
+    p.heure     = parseInt(document.getElementById('inp-heure-mensuel').value)  || 8;
+    p.moRelatif = parseInt(document.getElementById('sel-mo-relatif-mensuel').value) || 0;
+
+  } else if (currentFreq === 'hebdomadaire') {
+    p.jourSemaine = document.getElementById('sel-jour-semaine').value;
+    p.heure       = parseInt(document.getElementById('inp-heure-hebdo').value) || 8;
+    p.moRelatif   = parseInt(document.getElementById('sel-mo-relatif-hebdo').value) || 0;
+  }
+
+  var btn = this;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Planification…';
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      btn.disabled = false;
+      btn.innerHTML = '⏱ Planifier l\'envoi';
+      if (res.ok) { toast(res.msg, 'success'); chargerPlanifications(); }
+      else         toast('Erreur : ' + res.msg, 'error');
+    })
+    .withFailureHandler(function(e) {
+      btn.disabled = false;
+      btn.innerHTML = '⏱ Planifier l\'envoi';
+      toast('Erreur serveur : ' + e.message, 'error');
+    })
+    .planifierRapportInterface(p);
+});
+
+// ── Liste des planifications ─────────────────────────────────────────────
+function chargerPlanifications() {
+  document.getElementById('planif-container').innerHTML =
+    '<div class="empty-state">Chargement…</div>';
+
+  google.script.run
+    .withSuccessHandler(function(list) {
+      var c = document.getElementById('planif-container');
+      if (!list || !list.length) {
+        c.innerHTML = '<div class="empty-state">Aucune planification active.</div>';
+        return;
+      }
+      var rows = list.map(function(p) {
+        var freq   = p.frequence || '—';
+        var badge  = freq === 'unique' ? 'badge-orange' : freq === 'mensuel' ? 'badge-blue' : 'badge-green';
+        var detail = '';
+        if (freq === 'unique') {
+          detail = p.dateHeure ? new Date(p.dateHeure).toLocaleString('fr-FR') : '—';
+        } else if (freq === 'mensuel') {
+          detail = 'Jour ' + (p.jourMois || 1) + ' du mois — ' + (p.heure || 8) + 'h00';
+        } else if (freq === 'hebdomadaire') {
+          detail = (JOURS_FR[p.jourSemaine] || p.jourSemaine) + ' — ' + (p.heure || 8) + 'h00';
+        }
+        var periodeStr;
+        if (freq === 'unique' && p.mo !== undefined && p.yr) {
+          periodeStr = MOIS_FR[p.mo] + ' ' + p.yr + (p.mode === 'year' ? ' (annuel)' : '');
+        } else {
+          var rel = parseInt(p.moRelatif || 0);
+          periodeStr = rel === -1 ? 'Mois précédent' : 'Mois courant';
+          if (p.mode === 'year') periodeStr = 'Année courante';
+        }
+        var emails = (p.emails || '—');
+        if (emails.length > 30) emails = emails.substring(0, 28) + '…';
+
+        return '<tr>' +
+          '<td><span class="badge ' + badge + '">' + (FREQ_FR[freq] || freq) + '</span></td>' +
+          '<td>' + detail + '</td>' +
+          '<td>' + periodeStr + '</td>' +
+          '<td style="color:#475569;">' + emails + '</td>' +
+          '<td><button class="btn btn-red" onclick="supprimerPlanif(\'' + p.triggerId + '\')">✕ Suppr.</button></td>' +
+          '</tr>';
+      }).join('');
+
+      c.innerHTML =
+        '<table>' +
+          '<thead><tr>' +
+            '<th>Fréquence</th>' +
+            '<th>Exécution</th>' +
+            '<th>Période rapportée</th>' +
+            '<th>Destinataires</th>' +
+            '<th></th>' +
+          '</tr></thead>' +
+          '<tbody>' + rows + '</tbody>' +
+        '</table>';
+    })
+    .withFailureHandler(function(e) {
+      document.getElementById('planif-container').innerHTML =
+        '<div class="empty-state">Erreur de chargement : ' + e.message + '</div>';
+    })
+    .obtenirPlanificationsInterface();
+}
+
+// ── Suppression d'une planification ─────────────────────────────────────
+function supprimerPlanif(triggerId) {
+  if (!confirm('Supprimer cette planification ?')) return;
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res.ok) { toast(res.msg, 'success'); chargerPlanifications(); }
+      else         toast('Erreur : ' + res.msg, 'error');
+    })
+    .withFailureHandler(function(e) { toast('Erreur : ' + e.message, 'error'); })
+    .supprimerPlanificationInterface(triggerId);
+}
+
+// Chargement initial de la liste
+chargerPlanifications();
+</script>
+</body>
+</html>
