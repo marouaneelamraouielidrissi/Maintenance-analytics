@@ -583,13 +583,18 @@ function sendEmailNouvelleDemande(d) {
   <div style="background:#f1f5f9;padding:12px 24px;font-size:12px;color:#64748b;">${SENDER_NAME}</div>
 </div>`;
   var destNvlle = getUserEmails(['Interchangeable électrique']);
+  Logger.log('sendEmailNouvelleDemande — destinataires trouvés : "' + destNvlle + '"');
   if (destNvlle) {
     var destNvlleList = destNvlle.split(',').map(function(e){ return e.trim(); }).filter(Boolean);
     var toNvlle = destNvlleList[0];
     var ccNvlleRest = destNvlleList.slice(1).join(',');
     var optsNvlle = { htmlBody: corps, name: SENDER_NAME };
     if (ccNvlleRest) optsNvlle.cc = ccNvlleRest;
+    Logger.log('Envoi email EWS vers : ' + toNvlle);
     sendEmailOCP(toNvlle, sujet, '', optsNvlle);
+    Logger.log('Email envoyé avec succès');
+  } else {
+    Logger.log('ATTENTION : aucun utilisateur avec fonction "Interchangeable électrique" trouvé dans la feuille Users');
   }
 }
 
