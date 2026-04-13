@@ -10,7 +10,7 @@ function getWeekNumber(d) {
 
 function Envoyer_Rapport_Planification_PDF() {
   const SPREADSHEET_ID  = "1EBACM8ou8B_9fmExToUKsMCvHL27hiwU2D0yZ_gQGOA";
-  const SHEET_NAME      = "Vesrion imprimable";
+  const SHEET_NAME      = "Vesrion imprémable";
   const ROWS_FOR_2_PAGES = 112;
 
   const feuille = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -72,7 +72,7 @@ function Envoyer_Rapport_Planification_PDF() {
 
 function tester_Rapport_Planification() {
   const SPREADSHEET_ID  = "1EBACM8ou8B_9fmExToUKsMCvHL27hiwU2D0yZ_gQGOA";
-  const SHEET_NAME      = "Vesrion imprimable";
+  const SHEET_NAME      = "Vesrion imprémable";
   const ROWS_FOR_2_PAGES = 112;
 
   const feuille = SpreadsheetApp.openById(SPREADSHEET_ID);
