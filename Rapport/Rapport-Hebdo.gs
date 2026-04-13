@@ -5,8 +5,8 @@
 
 // ── IDs des fichiers ──────────────────────────────────────────
 const RH_OT_FILE_ID     = '1aQAvb1DUv6Vk1Y1C-WEYgQnYN1BxujEAg8lbMt1sP3s';
-const RH_ARRETS_FILE_ID = '1C9bYkPsoYg81ARgolVDlZRwsMZk4Seff6aC7vfxoVeE';
-const RH_ARRETS_SHEET   = 'Travaux hebdomadaire';
+const RH_ARRETS_FILE_ID = '1EBACM8ou8B_9fmExToUKsMCvHL27hiwU2D0yZ_gQGOA';
+const RH_ARRETS_SHEET   = 'Planning des arrets';
 
 // ── Configuration OCP Exchange (EWS) ─────────────────────────
 const RH_OCP_EMAIL = 'm.elamraoui@ocpgroup.ma';
@@ -136,8 +136,8 @@ function rhGetArrets() {
     for (var i=0;i<names.length;i++){ var x=hdr.indexOf(names[i]); if(x>=0) return x; }
     return -1;
   }
-  var cD=ci(['start date','date début','date debut','date']);
-  var cI=ci(['installation','équipement','equipement']);
+  var cD=ci(['start date','date début','date debut','début','date']);
+  var cI=ci(['installation','équipement','equipement','arrêt','arret']);
   var cS=ci(['section']);
   var cW=ci(['semaine']);
   var cA=ci(['année','annee']);
