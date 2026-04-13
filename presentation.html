@@ -61,6 +61,37 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;
 .slide.active .sdesc      {animation:fadeUp .45s .28s both}
 .slide.active .body-block {animation:fadeUp .45s .36s both}
 
+/* ═══ HERO SLIDE 1 — ANIMATIONS AVANCÉES ═══ */
+@keyframes heroLogoDrop{from{opacity:0;transform:translateY(-22px) scale(.85)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes heroTitleIn{from{opacity:0;transform:translateY(26px);filter:blur(7px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@keyframes heroCardPop{from{opacity:0;transform:translateY(36px) scale(.88)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes heroBgPulse{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes barGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes heroLineGrow{from{opacity:0;width:0}to{opacity:1;width:44px}}
+
+[data-slide="1"]{background:linear-gradient(-45deg,#f4fdf4,#e8f5e9,#d0ead0,#e8f5e9);background-size:400% 400%;animation:heroBgPulse 10s ease infinite}
+[data-slide="1"].active .hero-logo{animation:heroLogoDrop .7s .05s cubic-bezier(.34,1.56,.64,1) both}
+[data-slide="1"].active .st1{animation:heroTitleIn .75s .25s cubic-bezier(.4,0,.2,1) both}
+[data-slide="1"].active .sdesc{animation:heroTitleIn .6s .42s ease both}
+[data-slide="1"].active .hero-credit{animation:heroTitleIn .55s .56s ease both}
+[data-slide="1"].active .hero-card{animation:heroCardPop .65s cubic-bezier(.34,1.45,.64,1) both}
+[data-slide="1"].active .hero-card:nth-child(1){animation-delay:.70s}
+[data-slide="1"].active .hero-card:nth-child(2){animation-delay:.86s}
+[data-slide="1"].active .hero-card:nth-child(3){animation-delay:1.02s}
+[data-slide="1"].active .hero-card:nth-child(4){animation-delay:1.18s}
+[data-slide="1"].active .hero-card:nth-child(5){animation-delay:1.34s}
+[data-slide="1"].active .hero-bars>div{transform-origin:bottom;animation:barGrow .7s cubic-bezier(.34,1.2,.64,1) both}
+[data-slide="1"].active .hero-bars>div:nth-child(1){animation-delay:1.0s}
+[data-slide="1"].active .hero-bars>div:nth-child(2){animation-delay:1.08s}
+[data-slide="1"].active .hero-bars>div:nth-child(3){animation-delay:1.16s}
+[data-slide="1"].active .hero-bars>div:nth-child(4){animation-delay:1.24s}
+[data-slide="1"].active .hero-bars>div:nth-child(5){animation-delay:1.32s}
+[data-slide="1"].active .hero-bars>div:nth-child(6){animation-delay:1.40s}
+[data-slide="1"].active .hero-bars>div:nth-child(7){animation-delay:1.48s}
+[data-slide="1"].active .hero-bars>div:nth-child(8){animation-delay:1.56s}
+.hero-card{transition:transform .32s cubic-bezier(.34,1.3,.64,1),box-shadow .32s ease;cursor:default}
+.hero-card:hover{transform:translateY(-6px) scale(1.03);box-shadow:0 16px 44px rgba(46,125,50,.26)!important}
+
 /* ═══ TYPOGRAPHY ═══ */
 .eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#43a047;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .eyebrow::before{content:'';width:20px;height:2.5px;background:#43a047;border-radius:2px}
@@ -299,32 +330,153 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;
 
 <!-- ═══ 1 · COUVERTURE ═══ -->
 <div class="slide bg-hero active" data-slide="1">
-  <div class="hero-wrap body-block">
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px">
-      <img src="ocp-logo.png" class="ocp-logo" alt="OCP">
-      <div style="width:1.5px;height:40px;background:#c8e6c9"></div>
-      <div class="hero-logo-wrap" style="margin:0">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;width:100%">
+
+    <!-- Logo OCP -->
+    <img src="ocp-logo.png" class="hero-logo" style="height:46px;object-fit:contain;margin-bottom:10px" alt="OCP">
+
+    <!-- Titre -->
+    <h1 class="st1" style="text-align:center;margin-bottom:4px">Maintenance<br><span class="accent">Analytics</span></h1>
+    <p class="sdesc" style="text-align:center;margin-bottom:8px;max-width:560px">Application web de pilotage de la maintenance industrielle</p>
+    <p class="hero-credit" style="font-size:12px;color:#81c784;font-weight:600;letter-spacing:.5px;margin-bottom:18px">Créé par <span style="color:#2e7d32;font-weight:700">Bureau de Méthode Daoui</span></p>
+
+    <!-- 5 cartes illustratives -->
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;width:100%;max-width:980px">
+
+      <!-- 1 · Tableau de bord -->
+      <div class="hero-card" style="background:white;border:1.5px solid #c8e6c9;border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(46,125,50,.12)">
+        <div style="background:linear-gradient(135deg,#1b5e20,#2e7d32);padding:8px 10px;display:flex;align-items:center;gap:6px">
+          <span style="font-size:13px">📊</span>
+          <span style="font-size:9.5px;font-weight:700;color:white;letter-spacing:.3px">Tableau de bord</span>
+        </div>
+        <div style="padding:10px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px">
+            <div style="background:#e8f5e9;border-radius:6px;padding:5px 4px;text-align:center">
+              <div style="font-size:14px;font-weight:900;color:#1b5e20;line-height:1">71.7%</div>
+              <div style="font-size:7.5px;color:#81c784;margin-top:2px">Réalisation</div>
+            </div>
+            <div style="background:#e8f5e9;border-radius:6px;padding:5px 4px;text-align:center">
+              <div style="font-size:14px;font-weight:900;color:#1b5e20;line-height:1">1 247</div>
+              <div style="font-size:7.5px;color:#81c784;margin-top:2px">OT planifiés</div>
+            </div>
+          </div>
+          <div class="hero-bars" style="display:flex;align-items:flex-end;gap:3px;height:46px">
+            <div style="flex:1;background:#c8e6c9;border-radius:2px 2px 0 0;height:52%"></div>
+            <div style="flex:1;background:#66bb6a;border-radius:2px 2px 0 0;height:70%"></div>
+            <div style="flex:1;background:#c8e6c9;border-radius:2px 2px 0 0;height:45%"></div>
+            <div style="flex:1;background:#43a047;border-radius:2px 2px 0 0;height:85%"></div>
+            <div style="flex:1;background:#c8e6c9;border-radius:2px 2px 0 0;height:60%"></div>
+            <div style="flex:1;background:#2e7d32;border-radius:2px 2px 0 0;height:92%"></div>
+            <div style="flex:1;background:#81c784;border-radius:2px 2px 0 0;height:68%"></div>
+            <div style="flex:1;background:#a5d6a7;border-radius:2px 2px 0 0;height:55%"></div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="eyebrow" style="margin-top:16px">Bureau des Méthodes · Section Planification · OCP Group</div>
-    <h1 class="st1" style="text-align:center">Maintenance<br><span class="accent">Analytics</span></h1>
-    <p class="sdesc" style="text-align:center">Application web de pilotage de la maintenance industrielle — tableau de bord, planification, PDR, moteurs électriques et assistant IA</p>
-    <div class="hero-tags">
-      <span class="hero-tag">📊 Dashboard KPIs</span>
-      <span class="hero-tag">📋 Plan de charge</span>
-      <span class="hero-tag">🔩 PDR Disponibilité</span>
-      <span class="hero-tag">🗓️ Arrêts préventifs</span>
-      <span class="hero-tag">⚡ Moteurs électriques</span>
-      <span class="hero-tag">🤖 Assistant IA</span>
-      <span class="hero-tag">📁 Livrables</span>
-      <span class="hero-tag">📱 PWA installable</span>
-    </div>
-    <div class="hero-stats">
-      <div style="text-align:center"><div class="hstat-num">4</div><div class="hstat-lbl">Modules</div></div>
-      <div style="text-align:center"><div class="hstat-num">8</div><div class="hstat-lbl">Profils</div></div>
-      <div style="text-align:center"><div class="hstat-num">100%</div><div class="hstat-lbl">Temps réel</div></div>
-      <div style="text-align:center"><div class="hstat-num">SAP</div><div class="hstat-lbl">Intégration</div></div>
+
+      <!-- 2 · Planification -->
+      <div class="hero-card" style="background:white;border:1.5px solid #c8e6c9;border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(46,125,50,.12)">
+        <div style="background:linear-gradient(135deg,#2e7d32,#388e3c);padding:8px 10px;display:flex;align-items:center;gap:6px">
+          <span style="font-size:13px">📋</span>
+          <span style="font-size:9.5px;font-weight:700;color:white;letter-spacing:.3px">Planification</span>
+        </div>
+        <div style="padding:8px">
+          <div style="display:flex;gap:3px;margin-bottom:7px">
+            <div style="flex:1;height:11px;background:#e8f5e9;border-radius:3px;border:1px solid #c8e6c9"></div>
+            <div style="flex:1;height:11px;background:#e8f5e9;border-radius:3px;border:1px solid #c8e6c9"></div>
+            <div style="width:18px;height:11px;background:#2e7d32;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:7px;color:white">↺</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;align-items:center;gap:4px;padding:4px 5px;background:#f9fff9;border-radius:5px;border:1px solid #e8f5e9">
+              <div style="width:24px;height:6px;background:#a5d6a7;border-radius:2px"></div>
+              <div style="flex:1;height:5px;background:#e8f5e9;border-radius:2px"></div>
+              <div style="padding:1px 5px;background:#e8f5e9;border-radius:3px;font-size:7px;color:#2e7d32;font-weight:700">✓ Réalisé</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;padding:4px 5px;background:#f9fff9;border-radius:5px;border:1px solid #e8f5e9">
+              <div style="width:24px;height:6px;background:#a5d6a7;border-radius:2px"></div>
+              <div style="flex:1;height:5px;background:#e8f5e9;border-radius:2px"></div>
+              <div style="padding:1px 5px;background:#fce4e4;border-radius:3px;font-size:7px;color:#c62828;font-weight:700">✗ Non réal.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;padding:4px 5px;background:#f9fff9;border-radius:5px;border:1px solid #e8f5e9">
+              <div style="width:24px;height:6px;background:#a5d6a7;border-radius:2px"></div>
+              <div style="flex:1;height:5px;background:#e8f5e9;border-radius:2px"></div>
+              <div style="padding:1px 5px;background:#fff8e1;border-radius:3px;font-size:7px;color:#f57f17;font-weight:700">— Attente</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 · PDR -->
+      <div class="hero-card" style="background:white;border:1.5px solid #c8e6c9;border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(46,125,50,.12)">
+        <div style="background:linear-gradient(135deg,#388e3c,#43a047);padding:8px 10px;display:flex;align-items:center;gap:6px">
+          <span style="font-size:13px">🔩</span>
+          <span style="font-size:9.5px;font-weight:700;color:white;letter-spacing:.3px">PDR Disponibilité</span>
+        </div>
+        <div style="padding:8px;display:flex;flex-direction:column;gap:5px">
+          <div style="padding:5px 7px;background:#e8f5e9;border-radius:7px;border:1px solid #a5d6a7">
+            <div style="font-size:8px;font-weight:700;color:#1b5e20;margin-bottom:2px">Joint torique DN50</div>
+            <span style="background:#1b5e20;color:white;border-radius:3px;padding:1px 6px;font-size:7px;font-weight:700">✅ Disponible</span>
+          </div>
+          <div style="padding:5px 7px;background:#fce4e4;border-radius:7px;border:1px solid #ef9a9a">
+            <div style="font-size:8px;font-weight:700;color:#c62828;margin-bottom:2px">Réducteur 7.5 kW</div>
+            <span style="background:#c62828;color:white;border-radius:3px;padding:1px 6px;font-size:7px;font-weight:700">❌ Rupture</span>
+          </div>
+          <div style="padding:5px 7px;background:#fff8e1;border-radius:7px;border:1px solid #ffe082">
+            <div style="font-size:8px;font-weight:700;color:#e65100;margin-bottom:2px">Condensateur 400V</div>
+            <span style="background:#f57f17;color:white;border-radius:3px;padding:1px 6px;font-size:7px;font-weight:700">⏳ En attente</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 · Moteurs électriques -->
+      <div class="hero-card" style="background:white;border:1.5px solid #c8e6c9;border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(46,125,50,.12)">
+        <div style="background:linear-gradient(135deg,#43a047,#66bb6a);padding:8px 10px;display:flex;align-items:center;gap:6px">
+          <span style="font-size:13px">⚡</span>
+          <span style="font-size:9.5px;font-weight:700;color:white;letter-spacing:.3px">Moteurs Élect.</span>
+        </div>
+        <div style="padding:8px">
+          <div style="background:#f1f8f1;border-radius:8px;border:1px solid #c8e6c9;padding:6px;margin-bottom:7px">
+            <div style="font-size:8px;font-weight:700;color:#1b5e20;margin-bottom:4px">🔄 M-201 BROYEUR</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px">
+              <div style="background:white;border-radius:4px;padding:3px 5px;font-size:7.5px;color:#2e7d32;border:1px solid #e8f5e9"><span style="color:#a5d6a7;font-size:7px">kW </span>75</div>
+              <div style="background:white;border-radius:4px;padding:3px 5px;font-size:7.5px;color:#2e7d32;border:1px solid #e8f5e9"><span style="color:#a5d6a7;font-size:7px">V </span>380</div>
+              <div style="background:white;border-radius:4px;padding:3px 5px;font-size:7.5px;color:#2e7d32;border:1px solid #e8f5e9"><span style="color:#a5d6a7;font-size:7px">tr </span>1450</div>
+              <div style="background:#e8f5e9;border-radius:4px;padding:3px 5px;font-size:7px;color:#1b5e20;font-weight:700;border:1px solid #a5d6a7">✓ Approuvée</div>
+            </div>
+          </div>
+          <div style="font-size:7px;color:#81c784;font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px">État moteur</div>
+          <div style="display:flex;align-items:center;gap:2px">
+            <div style="width:18px;height:18px;border-radius:50%;background:#2e7d32;display:flex;align-items:center;justify-content:center;font-size:8px;color:white;font-weight:bold;flex-shrink:0">✓</div>
+            <div style="flex:1;height:2px;background:#2e7d32;border-radius:1px"></div>
+            <div style="width:18px;height:18px;border-radius:50%;background:#f57f17;display:flex;align-items:center;justify-content:center;font-size:8px;color:white;font-weight:bold;flex-shrink:0">2</div>
+            <div style="flex:1;height:2px;background:#e8f5e9;border-radius:1px"></div>
+            <div style="width:18px;height:18px;border-radius:50%;background:#e8f5e9;border:1.5px solid #c8e6c9;display:flex;align-items:center;justify-content:center;font-size:8px;color:#a5d6a7;font-weight:bold;flex-shrink:0">3</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:6.5px;color:#a5d6a7;margin-top:3px"><span>Attente</span><span>Réparation</span><span>Réparé</span></div>
+        </div>
+      </div>
+
+      <!-- 5 · Assistant IA -->
+      <div class="hero-card" style="background:white;border:1.5px solid #c8e6c9;border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(46,125,50,.12)">
+        <div style="background:linear-gradient(135deg,#1b5e20,#388e3c);padding:8px 10px;display:flex;align-items:center;gap:6px">
+          <span style="font-size:13px">🤖</span>
+          <span style="font-size:9.5px;font-weight:700;color:white;letter-spacing:.3px">Assistant IA</span>
+        </div>
+        <div style="padding:8px;display:flex;flex-direction:column;gap:5px">
+          <div style="display:flex;gap:4px;align-items:flex-start">
+            <div style="width:18px;height:18px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0">🤖</div>
+            <div style="background:#f1f8f1;border:1px solid #e8f5e9;border-radius:3px 8px 8px 8px;padding:5px 7px;font-size:7.5px;color:#2d4a2d;line-height:1.5">Bonjour ! Je suis votre assistant maintenance.</div>
+          </div>
+          <div style="display:flex;gap:4px;align-items:flex-start;justify-content:flex-end">
+            <div style="background:#2e7d32;border-radius:8px 3px 8px 8px;padding:5px 7px;font-size:7.5px;color:white;line-height:1.5">Combien d'OTs en attente ?</div>
+            <div style="width:18px;height:18px;border-radius:50%;background:#2e7d32;display:flex;align-items:center;justify-content:center;font-size:7px;color:white;font-weight:700;flex-shrink:0">MB</div>
+          </div>
+          <div style="display:flex;gap:4px;align-items:flex-start">
+            <div style="width:18px;height:18px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0">🤖</div>
+            <div style="background:#f1f8f1;border:1px solid #e8f5e9;border-radius:3px 8px 8px 8px;padding:5px 7px;font-size:7.5px;color:#2d4a2d;line-height:1.5"><b style="color:#1b5e20">12 OTs</b> ont des PDR en attente de confirmation.</div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -429,16 +581,34 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;
   </div>
 </div>
 
-<!-- ═══ 8 · MAP ═══ -->
+<!-- ═══ 7b · CONFIRMATION PDR VIDEO ═══ -->
+<div class="slide bg-white" data-slide="7b">
+  <div class="eyebrow">Module 2 — PDR · Démonstration</div>
+  <h2 class="st2">Confirmation PDR</h2>
+  <p class="sdesc">Processus de confirmation des pièces de rechange par le service Appro</p>
+  <div class="video-wrap body-block">
+    <video controls preload="metadata" playsinline>
+      <source src="Videos/Confirmation PDR.mov" type="video/quicktime">
+      <source src="Videos/Confirmation PDR.mov" type="video/mp4">
+      <p style="color:#5a8a5a;padding:40px;text-align:center;background:white">
+        Votre navigateur ne lit pas ce format.
+        <a href="Videos/Confirmation PDR.mov" download style="color:#2e7d32;font-weight:600">⬇ Télécharger la vidéo</a>
+      </p>
+    </video>
+    <div class="vid-cap">📹 Enregistrement d'écran — Confirmation des PDR</div>
+  </div>
+</div>
+
+<!-- ═══ 8 · PLAN DE CHARGE ═══ -->
 <div class="slide bg-white" data-slide="8">
-  <div class="eyebrow">Module 2 — MAP</div>
-  <h2 class="st2">Maintenance à Planifier</h2>
-  <p class="sdesc">OTs SOPL+LANC · Saisie de réalisation Service Exécution · Recherche combinée</p>
-  <div class="body-block" style="width:100%;max-width:880px;margin-top:14px">
+  <div class="eyebrow">Module 2 — Plan de charge</div>
+  <h2 class="st2">Plan de charge</h2>
+  <p class="sdesc">Ici, le plan de charge est clair, filtrable et accessible à tous les collaborateurs.</p>
+  <div class="body-block" style="width:100%;max-width:880px;margin-top:10px">
     <div class="fbar">
-      <select class="fsel"><option>Tous postes</option><option>421-MEC</option></select>
-      <select class="fsel"><option>ZCOR</option><option>ZCON</option></select>
-      <select class="fsel"><option>Objet technique</option><option>N°OT</option><option>Avis</option><option>Désignation</option></select>
+      <select class="fsel"><option>Service</option><option>421-MEC</option><option>423-ELEC</option><option>421-INST</option></select>
+      <select class="fsel"><option>Type d'OT</option><option>ZCOR</option><option>ZCON</option></select>
+      <select class="fsel"><option>Objet technique</option><option>N°OT</option><option>N°Avis</option><option>Description</option></select>
       <input class="finp" placeholder="Valeur…">
       <button class="fbtn">↺</button>
     </div>
@@ -452,14 +622,24 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;
         </tbody>
       </table>
     </div>
+    <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:13px">
+      <span class="hero-tag">📅 Historique OTs planifiés depuis le déploiement SAP</span>
+      <span class="hero-tag">🔍 Recherche : Service · Type d'OT · Objet · N°OT · N°Avis · Description</span>
+      <span class="hero-tag">✅ Feedback des travaux par service exécution</span>
+    </div>
   </div>
 </div>
 
-<!-- ═══ 9 · CAL ARRETS VIDEO ═══ -->
+<!-- ═══ 9 · CALENDRIER DES ARRÊTS ═══ -->
 <div class="slide bg-light" data-slide="9">
   <div class="eyebrow">Module 2 — Calendrier des arrêts</div>
-  <h2 class="st2">Arrêts Préventifs</h2>
+  <h2 class="st2">Calendrier des arrêts</h2>
   <p class="sdesc">Vue mensuelle avec codes couleurs, navigation et statistiques de réalisation</p>
+  <div style="display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-bottom:10px">
+    <span class="hero-tag">📅 Historique des arrêts préventifs</span>
+    <span class="hero-tag">🎨 Code couleur</span>
+    <span class="hero-tag">◀ Navigation par mois ▶</span>
+  </div>
   <div class="video-wrap body-block">
     <video controls preload="metadata" playsinline>
       <source src="Videos/Calendrier de maintenance.mov" type="video/quicktime">
@@ -494,6 +674,24 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;
     <div style="font-size:10px;font-weight:700;color:#81c784;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">État du moteur déposé</div>
     <div class="rbar"><div class="rd done">✓</div><div class="rl done"></div><div class="rd act">2</div><div class="rl"></div><div class="rd">3</div></div>
     <div style="display:flex;justify-content:space-between;font-size:9.5px;color:#a5d6a7;margin-top:4px"><span>En attente réparation</span><span style="margin-left:22px">En réparation</span><span>Réparé</span></div>
+  </div>
+</div>
+
+<!-- ═══ 10b · NOUVELLE DEMANDE VIDEO ═══ -->
+<div class="slide bg-light" data-slide="10b">
+  <div class="eyebrow">Module 3 — Moteurs · Démonstration</div>
+  <h2 class="st2">Nouvelle demande</h2>
+  <p class="sdesc">Création d'une nouvelle demande de changement ou réparation de moteur électrique</p>
+  <div class="video-wrap body-block">
+    <video controls preload="metadata" playsinline>
+      <source src="Videos/Nouvelle demande.mov" type="video/quicktime">
+      <source src="Videos/Nouvelle demande.mov" type="video/mp4">
+      <p style="color:#5a8a5a;padding:40px;text-align:center;background:white">
+        Votre navigateur ne lit pas ce format.
+        <a href="Videos/Nouvelle demande.mov" download style="color:#2e7d32;font-weight:600">⬇ Télécharger la vidéo</a>
+      </p>
+    </video>
+    <div class="vid-cap">📹 Enregistrement d'écran — Nouvelle demande de moteur</div>
   </div>
 </div>
 
@@ -558,6 +756,24 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;
   <div style="margin-top:18px;background:#e8f5e9;border:1.5px solid #a5d6a7;border-radius:12px;padding:14px 20px;display:flex;gap:12px;align-items:center;width:100%;max-width:680px">
     <span style="font-size:16px">ℹ️</span>
     <span style="font-size:12.5px;color:#2d4a2d">Hébergés sur <strong>GitHub privé</strong> (docs-mainana) · Token API sécurisé · Sélecteur Année / Mois</span>
+  </div>
+</div>
+
+<!-- ═══ 12b · LIVRABLES VIDEO ═══ -->
+<div class="slide bg-light" data-slide="12b">
+  <div class="eyebrow">Module 4 — Livrables · Démonstration</div>
+  <h2 class="st2">Livrables</h2>
+  <p class="sdesc">Bibliothèque de documents techniques — navigation, téléchargement et gestion des rapports</p>
+  <div class="video-wrap body-block">
+    <video controls preload="metadata" playsinline>
+      <source src="Videos/Livrables.mov" type="video/quicktime">
+      <source src="Videos/Livrables.mov" type="video/mp4">
+      <p style="color:#5a8a5a;padding:40px;text-align:center;background:white">
+        Votre navigateur ne lit pas ce format.
+        <a href="Videos/Livrables.mov" download style="color:#2e7d32;font-weight:600">⬇ Télécharger la vidéo</a>
+      </p>
+    </video>
+    <div class="vid-cap">📹 Enregistrement d'écran — Module Livrables</div>
   </div>
 </div>
 
