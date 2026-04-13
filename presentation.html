@@ -97,6 +97,20 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;
 @keyframes solCardSlide{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:translateX(0)}}
 @keyframes solCheckPop{from{opacity:0;transform:scale(0) rotate(-20deg)}to{opacity:1;transform:scale(1) rotate(0deg)}}
 @keyframes solLineDraw{from{width:0;opacity:0}to{width:100%;opacity:1}}
+/* ═══ DASHBOARD INTRO ANIMATIONS ═══ */
+[data-slide="dash-intro"].active .dash-title{animation:heroTitleIn .7s .15s cubic-bezier(.4,0,.2,1) both}
+[data-slide="dash-intro"].active .dash-sub{animation:heroTitleIn .6s .3s ease both}
+[data-slide="dash-intro"].active .dash-card{animation:heroCardPop .6s cubic-bezier(.34,1.45,.64,1) both}
+[data-slide="dash-intro"].active .dash-card:nth-child(1){animation-delay:.45s}
+[data-slide="dash-intro"].active .dash-card:nth-child(2){animation-delay:.62s}
+[data-slide="dash-intro"].active .dash-card:nth-child(3){animation-delay:.79s}
+[data-slide="dash-intro"].active .dash-icon{animation:solCheckPop .45s cubic-bezier(.34,1.8,.64,1) both}
+[data-slide="dash-intro"].active .dash-card:nth-child(1) .dash-icon{animation-delay:.65s}
+[data-slide="dash-intro"].active .dash-card:nth-child(2) .dash-icon{animation-delay:.82s}
+[data-slide="dash-intro"].active .dash-card:nth-child(3) .dash-icon{animation-delay:.99s}
+.dash-card{transition:transform .3s cubic-bezier(.34,1.3,.64,1),box-shadow .3s ease}
+.dash-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 14px 36px rgba(46,125,50,.2)!important}
+
 [data-slide="3"].active .sol-title{animation:solTitleIn .65s .1s cubic-bezier(.4,0,.2,1) both}
 [data-slide="3"].active .sol-sub{animation:solTitleIn .55s .25s ease both}
 [data-slide="3"].active .sol-card{animation:solCardSlide .55s cubic-bezier(.34,1.2,.64,1) both}
@@ -748,21 +762,52 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;
   </div>
 </div>
 
-<!-- ═══ 3 · DASHBOARD VIDEO ═══ -->
-<div class="slide bg-light" data-slide="3">
+<!-- ═══ DASHBOARD INTRO ═══ -->
+<div class="slide bg-green" data-slide="dash-intro">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;width:100%">
 
-  <h2 class="st2">Démonstration Dashboard</h2>
-  <p class="sdesc">Chargement SAP, KPIs temps réel, vue mensuelle et annuelle</p>
-  <div class="video-wrap body-block">
-    <video controls preload="metadata" playsinline>
-      <source src="Videos/Dashboard.mov" type="video/quicktime">
-      <source src="Videos/Dashboard.mov" type="video/mp4">
-      <p style="color:#5a8a5a;padding:40px;text-align:center;background:white">
-        Votre navigateur ne lit pas ce format.
-        <a href="Videos/Dashboard.mov" download style="color:#2e7d32;font-weight:600">⬇ Télécharger la vidéo</a>
-      </p>
-    </video>
-    <div class="vid-cap">📹 Enregistrement d'écran — Dashboard Maintenance Analytics</div>
+    <h2 class="st2 dash-title" style="color:#1b5e20;margin-bottom:8px">Pilotage de la maintenance<br>en temps réel</h2>
+    <p class="sdesc dash-sub" style="text-align:center;margin-bottom:26px;max-width:600px">Accès instantané aux indicateurs clés pour suivre et optimiser l'activité</p>
+
+    <div class="body-block" style="width:100%;max-width:860px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;width:100%">
+
+        <!-- Carte 1 -->
+        <div class="dash-card" style="background:white;border:1.5px solid #c8e6c9;border-radius:16px;padding:20px;box-shadow:0 4px 18px rgba(46,125,50,.1)">
+          <div class="dash-icon" style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#1b5e20,#43a047);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:12px">📋</div>
+          <div style="font-size:13.5px;font-weight:700;color:#1b5e20;margin-bottom:8px">Suivi global des OTs</div>
+          <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px">
+            <li style="font-size:11.5px;color:#4a7c4a;display:flex;gap:6px"><span style="color:#43a047;font-weight:700;flex-shrink:0">·</span>Planifiés, réalisés, en attente</li>
+            <li style="font-size:11.5px;color:#43a047;font-weight:600;display:flex;gap:6px"><span style="flex-shrink:0">→</span>Vision complète de la charge et de l'avancement</li>
+          </ul>
+        </div>
+
+        <!-- Carte 2 -->
+        <div class="dash-card" style="background:white;border:1.5px solid #c8e6c9;border-radius:16px;padding:20px;box-shadow:0 4px 18px rgba(46,125,50,.1)">
+          <div class="dash-icon" style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#2e7d32,#66bb6a);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:12px">📊</div>
+          <div style="font-size:13.5px;font-weight:700;color:#1b5e20;margin-bottom:6px">Analyse des performances</div>
+          <div style="background:#e8f5e9;border-radius:8px;padding:8px 10px;margin-bottom:8px;display:flex;gap:6px;align-items:flex-start">
+            <span style="font-size:15px;flex-shrink:0">⏱️</span>
+            <span style="font-size:11px;color:#2e7d32;font-weight:600;line-height:1.5">En quelques secondes au lieu de plusieurs heures</span>
+          </div>
+          <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px">
+            <li style="font-size:11.5px;color:#4a7c4a;display:flex;gap:6px"><span style="color:#43a047;font-weight:700;flex-shrink:0">·</span>Taux de réalisation, backlog, répartition</li>
+            <li style="font-size:11.5px;color:#43a047;font-weight:600;display:flex;gap:6px"><span style="flex-shrink:0">→</span>Identification rapide des points critiques</li>
+          </ul>
+        </div>
+
+        <!-- Carte 3 -->
+        <div class="dash-card" style="background:white;border:1.5px solid #c8e6c9;border-radius:16px;padding:20px;box-shadow:0 4px 18px rgba(46,125,50,.1)">
+          <div class="dash-icon" style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#388e3c,#a5d6a7);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:12px">🎯</div>
+          <div style="font-size:13.5px;font-weight:700;color:#1b5e20;margin-bottom:8px">Support à la décision</div>
+          <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px">
+            <li style="font-size:11.5px;color:#4a7c4a;display:flex;gap:6px"><span style="color:#43a047;font-weight:700;flex-shrink:0">·</span>Données actualisées en temps réel</li>
+            <li style="font-size:11.5px;color:#43a047;font-weight:600;display:flex;gap:6px"><span style="flex-shrink:0">→</span>Priorisation des actions</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
   </div>
 </div>
 
@@ -791,6 +836,24 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;
     <div class="cbox"><div class="ctit">Taux de réalisation mensuel</div><div class="csub">CONF + TCLO + CLOT / total · 12 mois</div><div class="bwrap"><div class="b bg" style="height:60%"></div><div class="b bg" style="height:72%"></div><div class="b bg" style="height:55%"></div><div class="b bgg" style="height:80%"></div><div class="b bg" style="height:68%"></div><div class="b bg" style="height:75%"></div><div class="b bg" style="height:85%"></div><div class="b ba" style="height:50%"></div><div class="b bg" style="height:66%"></div><div class="b bg" style="height:78%"></div><div class="b bgg" style="height:90%"></div><div class="b bp" style="height:71%"></div></div><div class="blbl"><span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span><span>O</span><span>N</span><span>D</span></div></div>
     <div class="cbox"><div class="ctit">Réalisation par corps de métier</div><div class="csub">% OT réalisés par poste</div><div class="bwrap"><div class="b bg" style="height:85%"></div><div class="b bgg" style="height:70%"></div><div class="b ba" style="height:90%"></div><div class="b bg" style="height:60%"></div><div class="b bp" style="height:78%"></div></div><div class="blbl"><span>421-MEC</span><span>423-ELEC</span><span>421-INST</span><span>423-REG</span><span>421-CHAU</span></div></div>
     <div class="cbox"><div class="ctit">Systématique vs Curatif</div><div class="csub">Part en % du volume mensuel</div><div class="bwrap" style="align-items:flex-end"><div style="flex:1;display:flex;flex-direction:column;gap:2px;height:100%;justify-content:flex-end"><div style="height:42%;background:#43a047;border-radius:4px 4px 0 0"></div><div style="height:28%;background:#66bb6a;border-radius:4px 4px 0 0"></div></div><div style="flex:1;display:flex;flex-direction:column;gap:2px;height:100%;justify-content:flex-end"><div style="height:48%;background:#43a047;border-radius:4px 4px 0 0"></div><div style="height:25%;background:#66bb6a;border-radius:4px 4px 0 0"></div></div><div style="flex:1;display:flex;flex-direction:column;gap:2px;height:100%;justify-content:flex-end"><div style="height:38%;background:#43a047;border-radius:4px 4px 0 0"></div><div style="height:32%;background:#66bb6a;border-radius:4px 4px 0 0"></div></div><div style="flex:1;display:flex;flex-direction:column;gap:2px;height:100%;justify-content:flex-end"><div style="height:55%;background:#43a047;border-radius:4px 4px 0 0"></div><div style="height:20%;background:#66bb6a;border-radius:4px 4px 0 0"></div></div></div><div style="display:flex;gap:14px;margin-top:8px"><div class="leg-i"><div class="leg-d" style="background:#43a047"></div>Préventif</div><div class="leg-i"><div class="leg-d" style="background:#66bb6a"></div>Correctif</div></div></div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD VIDEO ═══ -->
+<div class="slide bg-light" data-slide="dash-video">
+
+  <h2 class="st2">Démonstration Dashboard</h2>
+  <p class="sdesc">Chargement SAP, KPIs temps réel, vue mensuelle et annuelle</p>
+  <div class="video-wrap body-block">
+    <video controls preload="metadata" playsinline>
+      <source src="Videos/Dashboard.mov" type="video/quicktime">
+      <source src="Videos/Dashboard.mov" type="video/mp4">
+      <p style="color:#5a8a5a;padding:40px;text-align:center;background:white">
+        Votre navigateur ne lit pas ce format.
+        <a href="Videos/Dashboard.mov" download style="color:#2e7d32;font-weight:600">⬇ Télécharger la vidéo</a>
+      </p>
+    </video>
+    <div class="vid-cap">📹 Enregistrement d'écran — Dashboard Maintenance Analytics</div>
   </div>
 </div>
 
