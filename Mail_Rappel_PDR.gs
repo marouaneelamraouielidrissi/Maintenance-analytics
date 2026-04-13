@@ -4,59 +4,7 @@
 //  Déclencheur : chaque mercredi à 08h00
 // ============================================================
 
-// ── Configuration OCP Exchange (EWS) ─────────────────────────
-const OCP_EMAIL = 'm.elamraoui@ocpgroup.ma';
-const EWS_URL   = 'https://owa.ocpgroup.ma/EWS/Exchange.asmx';
-function getOcpPassword() {
-  return PropertiesService.getScriptProperties().getProperty('OCP_PASSWORD') || '';
-}
-
-function sendEmailOCP(to, subject, body, options) {
-  const toList = Array.isArray(to) ? to : [to];
-  const cc = options && options.cc
-    ? (Array.isArray(options.cc) ? options.cc : options.cc.split(',').map(function(e){ return e.trim(); }).filter(Boolean))
-    : [];
-  const toRecipients = toList.map(function(e){
-    return '<t:Mailbox><t:EmailAddress>' + e + '</t:EmailAddress></t:Mailbox>';
-  }).join('');
-  const ccBlock = cc.length
-    ? '<t:CcRecipients>' + cc.map(function(e){
-        return '<t:Mailbox><t:EmailAddress>' + e + '</t:EmailAddress></t:Mailbox>';
-      }).join('') + '</t:CcRecipients>'
-    : '';
-  const fromName = (options && options.name) ? options.name : 'Maintenance Analytics';
-  const bodyType = (options && options.htmlBody) ? 'HTML' : 'Text';
-  const bodyContent = (options && options.htmlBody) ? options.htmlBody : (body || '');
-  const soap = '<?xml version="1.0" encoding="utf-8"?>'
-    + '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'
-    + ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"'
-    + ' xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages">'
-    + '<soap:Body><m:CreateItem MessageDisposition="SendAndSaveCopy">'
-    + '<m:SavedItemFolderId><t:DistinguishedFolderId Id="sentitems"/></m:SavedItemFolderId>'
-    + '<m:Items><t:Message>'
-    + '<t:Subject>' + subject + '</t:Subject>'
-    + '<t:Body BodyType="' + bodyType + '">' + bodyContent + '</t:Body>'
-    + '<t:From><t:Mailbox><t:Name>' + fromName + '</t:Name>'
-    + '<t:EmailAddress>' + OCP_EMAIL + '</t:EmailAddress></t:Mailbox></t:From>'
-    + '<t:ToRecipients>' + toRecipients + '</t:ToRecipients>'
-    + ccBlock
-    + '</t:Message></m:Items>'
-    + '</m:CreateItem></m:Body></soap:Envelope>';
-  const credentials = Utilities.base64Encode(OCP_EMAIL + ':' + getOcpPassword());
-  const response = UrlFetchApp.fetch(EWS_URL, {
-    method: 'post',
-    contentType: 'text/xml; charset=utf-8',
-    headers: {
-      'Authorization': 'Basic ' + credentials,
-      'SOAPAction': 'http://schemas.microsoft.com/exchange/services/2006/messages/CreateItem'
-    },
-    payload: soap,
-    muteHttpExceptions: true
-  });
-  if (response.getResponseCode() !== 200 || response.getContentText().indexOf('NoError') === -1) {
-    throw new Error('EWS send failed (' + response.getResponseCode() + '): ' + response.getContentText().substring(0, 300));
-  }
-}
+// sendEmailOCP(), OCP_EMAIL, EWS_URL et getOcpPassword() sont définis dans google_apps_script.js
 
 function envoyerRappelPDR() {
 
