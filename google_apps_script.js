@@ -31,8 +31,8 @@ function sendEmailOCP(to, subject, body, options) {
     + '<soap:Body><m:CreateItem MessageDisposition="SendAndSaveCopy">'
     + '<m:SavedItemFolderId><t:DistinguishedFolderId Id="sentitems"/></m:SavedItemFolderId>'
     + '<m:Items><t:Message>'
-    + '<t:Subject>' + subject + '</t:Subject>'
-    + '<t:Body BodyType="' + bodyType + '">' + bodyContent + '</t:Body>'
+    + '<t:Subject>' + subject.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</t:Subject>'
+    + '<t:Body BodyType="' + bodyType + '"><![CDATA[' + bodyContent + ']]></t:Body>'
     + '<t:From><t:Mailbox><t:Name>' + fromName + '</t:Name>'
     + '<t:EmailAddress>' + OCP_EMAIL + '</t:EmailAddress></t:Mailbox></t:From>'
     + '<t:ToRecipients>' + toRecipients + '</t:ToRecipients>'
@@ -503,10 +503,10 @@ function doPost(e) {
     const payload = JSON.parse(e.postData.contents);
     if (payload.action === 'save') {
       saveDemande(payload.demande);
-      sendEmailNouvelleDemande(payload.demande);
+      try { sendEmailNouvelleDemande(payload.demande); } catch(mailErr) { Logger.log('Email nouvelle demande échoué : ' + mailErr.toString()); }
     } else if (payload.action === 'update') {
       updateDemande(payload.id, payload.updates);
-      sendEmailChangementStatut(payload.id, payload.updates);
+      try { sendEmailChangementStatut(payload.id, payload.updates); } catch(mailErr) { Logger.log('Email changement statut échoué : ' + mailErr.toString()); }
     }
     return jsonResponse({ success: true });
   } catch(err) {
