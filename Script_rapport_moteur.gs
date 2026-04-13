@@ -145,6 +145,56 @@ function Envoyer_Rapport_Moteur_PDF() {
   sendEmailEWS(to, cc, sujet, messageHtml, blob, 'Bureau de méthode Daoui - Gestion des interchangeables');
 }
 
+/**
+ * Fonction de test : envoie le rapport uniquement à m.elamraoui@ocpgroup.ma
+ * pour vérifier que tout fonctionne avant l'envoi réel à tous les destinataires.
+ */
+function testerEnvoiRapportMoteur() {
+  const feuille    = SpreadsheetApp.openById("1C9bYkPsoYg81ARgolVDlZRwsMZk4Seff6aC7vfxoVeE");
+  const feuilleNom = "Rapport moteur";
+
+  const dateActuelle = new Date();
+  const mois  = Utilities.formatDate(dateActuelle, Session.getScriptTimeZone(), "MMMM");
+  const annee = Utilities.formatDate(dateActuelle, Session.getScriptTimeZone(), "yyyy");
+
+  const messageHtml = `
+    <div style="color: #003366; font-family: Arial, sans-serif;">
+      <p><strong>[TEST]</strong> Bonjour,</p>
+      <p>Ceci est un <strong>email de test</strong> — rapport de gestion des moteurs électriques pour <strong>${mois} ${annee}</strong>.</p>
+      <p>Si vous recevez cet email avec le PDF en pièce jointe, la configuration est correcte.</p>
+      <br>
+      <div style="font-family: 'Times New Roman', serif; font-size: 14px; color: #002060; line-height: 1.5;">
+        <span style="font-weight: bold;">Marouane ELAMRAOUI</span><br>
+        <span style="color: #c55a11;">Méthode de Maintenance</span><br>
+        <span style="font-weight: bold;">OCP SA - <span style="color:#002060;">Khouribga</span></span>
+      </div>
+    </div>
+  `;
+
+  const options = {
+    exportFormat: "pdf", format: "pdf", size: "A4", landscape: false,
+    sheetnames: false, printtitle: false, pagenumbers: false, gridlines: false, fzr: false,
+    gid: feuille.getSheetByName(feuilleNom).getSheetId()
+  };
+
+  const url     = 'https://docs.google.com/spreadsheets/d/' + feuille.getId() + '/export?' +
+    Object.entries(options).map(function(kv){ return kv[0] + '=' + kv[1]; }).join('&');
+  const token   = ScriptApp.getOAuthToken();
+  const pdfResp = UrlFetchApp.fetch(url, { headers: { Authorization: 'Bearer ' + token } });
+  const blob    = pdfResp.getBlob().setName("[TEST] Rapport mensuel moteurs.pdf");
+
+  sendEmailEWS(
+    OCP_EMAIL_RPT,   // uniquement toi
+    null,            // pas de CC
+    '[TEST] Rapport Mensuel de gestion des moteurs électriques',
+    messageHtml,
+    blob,
+    'Bureau de méthode Daoui - Gestion des interchangeables'
+  );
+
+  Logger.log('✅ Email de test envoyé à : ' + OCP_EMAIL_RPT);
+}
+
 function doGet(e) {
   try {
     Envoyer_Rapport_Moteur_PDF();
