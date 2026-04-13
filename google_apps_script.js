@@ -33,8 +33,6 @@ function sendEmailOCP(to, subject, body, options) {
     + '<m:Items><t:Message>'
     + '<t:Subject>' + subject.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</t:Subject>'
     + '<t:Body BodyType="' + bodyType + '"><![CDATA[' + bodyContent + ']]></t:Body>'
-    + '<t:From><t:Mailbox><t:Name>' + fromName + '</t:Name>'
-    + '<t:EmailAddress>' + OCP_EMAIL + '</t:EmailAddress></t:Mailbox></t:From>'
     + '<t:ToRecipients>' + toRecipients + '</t:ToRecipients>'
     + ccBlock
     + '</t:Message></m:Items>'
