@@ -8264,18 +8264,22 @@ async function saveOcpPassword() {
   try {
     const params = new URLSearchParams({ action: 'setOcpPassword', password: pwd });
     const res = await fetch(WEBAPP_URL + '?' + params);
-    const data = await res.json();
-    if (data.success) {
+    let data;
+    try { data = await res.json(); } catch(je) { data = null; }
+    if (data && data.success) {
       msg.style.background = '#f0fdf4'; msg.style.color = '#15803d'; msg.style.border = '1px solid #bbf7d0';
       msg.textContent = '✓ Mot de passe enregistré avec succès.';
       document.getElementById('ocp-pwd-input').value = '';
+    } else if (data && data.error) {
+      msg.style.background = '#fff7ed'; msg.style.color = '#c2410c'; msg.style.border = '1px solid #fed7aa';
+      msg.textContent = 'Erreur script : ' + data.error;
     } else {
       msg.style.background = '#fff7ed'; msg.style.color = '#c2410c'; msg.style.border = '1px solid #fed7aa';
-      msg.textContent = 'Erreur : ' + (data.error || 'Échec de l\'enregistrement.');
+      msg.textContent = '⚠ Script non à jour. Copie le code de google_apps_script.js dans l\'éditeur GAS et fais un nouveau déploiement.';
     }
   } catch(e) {
-    msg.style.background = '#fff7ed'; msg.style.color = '#c2410c'; msg.style.border = '1px solid #fed7aa';
-    msg.textContent = 'Erreur de connexion au script.';
+    msg.style.display = 'block'; msg.style.background = '#fff7ed'; msg.style.color = '#c2410c'; msg.style.border = '1px solid #fed7aa';
+    msg.textContent = '⚠ Impossible de joindre le script. Vérifie ta connexion ou le déploiement GAS.';
   }
 }
 function verifySettingsAuth() {
