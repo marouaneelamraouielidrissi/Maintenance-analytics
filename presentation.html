@@ -150,6 +150,29 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;
 [data-slide="pdr-result"].active .res-item:nth-child(3){animation-delay:1.6s}
 [data-slide="pdr-result"].active .res-arrow{animation:arrowBounce 1s 1.8s ease-in-out infinite}
 
+/* ═══ RÉSULTAT PLAN DE CHARGE ═══ */
+@keyframes barSlide{from{width:0}to{width:100%}}
+@keyframes numPop{from{opacity:0;transform:scale(.4) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes kpiPop{from{opacity:0;transform:translateY(28px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+[data-slide="pdc-result"].active .pdc-label{animation:heroTitleIn .5s .1s ease both}
+[data-slide="pdc-result"].active .pdc-r-title{animation:heroTitleIn .65s .2s ease both}
+[data-slide="pdc-result"].active .pdc-r-sub{animation:heroTitleIn .55s .34s ease both}
+[data-slide="pdc-result"].active .pdc-r-kpi{animation:kpiPop .6s cubic-bezier(.34,1.3,.64,1) both}
+[data-slide="pdc-result"].active .pdc-r-kpi:nth-child(1){animation-delay:.48s}
+[data-slide="pdc-result"].active .pdc-r-kpi:nth-child(2){animation-delay:.65s}
+[data-slide="pdc-result"].active .pdc-r-num{animation:numPop .7s cubic-bezier(.34,1.56,.64,1) both}
+[data-slide="pdc-result"].active .pdc-r-kpi:nth-child(1) .pdc-r-num:nth-child(1){animation-delay:.7s}
+[data-slide="pdc-result"].active .pdc-r-kpi:nth-child(1) .pdc-r-num:last-child{animation-delay:.85s}
+[data-slide="pdc-result"].active .pdc-r-kpi:nth-child(2) .pdc-r-num:nth-child(1){animation-delay:.87s}
+[data-slide="pdc-result"].active .pdc-r-kpi:nth-child(2) .pdc-r-num:last-child{animation-delay:1.0s}
+[data-slide="pdc-result"].active .pdc-r-bar1{animation:barSlide .8s .9s ease-out both}
+[data-slide="pdc-result"].active .pdc-r-bar2{animation:barSlide .8s 1.05s ease-out both}
+[data-slide="pdc-result"].active .pdc-r-arrow{animation:arrowBounce 1.2s 1.3s ease-in-out infinite}
+[data-slide="pdc-result"].active .pdc-r-item{animation:resultFadeUp .5s ease both}
+[data-slide="pdc-result"].active .pdc-r-item:nth-child(1){animation-delay:1.15s}
+[data-slide="pdc-result"].active .pdc-r-item:nth-child(2){animation-delay:1.30s}
+[data-slide="pdc-result"].active .pdc-r-item:nth-child(3){animation-delay:1.45s}
+
 /* ═══ PLAN DE CHARGE PROBLÉMATIQUE ═══ */
 @keyframes pdcCardIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
 @keyframes pdcImpactFlash{0%,100%{background:rgba(198,40,40,.07)}50%{background:rgba(198,40,40,.16)}}
@@ -1218,6 +1241,95 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;
       <span class="hero-tag">🔍 Recherche : Service · Type d'OT · Objet · N°OT · N°Avis · Description</span>
       <span class="hero-tag">✅ Feedback des travaux par service exécution</span>
     </div>
+  </div>
+</div>
+
+<!-- ═══ RÉSULTAT PLAN DE CHARGE ═══ -->
+<div class="slide" data-slide="pdc-result" style="background:linear-gradient(145deg,#1b5e20 0%,#2e7d32 50%,#1b5e20 100%)">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;width:100%">
+
+    <!-- Titre -->
+    <div class="pdc-label" style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#a5d6a7;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+      <span style="display:inline-block;width:20px;height:2.5px;background:#66bb6a;border-radius:2px"></span>Plan de charge<span style="display:inline-block;width:20px;height:2.5px;background:#66bb6a;border-radius:2px"></span>
+    </div>
+    <h2 class="st2 pdc-r-title" style="color:white;margin-bottom:6px">Résultat concret</h2>
+    <p class="sdesc pdc-r-sub" style="color:rgba(255,255,255,.7);margin-bottom:28px">Plan de charge · Impact mesuré sur le terrain</p>
+
+    <!-- Deux KPI animés -->
+    <div class="pdc-r-kpis" style="display:flex;gap:20px;margin-bottom:26px;width:100%;max-width:780px">
+
+      <!-- KPI 1 — Gain de temps lancement -->
+      <div class="pdc-r-kpi" style="flex:1;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:20px;padding:22px 20px;text-align:center;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#66bb6a,#a5d6a7)"></div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,.45);text-transform:uppercase;margin-bottom:12px">Lancement des travaux</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:14px">
+          <div>
+            <div style="font-size:11px;color:rgba(239,154,154,.7);font-weight:600;margin-bottom:4px">Avant</div>
+            <div class="pdc-r-num" style="font-size:clamp(32px,4.5vw,52px);font-weight:900;color:#ef9a9a;letter-spacing:-3px;line-height:1">Lent</div>
+            <div style="font-size:11px;color:rgba(239,154,154,.6);margin-top:2px">données éparses</div>
+          </div>
+          <div class="pdc-r-arrow" style="font-size:28px;color:#66bb6a">→</div>
+          <div>
+            <div style="font-size:11px;color:rgba(165,214,167,.8);font-weight:600;margin-bottom:4px">Après</div>
+            <div class="pdc-r-num" style="font-size:clamp(32px,4.5vw,52px);font-weight:900;color:#a5d6a7;letter-spacing:-3px;line-height:1">−1h</div>
+            <div style="font-size:11px;color:rgba(165,214,167,.6);margin-top:2px">par séance de lancement</div>
+          </div>
+        </div>
+        <div style="height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden">
+          <div class="pdc-r-bar1" style="height:100%;width:0;background:linear-gradient(90deg,#66bb6a,#a5d6a7);border-radius:4px"></div>
+        </div>
+        <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:5px">Plan consultable instantanément par tous</div>
+      </div>
+
+      <!-- KPI 2 — Planification efficace -->
+      <div class="pdc-r-kpi" style="flex:1;background:rgba(102,187,106,.12);border:1.5px solid rgba(102,187,106,.35);border-radius:20px;padding:22px 20px;text-align:center;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#a5d6a7,#66bb6a)"></div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,.45);text-transform:uppercase;margin-bottom:12px">Planification efficace</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:14px">
+          <div>
+            <div style="font-size:11px;color:rgba(239,154,154,.7);font-weight:600;margin-bottom:4px">Avant</div>
+            <div class="pdc-r-num" style="font-size:clamp(32px,4.5vw,52px);font-weight:900;color:#ef9a9a;letter-spacing:-3px;line-height:1">❌</div>
+            <div style="font-size:11px;color:rgba(239,154,154,.6);margin-top:2px">OTs dupliqués, mal suivis</div>
+          </div>
+          <div class="pdc-r-arrow" style="font-size:28px;color:#66bb6a">→</div>
+          <div>
+            <div style="font-size:11px;color:rgba(165,214,167,.8);font-weight:600;margin-bottom:4px">Après</div>
+            <div class="pdc-r-num" style="font-size:clamp(32px,4.5vw,52px);font-weight:900;color:#a5d6a7;letter-spacing:-3px;line-height:1">✅</div>
+            <div style="font-size:11px;color:rgba(165,214,167,.6);margin-top:2px">OTs replanifiés & traçables</div>
+          </div>
+        </div>
+        <div style="height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden">
+          <div class="pdc-r-bar2" style="height:100%;width:0;background:linear-gradient(90deg,#a5d6a7,#66bb6a);border-radius:4px"></div>
+        </div>
+        <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:5px">Feedback terrain intégré · Zéro doublon</div>
+      </div>
+    </div>
+
+    <!-- 3 bénéfices -->
+    <div style="display:flex;gap:12px;width:100%;max-width:780px">
+      <div class="pdc-r-item" style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:13px 15px;display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:20px;flex-shrink:0">⚡</span>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:white;margin-bottom:2px">Accès immédiat</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5)">Plan filtrable par tous les collaborateurs</div>
+        </div>
+      </div>
+      <div class="pdc-r-item" style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:13px 15px;display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:20px;flex-shrink:0">🔄</span>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:white;margin-bottom:2px">OTs replanifiés</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5)">Feedback exécution intégré en temps réel</div>
+        </div>
+      </div>
+      <div class="pdc-r-item" style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:13px 15px;display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:20px;flex-shrink:0">🎯</span>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:white;margin-bottom:2px">Zéro doublon</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5)">OTs et avis centralisés, traçables</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
