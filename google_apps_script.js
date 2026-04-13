@@ -38,7 +38,7 @@ function sendEmailOCP(to, subject, body, options) {
     + '<t:ToRecipients>' + toRecipients + '</t:ToRecipients>'
     + ccBlock
     + '</t:Message></m:Items>'
-    + '</m:CreateItem></m:Body></soap:Envelope>';
+    + '</m:CreateItem></soap:Body></soap:Envelope>';
   Logger.log('SOAP envoyé : ' + soap.substring(0, 500));
   const credentials = Utilities.base64Encode(OCP_EMAIL + ':' + getOcpPassword());
   const response = UrlFetchApp.fetch(EWS_URL, {
