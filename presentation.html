@@ -136,6 +136,29 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;
 [data-slide="pdr-result"].active .res-item:nth-child(3){animation-delay:1.6s}
 [data-slide="pdr-result"].active .res-arrow{animation:arrowBounce 1s 1.8s ease-in-out infinite}
 
+/* ═══ PROCESSUS OT SLIDE ═══ */
+@keyframes stepPop{from{opacity:0;transform:translateY(22px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes arrowDrop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes criticalPulse{0%,100%{box-shadow:0 0 0 0 rgba(198,40,40,.5),0 4px 20px rgba(198,40,40,.2)}60%{box-shadow:0 0 0 14px rgba(198,40,40,0),0 4px 20px rgba(198,40,40,.3)}}
+@keyframes criticalGlow{0%,100%{border-color:#ef5350}50%{border-color:#c62828;background:rgba(198,40,40,.12)}}
+@keyframes focusLine{from{width:0;opacity:0}to{width:100%;opacity:1}}
+[data-slide="ot-process"].active .proc-step{animation:stepPop .5s cubic-bezier(.34,1.3,.64,1) both}
+[data-slide="ot-process"].active .proc-step:nth-child(1){animation-delay:.2s}
+[data-slide="ot-process"].active .proc-step:nth-child(2){animation-delay:.38s}
+[data-slide="ot-process"].active .proc-step:nth-child(3){animation-delay:.56s}
+[data-slide="ot-process"].active .proc-step:nth-child(4){animation-delay:.74s}
+[data-slide="ot-process"].active .proc-step:nth-child(5){animation-delay:.92s}
+[data-slide="ot-process"].active .proc-step:nth-child(6){animation-delay:1.10s}
+[data-slide="ot-process"].active .proc-arrow{animation:arrowDrop .3s ease both}
+[data-slide="ot-process"].active .proc-arrow:nth-child(2){animation-delay:.32s}
+[data-slide="ot-process"].active .proc-arrow:nth-child(4){animation-delay:.50s}
+[data-slide="ot-process"].active .proc-arrow:nth-child(6){animation-delay:.68s}
+[data-slide="ot-process"].active .proc-arrow:nth-child(8){animation-delay:.86s}
+[data-slide="ot-process"].active .proc-arrow:nth-child(10){animation-delay:1.04s}
+[data-slide="ot-process"].active .proc-critical{animation:stepPop .6s .74s cubic-bezier(.34,1.56,.64,1) both,criticalPulse 2s 1.5s ease-in-out infinite,criticalGlow 2s 1.5s ease-in-out infinite}
+[data-slide="ot-process"].active .proc-focus-line{animation:focusLine .8s 1.4s ease both}
+.proc-step{transition:transform .2s ease}.proc-step:hover{transform:scale(1.04)}
+
 /* ═══ TYPOGRAPHY ═══ */
 .eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#43a047;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .eyebrow::before{content:'';width:20px;height:2.5px;background:#43a047;border-radius:2px}
@@ -768,6 +791,92 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;
     <div class="cbox"><div class="ctit">Taux de réalisation mensuel</div><div class="csub">CONF + TCLO + CLOT / total · 12 mois</div><div class="bwrap"><div class="b bg" style="height:60%"></div><div class="b bg" style="height:72%"></div><div class="b bg" style="height:55%"></div><div class="b bgg" style="height:80%"></div><div class="b bg" style="height:68%"></div><div class="b bg" style="height:75%"></div><div class="b bg" style="height:85%"></div><div class="b ba" style="height:50%"></div><div class="b bg" style="height:66%"></div><div class="b bg" style="height:78%"></div><div class="b bgg" style="height:90%"></div><div class="b bp" style="height:71%"></div></div><div class="blbl"><span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span><span>O</span><span>N</span><span>D</span></div></div>
     <div class="cbox"><div class="ctit">Réalisation par corps de métier</div><div class="csub">% OT réalisés par poste</div><div class="bwrap"><div class="b bg" style="height:85%"></div><div class="b bgg" style="height:70%"></div><div class="b ba" style="height:90%"></div><div class="b bg" style="height:60%"></div><div class="b bp" style="height:78%"></div></div><div class="blbl"><span>421-MEC</span><span>423-ELEC</span><span>421-INST</span><span>423-REG</span><span>421-CHAU</span></div></div>
     <div class="cbox"><div class="ctit">Systématique vs Curatif</div><div class="csub">Part en % du volume mensuel</div><div class="bwrap" style="align-items:flex-end"><div style="flex:1;display:flex;flex-direction:column;gap:2px;height:100%;justify-content:flex-end"><div style="height:42%;background:#43a047;border-radius:4px 4px 0 0"></div><div style="height:28%;background:#66bb6a;border-radius:4px 4px 0 0"></div></div><div style="flex:1;display:flex;flex-direction:column;gap:2px;height:100%;justify-content:flex-end"><div style="height:48%;background:#43a047;border-radius:4px 4px 0 0"></div><div style="height:25%;background:#66bb6a;border-radius:4px 4px 0 0"></div></div><div style="flex:1;display:flex;flex-direction:column;gap:2px;height:100%;justify-content:flex-end"><div style="height:38%;background:#43a047;border-radius:4px 4px 0 0"></div><div style="height:32%;background:#66bb6a;border-radius:4px 4px 0 0"></div></div><div style="flex:1;display:flex;flex-direction:column;gap:2px;height:100%;justify-content:flex-end"><div style="height:55%;background:#43a047;border-radius:4px 4px 0 0"></div><div style="height:20%;background:#66bb6a;border-radius:4px 4px 0 0"></div></div></div><div style="display:flex;gap:14px;margin-top:8px"><div class="leg-i"><div class="leg-d" style="background:#43a047"></div>Préventif</div><div class="leg-i"><div class="leg-d" style="background:#66bb6a"></div>Correctif</div></div></div>
+  </div>
+</div>
+
+<!-- ═══ PROCESSUS OT ═══ -->
+<div class="slide bg-white" data-slide="ot-process">
+  <h2 class="st2" style="margin-bottom:6px">Processus de préparation des OTs</h2>
+  <p class="sdesc" style="text-align:center;margin-bottom:24px">Pourquoi la confirmation PDR est une étape <strong style="color:#c62828">critique</strong> du cycle maintenance</p>
+
+  <div class="body-block" style="width:100%;max-width:860px">
+
+    <!-- Flow horizontal -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:0;width:100%;flex-wrap:nowrap;margin-bottom:22px">
+
+      <!-- Étape 1 -->
+      <div class="proc-step" style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0">
+        <div style="width:52px;height:52px;border-radius:14px;background:#e8f5e9;border:2px solid #a5d6a7;display:flex;align-items:center;justify-content:center;font-size:22px">📋</div>
+        <div style="font-size:10px;font-weight:700;color:#1b5e20;text-align:center;max-width:70px;line-height:1.3">Avis ouvert</div>
+      </div>
+
+      <div class="proc-arrow" style="font-size:20px;color:#a5d6a7;margin:0 4px;padding-bottom:18px">→</div>
+
+      <!-- Étape 2 -->
+      <div class="proc-step" style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0">
+        <div style="width:52px;height:52px;border-radius:14px;background:#e8f5e9;border:2px solid #a5d6a7;display:flex;align-items:center;justify-content:center;font-size:22px">✅</div>
+        <div style="font-size:10px;font-weight:700;color:#1b5e20;text-align:center;max-width:72px;line-height:1.3">Approbation de l'avis</div>
+      </div>
+
+      <div class="proc-arrow" style="font-size:20px;color:#a5d6a7;margin:0 4px;padding-bottom:18px">→</div>
+
+      <!-- Étape 3 -->
+      <div class="proc-step" style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0">
+        <div style="width:52px;height:52px;border-radius:14px;background:#e8f5e9;border:2px solid #a5d6a7;display:flex;align-items:center;justify-content:center;font-size:22px">🔧</div>
+        <div style="font-size:10px;font-weight:700;color:#1b5e20;text-align:center;max-width:72px;line-height:1.3">Création OT <span style="color:#81c784;font-weight:600">(préparation)</span></div>
+      </div>
+
+      <div class="proc-arrow" style="font-size:20px;color:#a5d6a7;margin:0 4px;padding-bottom:18px">→</div>
+
+      <!-- Étape 4 — CRITIQUE -->
+      <div class="proc-step proc-critical" style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;background:rgba(198,40,40,.07);border:2.5px solid #ef5350;border-radius:18px;padding:10px 12px">
+        <div style="width:54px;height:54px;border-radius:14px;background:#fce4e4;border:2px solid #ef9a9a;display:flex;align-items:center;justify-content:center;font-size:24px">🔴</div>
+        <div style="font-size:10px;font-weight:800;color:#c62828;text-align:center;max-width:80px;line-height:1.3">Vérification<br>PDR</div>
+        <div style="font-size:8.5px;background:#c62828;color:white;border-radius:4px;padding:1px 7px;font-weight:700;letter-spacing:.3px">POINT CRITIQUE</div>
+      </div>
+
+      <div class="proc-arrow" style="font-size:20px;color:#a5d6a7;margin:0 4px;padding-bottom:18px">→</div>
+
+      <!-- Étape 5 -->
+      <div class="proc-step" style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0">
+        <div style="width:52px;height:52px;border-radius:14px;background:#e8f5e9;border:2px solid #a5d6a7;display:flex;align-items:center;justify-content:center;font-size:22px">🚀</div>
+        <div style="font-size:10px;font-weight:700;color:#1b5e20;text-align:center;max-width:72px;line-height:1.3">Lancement de l'OT</div>
+      </div>
+
+      <div class="proc-arrow" style="font-size:20px;color:#a5d6a7;margin:0 4px;padding-bottom:18px">→</div>
+
+      <!-- Étape 6 -->
+      <div class="proc-step" style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0">
+        <div style="width:52px;height:52px;border-radius:14px;background:#e8f5e9;border:2px solid #a5d6a7;display:flex;align-items:center;justify-content:center;font-size:22px">📅</div>
+        <div style="font-size:10px;font-weight:700;color:#1b5e20;text-align:center;max-width:72px;line-height:1.3">Planification</div>
+      </div>
+
+    </div>
+
+    <!-- Focus sur l'étape critique -->
+    <div style="background:#fff5f5;border:1.5px solid #ffcdd2;border-radius:16px;padding:18px 24px;width:100%;position:relative;overflow:hidden">
+      <div class="proc-focus-line" style="position:absolute;top:0;left:0;height:3px;background:linear-gradient(90deg,#c62828,#ef5350);width:0;border-radius:0"></div>
+      <div style="display:flex;gap:20px;align-items:flex-start">
+        <div style="flex-shrink:0">
+          <div style="font-size:13px;font-weight:800;color:#c62828;margin-bottom:8px">🔴 Pourquoi ce point est critique ?</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:#8d3a3a"><span style="color:#c62828;font-weight:700;flex-shrink:0">→</span>Sans PDR confirmés, l'OT ne peut pas être exécuté correctement</div>
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:#8d3a3a"><span style="color:#c62828;font-weight:700;flex-shrink:0">→</span>Vérification manuelle = <strong>2 semaines</strong> de délai moyen</div>
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:#8d3a3a"><span style="color:#c62828;font-weight:700;flex-shrink:0">→</span>Risque de rupture de stock non détectée → travaux interrompus</div>
+          </div>
+        </div>
+        <div style="width:1.5px;background:#ffcdd2;align-self:stretch;flex-shrink:0"></div>
+        <div style="flex-shrink:0">
+          <div style="font-size:13px;font-weight:800;color:#2e7d32;margin-bottom:8px">✅ Ce que l'application apporte</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:#4a7c4a"><span style="color:#43a047;font-weight:700;flex-shrink:0">→</span>Confirmation digitale par chaque service Appro</div>
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:#4a7c4a"><span style="color:#43a047;font-weight:700;flex-shrink:0">→</span>Rappels automatiques · Statuts en temps réel</div>
+            <div style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:#4a7c4a"><span style="color:#43a047;font-weight:700;flex-shrink:0">→</span>Délai réduit à <strong style="color:#1b5e20">4 jours</strong> · Gain <strong style="color:#1b5e20">-70%</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
