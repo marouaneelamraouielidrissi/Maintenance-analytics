@@ -259,6 +259,18 @@ function doGet(e) {
       return jsonResponse({ success: true, row: matchRow, value: reporteVal });
     }
 
+    // ── Mot de passe OCP Exchange ────────────────────────────
+    if (e && e.parameter && e.parameter.action === 'setOcpPassword') {
+      var newPwd = e.parameter.password || '';
+      if (!newPwd) return jsonResponse({ success: false, error: 'Mot de passe vide.' });
+      PropertiesService.getScriptProperties().setProperty('OCP_PASSWORD', newPwd);
+      return jsonResponse({ success: true });
+    }
+    if (e && e.parameter && e.parameter.action === 'getOcpPasswordStatus') {
+      var pwd = PropertiesService.getScriptProperties().getProperty('OCP_PASSWORD');
+      return jsonResponse({ success: true, isSet: !!(pwd && pwd.length > 0) });
+    }
+
     // ── Codes d'accès : admin, appro, exec, cm ───────────────
     if (e && e.parameter && e.parameter.action === 'updateCode') {
       var cp        = e.parameter;
@@ -495,13 +507,6 @@ function doPost(e) {
     } else if (payload.action === 'update') {
       updateDemande(payload.id, payload.updates);
       sendEmailChangementStatut(payload.id, payload.updates);
-    } else if (payload.action === 'setOcpPassword') {
-      if (!payload.password) return jsonResponse({ success: false, error: 'Mot de passe vide.' });
-      PropertiesService.getScriptProperties().setProperty('OCP_PASSWORD', payload.password);
-      return jsonResponse({ success: true });
-    } else if (payload.action === 'getOcpPasswordStatus') {
-      const pwd = PropertiesService.getScriptProperties().getProperty('OCP_PASSWORD');
-      return jsonResponse({ success: true, isSet: !!(pwd && pwd.length > 0) });
     }
     return jsonResponse({ success: true });
   } catch(err) {
