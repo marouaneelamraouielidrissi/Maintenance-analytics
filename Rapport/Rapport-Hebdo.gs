@@ -350,14 +350,14 @@ function rhMakePieImg(labels, values, title, w, h) {
       .addColumn(Charts.ColumnType.NUMBER,'Val');
     for(var i=0;i<labels.length;i++) dt.addRow([labels[i],values[i]]);
     dt.build();
-    var c=Charts.newPieChart().setDataTable(dt).setDimensions(w||500,h||240)
+    var c=Charts.newPieChart().setDataTable(dt).setDimensions(w||560,h||300)
       .setOption('title','')
       .setOption('backgroundColor','#ffffff')
-      .setOption('chartArea',{left:10,top:10,width:'92%',height:'92%'})
-      .setOption('legend',{position:'right',textStyle:{fontSize:12,color:'#334155'}})
+      .setOption('chartArea',{left:'5%',top:'5%',width:'90%',height:'62%'})
+      .setOption('legend',{position:'bottom',textStyle:{fontSize:10,color:'#334155'}})
       .setOption('pieHole',0.4)
       .setOption('pieSliceText','value-and-percentage')
-      .setOption('pieSliceTextStyle',{fontSize:11,bold:true,color:'#ffffff'})
+      .setOption('pieSliceTextStyle',{fontSize:10,bold:true,color:'#ffffff'})
       .build();
     return 'data:image/png;base64,'+Utilities.base64Encode(c.getAs('image/png').getBytes());
   } catch(e){ Logger.log('rhMakePieImg: '+e.message); return ''; }
