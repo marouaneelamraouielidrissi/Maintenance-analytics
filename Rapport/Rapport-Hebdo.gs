@@ -61,6 +61,13 @@ function sendEmailRH(to, subject, htmlBody, senderName, attachments, cc) {
   var mime    = mimeParts.filter(function(l){ return l !== null; }).join('\r\n');
   var mimeB64 = Utilities.base64Encode(mime, Utilities.Charset.UTF_8);
 
+  // CC explicite dans le SOAP (Exchange ignore parfois le Cc: du MIME)
+  var ccXml = ccList.length
+    ? '<t:CcRecipients>' + ccList.map(function(e){
+        return '<t:Mailbox><t:EmailAddress>' + e + '</t:EmailAddress></t:Mailbox>';
+      }).join('') + '</t:CcRecipients>'
+    : '';
+
   var soap = '<?xml version="1.0" encoding="utf-8"?>'
     + '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'
     + ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"'
@@ -70,6 +77,7 @@ function sendEmailRH(to, subject, htmlBody, senderName, attachments, cc) {
     + '<m:SavedItemFolderId><t:DistinguishedFolderId Id="sentitems"/></m:SavedItemFolderId>'
     + '<m:Items><t:Message>'
     + '<t:MimeContent CharacterSet="UTF-8">' + mimeB64 + '</t:MimeContent>'
+    + ccXml
     + '</t:Message></m:Items>'
     + '</m:CreateItem></soap:Body></soap:Envelope>';
 
