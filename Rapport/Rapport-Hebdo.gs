@@ -347,16 +347,18 @@ function rhMakePieImg(labels, values, title, w, h) {
   try {
     var dt=Charts.newDataTable()
       .addColumn(Charts.ColumnType.STRING,'Cat')
-      .addColumn(Charts.ColumnType.NUMBER,'Val');
-    for(var i=0;i<labels.length;i++) dt.addRow([labels[i],values[i]]);
+      .addColumn(Charts.ColumnType.NUMBER,'Val')
+      .addColumn(Charts.ColumnType.STRING,'Ann');
+    for(var i=0;i<labels.length;i++) dt.addRow([labels[i],values[i],''+values[i]]);
     dt.build();
     var c=Charts.newColumnChart().setDataTable(dt).setDimensions(w||880,h||420)
       .setOption('title','')
       .setOption('backgroundColor','#ffffff')
-      .setOption('chartArea',{left:50,top:10,width:'82%',height:'75%'})
+      .setOption('chartArea',{left:50,top:20,width:'82%',height:'72%'})
       .setOption('legend',{position:'none'})
       .setOption('hAxis',{textStyle:{fontSize:11,color:'#334155'},slantedText:true,slantedTextAngle:30})
       .setOption('vAxis',{textStyle:{fontSize:11,color:'#94a3b8'},gridlines:{color:'#f1f5f9'},minValue:0})
+      .setOption('annotations',{alwaysOutside:false,textStyle:{fontSize:12,bold:true,color:'#ffffff'}})
       .setOption('colors',['#6366f1'])
       .setOption('bar',{groupWidth:'55%'})
       .build();
