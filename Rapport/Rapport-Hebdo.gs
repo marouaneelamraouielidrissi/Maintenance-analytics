@@ -368,22 +368,15 @@ function rhMakeBarImg(labels, values, color, title, w, h) {
       .addColumn(Charts.ColumnType.NUMBER,'Count');
     for(var i=0;i<labels.length;i++) dt.addRow([labels[i],values[i]]);
     dt.build();
-    // Ajouter les valeurs comme annotations dans les données
-    var dtA=Charts.newDataTable()
-      .addColumn(Charts.ColumnType.STRING,'Item')
-      .addColumn(Charts.ColumnType.NUMBER,'Count')
-      .addColumn(Charts.ColumnType.STRING,'Annotation');
-    for(var i=0;i<labels.length;i++) dtA.addRow([labels[i],values[i],String(values[i])]);
-    dtA.build();
-    var c=Charts.newBarChart().setDataTable(dtA).setDimensions(w||880,h||420)
+    var c=Charts.newBarChart().setDataTable(dt).setDimensions(w||880,h||420)
       .setOption('title','')
       .setOption('backgroundColor','#ffffff')
       .setOption('colors',[color||'#3b82f6'])
       .setOption('legend',{position:'none'})
-      .setOption('chartArea',{left:100,top:10,width:'82%',height:'88%'})
-      .setOption('hAxis',{textStyle:{fontSize:11,color:'#475569'},gridlines:{color:'#e2e8f0'}})
+      .setOption('chartArea',{left:100,top:10,width:'76%',height:'88%'})
+      .setOption('hAxis',{textStyle:{fontSize:11,color:'#475569'},gridlines:{color:'#e2e8f0'},format:'#'})
       .setOption('vAxis',{textStyle:{fontSize:11,color:'#475569'}})
-      .setOption('annotations',{alwaysOutside:true,textStyle:{fontSize:11,bold:true,color:'#1e293b'}})
+      .setOption('bar',{groupWidth:'60%'})
       .build();
     return 'data:image/png;base64,'+Utilities.base64Encode(c.getAs('image/png').getBytes());
   } catch(e){ Logger.log('rhMakeBarImg: '+e.message); return ''; }
