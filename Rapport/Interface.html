@@ -184,10 +184,23 @@
         </select>
       </div>
     </div>
+  </div>
+
+  <!-- ═══════════ DESTINATAIRES ════════════════════════════════════════════ -->
+  <div class="card">
+    <div class="card-title">Destinataires</div>
     <div class="form-row">
       <div class="fg full">
-        <label>Destinataires (séparés par des virgules)</label>
+        <label>À — Destinataires principaux <span style="color:#DC2626;">*</span></label>
         <input type="text" id="inp-emails" placeholder="email@ocp.ma, autre@ocp.ma" />
+        <div class="info-row">Séparés par des virgules</div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg full">
+        <label>CC — Copie conforme</label>
+        <input type="text" id="inp-emails-cc" placeholder="cc1@ocp.ma, cc2@ocp.ma" />
+        <div class="info-row">Optionnel · séparés par des virgules</div>
       </div>
     </div>
   </div>
@@ -374,7 +387,8 @@ google.script.run
     document.getElementById('sel-mois').value  = cfg.mo !== undefined ? cfg.mo : now.getMonth();
     document.getElementById('inp-annee').value = cfg.yr  || now.getFullYear();
     document.getElementById('sel-mode').value  = cfg.mode || 'month';
-    document.getElementById('inp-emails').value = cfg.emails || '';
+    document.getElementById('inp-emails').value    = cfg.emails   || '';
+    document.getElementById('inp-emails-cc').value = cfg.emailsCC || '';
     // Date par défaut pour "unique" = maintenant + 10 min
     var d = new Date(now.getTime() + 10 * 60000);
     document.getElementById('inp-datetime-unique').value =
@@ -399,10 +413,11 @@ function pad(n) { return String(n).padStart(2, '0'); }
 // ── Collecte des paramètres de base ─────────────────────────────────────
 function getBaseParams() {
   return {
-    mo:     parseInt(document.getElementById('sel-mois').value),
-    yr:     parseInt(document.getElementById('inp-annee').value),
-    mode:   document.getElementById('sel-mode').value,
-    emails: document.getElementById('inp-emails').value.trim()
+    mo:       parseInt(document.getElementById('sel-mois').value),
+    yr:       parseInt(document.getElementById('inp-annee').value),
+    mode:     document.getElementById('sel-mode').value,
+    emails:   document.getElementById('inp-emails').value.trim(),
+    emailsCC: document.getElementById('inp-emails-cc').value.trim()
   };
 }
 
@@ -510,12 +525,14 @@ function chargerPlanifications() {
         }
         var emails = (p.emails || '—');
         if (emails.length > 30) emails = emails.substring(0, 28) + '…';
+        var cc = (p.emailsCC || '');
+        if (cc.length > 30) cc = cc.substring(0, 28) + '…';
 
         return '<tr>' +
           '<td><span class="badge ' + badge + '">' + (FREQ_FR[freq] || freq) + '</span></td>' +
           '<td>' + detail + '</td>' +
           '<td>' + periodeStr + '</td>' +
-          '<td style="color:#475569;">' + emails + '</td>' +
+          '<td style="color:#475569;">' + emails + (cc ? '<br><span style="color:#94A3B8;font-size:10px;">CC : ' + cc + '</span>' : '') + '</td>' +
           '<td><button class="btn btn-red" onclick="supprimerPlanif(\'' + p.triggerId + '\')">✕ Suppr.</button></td>' +
           '</tr>';
       }).join('');
@@ -526,7 +543,7 @@ function chargerPlanifications() {
             '<th>Fréquence</th>' +
             '<th>Exécution</th>' +
             '<th>Période rapportée</th>' +
-            '<th>Destinataires</th>' +
+            '<th>À / CC</th>' +
             '<th></th>' +
           '</tr></thead>' +
           '<tbody>' + rows + '</tbody>' +

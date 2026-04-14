@@ -17,8 +17,9 @@ function getRhPassword() {
   return PropertiesService.getScriptProperties().getProperty('OCP_PASSWORD') || '';
 }
 
-function sendEmailRH(to, subject, htmlBody, senderName, attachments) {
+function sendEmailRH(to, subject, htmlBody, senderName, attachments, cc) {
   var toList = Array.isArray(to) ? to : to.split(',').map(function(e){ return e.trim(); }).filter(Boolean);
+  var ccList = cc ? (Array.isArray(cc) ? cc : cc.split(',').map(function(e){ return e.trim(); }).filter(Boolean)) : [];
   var boundary = 'rh_boundary_' + Date.now();
   var subjB64  = Utilities.base64Encode(subject,  Utilities.Charset.UTF_8);
   var bodyB64  = Utilities.base64Encode(htmlBody,  Utilities.Charset.UTF_8);
@@ -26,6 +27,7 @@ function sendEmailRH(to, subject, htmlBody, senderName, attachments) {
   var mimeParts = [
     'From: "' + senderName + '" <' + RH_OCP_EMAIL + '>',
     'To: ' + toList.join(', '),
+    (ccList.length ? 'Cc: ' + ccList.join(', ') : null),
     'Subject: =?UTF-8?B?' + subjB64 + '?=',
     'MIME-Version: 1.0',
     'Content-Type: multipart/mixed; boundary="' + boundary + '"',
@@ -56,7 +58,7 @@ function sendEmailRH(to, subject, htmlBody, senderName, attachments) {
   mimeParts.push('');
   mimeParts.push('--' + boundary + '--');
 
-  var mime    = mimeParts.join('\r\n');
+  var mime    = mimeParts.filter(function(l){ return l !== null; }).join('\r\n');
   var mimeB64 = Utilities.base64Encode(mime, Utilities.Charset.UTF_8);
 
   var soap = '<?xml version="1.0" encoding="utf-8"?>'
@@ -104,7 +106,8 @@ function getConfigInterfaceDefaut() {
     mo:     now.getMonth(),
     yr:     now.getFullYear(),
     mode:   'month',
-    emails: props.getProperty('RH_EMAILS') || RH_OCP_EMAIL
+    emails:    props.getProperty('RH_EMAILS')    || RH_OCP_EMAIL,
+    emailsCC:  props.getProperty('RH_EMAILS_CC') || ''
   };
 }
 
@@ -916,9 +919,11 @@ function envoyerRapportDepuisInterface(p) {
     var html   = rhBuildHtml(arrets, kpi, avis);
     var MOIS   = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
     var sujet  = 'Rapport Hebdomadaire de Planification — S' + arrets.sem + ' · ' + MOIS[mo] + ' ' + yr;
-    sendEmailRH(p.emails, sujet, html, 'Bureau Méthode Daoui - Planification');
-    PropertiesService.getScriptProperties().setProperty('RH_EMAILS', p.emails);
-    return { ok: true, msg: 'Rapport envoyé avec succès à : ' + p.emails };
+    sendEmailRH(p.emails, sujet, html, 'Bureau Méthode Daoui - Planification', null, p.emailsCC || '');
+    var props2 = PropertiesService.getScriptProperties();
+    props2.setProperty('RH_EMAILS', p.emails);
+    if (p.emailsCC) props2.setProperty('RH_EMAILS_CC', p.emailsCC);
+    return { ok: true, msg: 'Rapport envoyé avec succès à : ' + p.emails + (p.emailsCC ? ' (CC : ' + p.emailsCC + ')' : '') };
   } catch(e) {
     return { ok: false, msg: e.message };
   }
@@ -954,7 +959,9 @@ function planifierRapportInterface(p) {
     var cfg = JSON.parse(JSON.stringify(p));
     cfg.triggerId = trigger.getUniqueId();
     PropertiesService.getScriptProperties().setProperty('PLANIF_' + cfg.triggerId, JSON.stringify(cfg));
-    PropertiesService.getScriptProperties().setProperty('RH_EMAILS', p.emails);
+    var propsP = PropertiesService.getScriptProperties();
+    propsP.setProperty('RH_EMAILS', p.emails);
+    if (p.emailsCC) propsP.setProperty('RH_EMAILS_CC', p.emailsCC);
     return { ok: true, msg: 'Planification créée avec succès.' };
   } catch(e) {
     return { ok: false, msg: e.message };
@@ -978,7 +985,8 @@ function executerRapportPlanifie(e) {
     mo = d.getMonth(); yr = d.getFullYear();
   }
 
-  var emails = cfg.emails || props.getProperty('RH_EMAILS') || RH_OCP_EMAIL;
+  var emails   = cfg.emails   || props.getProperty('RH_EMAILS')    || RH_OCP_EMAIL;
+  var emailsCC = cfg.emailsCC || props.getProperty('RH_EMAILS_CC') || '';
   var arrets = rhGetArrets();
   var kpi    = rhGetKpi(mo, yr);
   var prep   = rhGetPreparation(mo, yr);
@@ -988,7 +996,7 @@ function executerRapportPlanifie(e) {
   var MOIS   = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
   var sujet  = 'Rapport Hebdomadaire de Planification — S' + arrets.sem + ' · ' + MOIS[mo] + ' ' + yr;
 
-  sendEmailRH(emails, sujet, html, 'Bureau Méthode Daoui - Planification');
+  sendEmailRH(emails, sujet, html, 'Bureau Méthode Daoui - Planification', null, emailsCC);
 
   // Supprimer le trigger si "unique"
   if (cfg.frequence === 'unique' && triggerId) {
