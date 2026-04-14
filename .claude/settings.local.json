@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git push:*)"
     ]
   },
   "hooks": {
@@ -11,8 +14,8 @@
           {
             "type": "command",
             "command": "cd /Users/mounaim/Desktop/mainAna && git add -A && git diff --cached --quiet || (git commit -m \"auto: task completed\" && git push)",
-            "statusMessage": "💾 Push automatique en cours...",
-            "timeout": 60
+            "timeout": 60,
+            "statusMessage": "💾 Push automatique en cours..."
           }
         ]
       }
