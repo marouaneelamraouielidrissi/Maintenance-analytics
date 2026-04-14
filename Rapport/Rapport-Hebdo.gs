@@ -277,12 +277,12 @@ function rhMakePieImg(labels, values, title, w, h) {
       .addColumn(Charts.ColumnType.NUMBER,'Val');
     for(var i=0;i<labels.length;i++) dt.addRow([labels[i],values[i]]);
     dt.build();
-    var c=Charts.newPieChart().setDataTable(dt).setDimensions(w||380,h||210)
+    var c=Charts.newPieChart().setDataTable(dt).setDimensions(w||760,h||380)
       .setOption('title',title||'')
       .setOption('backgroundColor','#ffffff')
-      .setOption('chartArea',{left:10,top:28,width:'62%',height:'78%'})
-      .setOption('legend',{position:'right',textStyle:{fontSize:9}})
-      .setOption('pieSliceTextStyle',{fontSize:9})
+      .setOption('chartArea',{left:10,top:40,width:'62%',height:'80%'})
+      .setOption('legend',{position:'right',textStyle:{fontSize:12}})
+      .setOption('pieSliceTextStyle',{fontSize:11})
       .build();
     return 'data:image/png;base64,'+Utilities.base64Encode(c.getAs('image/png').getBytes());
   } catch(e){ Logger.log('rhMakePieImg: '+e.message); return ''; }
@@ -295,14 +295,14 @@ function rhMakeBarImg(labels, values, color, title, w, h) {
       .addColumn(Charts.ColumnType.NUMBER,'Count');
     for(var i=0;i<labels.length;i++) dt.addRow([labels[i],values[i]]);
     dt.build();
-    var c=Charts.newBarChart().setDataTable(dt).setDimensions(w||380,h||210)
+    var c=Charts.newBarChart().setDataTable(dt).setDimensions(w||760,h||380)
       .setOption('title',title||'')
       .setOption('backgroundColor','#ffffff')
       .setOption('colors',[color||'#3b82f6'])
       .setOption('legend',{position:'none'})
-      .setOption('chartArea',{left:90,top:28,width:'60%',height:'75%'})
-      .setOption('hAxis',{textStyle:{fontSize:9}})
-      .setOption('vAxis',{textStyle:{fontSize:9}})
+      .setOption('chartArea',{left:130,top:40,width:'60%',height:'78%'})
+      .setOption('hAxis',{textStyle:{fontSize:11}})
+      .setOption('vAxis',{textStyle:{fontSize:11}})
       .build();
     return 'data:image/png;base64,'+Utilities.base64Encode(c.getAs('image/png').getBytes());
   } catch(e){ Logger.log('rhMakeBarImg: '+e.message); return ''; }
@@ -437,18 +437,21 @@ function rhBuildHtml(arrets, kpi, avis) {
   return '<!DOCTYPE html><html><head><meta charset="UTF-8"></head>'
   +'<body style="margin:0;padding:0;background:#f4f6f9;font-family:Arial,Helvetica,sans-serif;color:#0f172a;">'
 
-  // ── Header (table-based) ──
-  +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#1d4ed8;">'
-  +'<tr><td style="padding:20px 32px;">'
+  // ── Wrapper centré ──
+  +'<table cellpadding="0" cellspacing="0" width="100%"><tr><td align="center" style="padding:24px 16px 48px;">'
+  +'<table cellpadding="0" cellspacing="0" width="900" style="max-width:900px;">'
+
+  // ── Header ──
+  +'<tr><td style="background:#1d4ed8;border-radius:10px 10px 0 0;padding:20px 32px;">'
   +'<table cellpadding="0" cellspacing="0" width="100%"><tr>'
   +'<td><div style="color:#ffffff;font-weight:700;font-size:16px;">Rapport de Maintenance</div>'
   +'<div style="color:#bfdbfe;font-size:11px;margin-top:3px;">Bureau des M&#233;thodes Daoui &middot; OCP Group Khouribga</div></td>'
-  +'<td align="right"><span style="background:#ffffff;color:#1d4ed8;font-weight:700;font-size:12px;padding:5px 14px;">S'+s+' &middot; '+d0+' &#8594; '+d1+'</span></td>'
+  +'<td align="right"><span style="background:#ffffff;color:#1d4ed8;font-weight:700;font-size:12px;padding:5px 14px;border-radius:4px;">S'+s+' &middot; '+d0+' &#8594; '+d1+'</span></td>'
   +'</tr></table>'
-  +'</td></tr></table>'
+  +'</td></tr>'
 
   // ── Contenu ──
-  +'<table cellpadding="0" cellspacing="0" width="100%"><tr><td style="padding:24px 32px 48px;">'
+  +'<tr><td style="background:#ffffff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 10px 10px;padding:28px 32px 40px;">'
   +'<h2 style="font-size:18px;font-weight:700;margin:0 0 4px;color:#0f172a;">Rapport Hebdomadaire de Planification</h2>'
   +'<p style="font-size:13px;color:#64748b;margin:0 0 20px;">Semaine <strong>S'+s+'</strong> &middot; '+d0+' au '+d1+' &middot; G&#233;n&#233;r&#233; le '+new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})+'</p>'
 
@@ -586,7 +589,9 @@ function rhBuildHtml(arrets, kpi, avis) {
   +'</div>'
   +'</td></tr></table>'
 
-  +'</td></tr></table>' // fin contenu
+  +'</td></tr>'        // fin contenu
+  +'</table>'          // fin table 900px
+  +'</td></tr></table>' // fin wrapper centré
   +'</body></html>';
 }
 
