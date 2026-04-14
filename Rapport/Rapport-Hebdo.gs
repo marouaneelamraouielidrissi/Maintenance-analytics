@@ -17,7 +17,7 @@ function getRhPassword() {
   return PropertiesService.getScriptProperties().getProperty('OCP_PASSWORD') || '';
 }
 
-function sendEmailRH(to, subject, htmlBody, senderName) {
+function sendEmailRH(to, subject, htmlBody, senderName, attachments) {
   var toList = Array.isArray(to) ? to : to.split(',').map(function(e){ return e.trim(); }).filter(Boolean);
   var boundary = 'rh_boundary_' + Date.now();
   var subjB64  = Utilities.base64Encode(subject,  Utilities.Charset.UTF_8);
@@ -34,10 +34,27 @@ function sendEmailRH(to, subject, htmlBody, senderName) {
     'Content-Type: text/html; charset=UTF-8',
     'Content-Transfer-Encoding: base64',
     '',
-    bodyB64,
-    '',
-    '--' + boundary + '--'
+    bodyB64
   ];
+
+  // Pièces jointes optionnelles
+  if (attachments && attachments.length) {
+    attachments.forEach(function(att) {
+      if (!att) return;
+      var attB64  = Utilities.base64Encode(att.getBytes());
+      var nameB64 = Utilities.base64Encode(att.getName(), Utilities.Charset.UTF_8);
+      mimeParts.push('');
+      mimeParts.push('--' + boundary);
+      mimeParts.push('Content-Type: ' + (att.getContentType() || 'application/octet-stream'));
+      mimeParts.push('Content-Transfer-Encoding: base64');
+      mimeParts.push('Content-Disposition: attachment; filename="=?UTF-8?B?' + nameB64 + '?="');
+      mimeParts.push('');
+      mimeParts.push(attB64);
+    });
+  }
+
+  mimeParts.push('');
+  mimeParts.push('--' + boundary + '--');
 
   var mime    = mimeParts.join('\r\n');
   var mimeB64 = Utilities.base64Encode(mime, Utilities.Charset.UTF_8);
@@ -306,6 +323,178 @@ function rhMakeBarImg(labels, values, color, title, w, h) {
       .build();
     return 'data:image/png;base64,'+Utilities.base64Encode(c.getAs('image/png').getBytes());
   } catch(e){ Logger.log('rhMakeBarImg: '+e.message); return ''; }
+}
+
+// ── Génération PDF via Google Doc temporaire ─────────────────
+function rhGeneratePdf(arrets, kpi, avis) {
+  var d0=rhFmtDate(arrets.s0), d1=rhFmtDate(arrets.s1);
+  var doc = DocumentApp.create('RH_Rapport_Temp_'+Date.now());
+  var body = doc.getBody();
+  body.setMarginTop(40).setMarginBottom(40).setMarginLeft(50).setMarginRight(50);
+
+  function styled(el, size, bold, color) {
+    el.editAsText().setFontSize(size||11).setBold(bold||false).setForegroundColor(color||'#0f172a'); return el;
+  }
+  function h(txt, color) {
+    return styled(body.appendParagraph(txt).setHeading(DocumentApp.ParagraphHeading.HEADING2), 13, true, color||'#1d4ed8');
+  }
+  function sep() { body.appendParagraph('').editAsText().setFontSize(3); }
+  function styleTable(tbl, hdrBg, cols) {
+    var row=tbl.getRow(0);
+    for(var j=0;j<cols;j++){
+      row.getCell(j).setBackgroundColor(hdrBg);
+      row.getCell(j).editAsText().setBold(true).setFontSize(10).setForegroundColor('#ffffff');
+    }
+    for(var i=1;i<tbl.getNumRows();i++){
+      if(i%2===0) for(var j=0;j<cols;j++) tbl.getRow(i).getCell(j).setBackgroundColor('#f8fafc');
+    }
+  }
+
+  // ── Titre ──
+  styled(body.appendParagraph('Rapport de Maintenance — S'+arrets.sem+' · '+kpi.mois).setHeading(DocumentApp.ParagraphHeading.HEADING1), 17, true, '#1d4ed8');
+  styled(body.appendParagraph(d0+' → '+d1+'   ·   Généré le '+new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})), 10, false, '#64748b');
+  sep();
+
+  // ── Calendrier ──
+  h('Calendrier des arrêts — Semaine S'+arrets.sem, '#1d4ed8');
+  if (arrets.rows.length) {
+    var DAYS=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+    var wMap={};
+    arrets.rows.forEach(function(r){
+      var wn=parseInt(r.semaine.toString().replace(/\D/g,''));
+      var k=r.annee+'-'+wn;
+      if(!wMap[k]) wMap[k]={semaine:r.semaine,wn:wn,annee:r.annee,days:{}};
+      var p=r.date.split('-').map(Number);
+      var dow=(new Date(p[0],p[1]-1,p[2]).getDay()+6)%7;
+      if(!wMap[k].days[dow]) wMap[k].days[dow]=[];
+      var icon=r.statut==='realise'?' ✓':r.statut==='imprevu'?' !':' ✗';
+      wMap[k].days[dow].push(r.install+icon);
+    });
+    var weeks=Object.values(wMap).sort(function(a,b){return a.annee!==b.annee?a.annee-b.annee:a.wn-b.wn;});
+    var calData=[['Sem.'].concat(DAYS)];
+    weeks.forEach(function(w){
+      var row=[w.semaine];
+      for(var di=0;di<7;di++) row.push((w.days[di]||[]).join('\n')||'—');
+      calData.push(row);
+    });
+    var tbl=body.appendTable(calData);
+    styleTable(tbl,'#1d4ed8',8);
+    for(var i=1;i<tbl.getNumRows();i++){
+      tbl.getRow(i).getCell(0).editAsText().setBold(true).setFontSize(10).setForegroundColor('#1d4ed8');
+      for(var j=1;j<8;j++) tbl.getRow(i).getCell(j).editAsText().setFontSize(9);
+    }
+  } else {
+    styled(body.appendParagraph('Aucun arrêt enregistré pour cette semaine.'), 11, false, '#94a3b8');
+  }
+  sep();
+
+  // ── KPIs OT ──
+  h('Indicateurs OT — '+kpi.mois, '#1d4ed8');
+  var nbA=arrets.rows.length;
+  var nbR=arrets.rows.filter(function(r){return r.statut==='realise';}).length;
+  var tA=nbA?((nbR/nbA)*100).toFixed(1)+'%':'—';
+  var scTot=kpi.sys+kpi.cur;
+  var sysPct=scTot?((kpi.sys/scTot)*100).toFixed(1)+'%':'—';
+  var curPct=scTot?((kpi.cur/scTot)*100).toFixed(1)+'%':'—';
+  var kpiRows=[
+    ['Indicateur','Valeur','Détail'],
+    ['Taux réalisation OT', kpi.tauxRealStr, kpi.real+' / '+kpi.total+' OT'],
+    ['Taux réalisation arrêts', tA, nbR+' / '+nbA+' arrêts (S'+arrets.sem+')'],
+    ['Systématique / Curatif', sysPct+' / '+curPct, kpi.sys+' ZCON+ZEST+ZETL · '+kpi.cur+' ZCOR'],
+    ['OT Lancés', kpi.lancPct, kpi.lanc+' en cours'],
+    ['Non lancés CRPR', kpi.crprPct, kpi.crpr+' OT'],
+    ['Backlog', kpi.backlog+' OT', 'ATPL + LANC'],
+    ['Préventif', kpi.sys+' OT — taux '+kpi.tauxPrevStr, 'ZCON + ZEST + ZETL'],
+    ['Correctif', kpi.cur+' OT — taux '+kpi.tauxCorStr, 'ZCOR uniquement'],
+  ];
+  var kt=body.appendTable(kpiRows); styleTable(kt,'#1d4ed8',3);
+  for(var i=1;i<kt.getNumRows();i++){
+    kt.getRow(i).getCell(0).editAsText().setBold(true).setFontSize(10);
+    kt.getRow(i).getCell(1).editAsText().setBold(true).setFontSize(11).setForegroundColor('#1d4ed8');
+    kt.getRow(i).getCell(2).editAsText().setFontSize(9).setForegroundColor('#64748b');
+  }
+  sep();
+
+  // ── Taux par poste ──
+  if(kpi.postes.length){
+    h('Taux de réalisation par corps de métier', '#1d4ed8');
+    var postRows=[['Poste de travail','Réalisés / Total','Taux']];
+    kpi.postes.forEach(function(p){ postRows.push([p.nom, p.real+' / '+p.total, p.taux.toFixed(1)+'%']); });
+    var pt=body.appendTable(postRows); styleTable(pt,'#1d4ed8',3);
+    for(var i=1;i<pt.getNumRows();i++){
+      pt.getRow(i).getCell(0).editAsText().setBold(true).setFontSize(10);
+      var taux=kpi.postes[i-1].taux;
+      var color=taux>=80?'#059669':taux>=50?'#d97706':'#dc2626';
+      pt.getRow(i).getCell(2).editAsText().setBold(true).setFontSize(11).setForegroundColor(color);
+    }
+    sep();
+  }
+
+  // ── Charts ──
+  function makeCB(labels,vals,title,w,h_){
+    try{
+      var dt=Charts.newDataTable().addColumn(Charts.ColumnType.STRING,'C').addColumn(Charts.ColumnType.NUMBER,'V');
+      for(var i=0;i<labels.length;i++) dt.addRow([labels[i],vals[i]]);
+      dt.build();
+      return Charts.newPieChart().setDataTable(dt).setDimensions(w||480,h_||280)
+        .setOption('title',title).setOption('backgroundColor','#ffffff')
+        .setOption('chartArea',{left:10,top:32,width:'60%',height:'78%'})
+        .setOption('legend',{position:'right',textStyle:{fontSize:11}}).build().getAs('image/png');
+    }catch(e){return null;}
+  }
+  function makeBB(labels,vals,color,title,w,h_){
+    try{
+      var dt=Charts.newDataTable().addColumn(Charts.ColumnType.STRING,'I').addColumn(Charts.ColumnType.NUMBER,'V');
+      for(var i=0;i<labels.length;i++) dt.addRow([labels[i],vals[i]]);
+      dt.build();
+      return Charts.newBarChart().setDataTable(dt).setDimensions(w||480,h_||280)
+        .setOption('title',title).setOption('backgroundColor','#ffffff')
+        .setOption('colors',[color||'#3b82f6']).setOption('legend',{position:'none'})
+        .setOption('chartArea',{left:110,top:32,width:'65%',height:'78%'})
+        .setOption('hAxis',{textStyle:{fontSize:10}}).setOption('vAxis',{textStyle:{fontSize:10}}).build().getAs('image/png');
+    }catch(e){return null;}
+  }
+
+  h('Graphiques OT', '#1d4ed8');
+  if(kpi.typeData.length){var b=makeCB(kpi.typeData.slice(0,6).map(function(x){return x.type;}),kpi.typeData.slice(0,6).map(function(x){return x.count;}),'Répartition par type d\'OT');if(b)body.appendImage(b);}
+  if(kpi.postes.length){var b=makeBB(kpi.postes.slice(0,7).map(function(x){return x.nom;}),kpi.postes.slice(0,7).map(function(x){return x.total;}),'#3b82f6','Volume OT par corps de métier');if(b)body.appendImage(b);}
+
+  // ── Avis ──
+  if(avis){
+    sep();
+    h('Analyse des Avis (ZC) — '+kpi.mois, '#7c3aed');
+    var avRows=[
+      ['Indicateur','Valeur'],
+      ['Total Avis', avis.total.toLocaleString('fr-FR')],
+      ['Convertis en OT', avis.avecOT+' ('+avis.txConv.toFixed(1)+'%)'],
+      ['Avis Ouverts (AOUV+AENC)', avis.ouverts.toLocaleString('fr-FR')],
+    ];
+    var at=body.appendTable(avRows); styleTable(at,'#7c3aed',2);
+    for(var i=1;i<at.getNumRows();i++){
+      at.getRow(i).getCell(0).editAsText().setBold(true).setFontSize(10);
+      at.getRow(i).getCell(1).editAsText().setBold(true).setFontSize(11).setForegroundColor('#7c3aed');
+    }
+    if(avis.bySecteur.length){var b=makeCB(avis.bySecteur.map(function(x){return x.label;}),avis.bySecteur.map(function(x){return x.count;}),'Répartition par secteur');if(b)body.appendImage(b);}
+    if(avis.byPoste.length){var b=makeCB(avis.byPoste.map(function(x){return x.label;}),avis.byPoste.map(function(x){return x.count;}),'Avis par corps de métier');if(b)body.appendImage(b);}
+    if(avis.byInstall.length){var b=makeBB(avis.byInstall.slice(0,8).map(function(x){return x.label;}),avis.byInstall.slice(0,8).map(function(x){return x.count;}),'#0891b2','Avis par installation');if(b)body.appendImage(b);}
+    if(avis.openByPoste.length){
+      sep();
+      var tot=avis.openByPoste.reduce(function(s,r){return s+r.count;},0);
+      var opRows=[['Corps de Métier','Ouverts','Part']];
+      avis.openByPoste.forEach(function(r){opRows.push([r.label,String(r.count),tot?((r.count/tot)*100).toFixed(1)+'%':'—']);});
+      opRows.push(['TOTAL',String(tot),'100%']);
+      var ot=body.appendTable(opRows); styleTable(ot,'#dc2626',3);
+      var last=ot.getRow(ot.getNumRows()-1);
+      for(var j=0;j<3;j++) last.getCell(j).editAsText().setBold(true).setFontSize(10);
+    }
+  }
+
+  // ── Export PDF ──
+  doc.saveAndClose();
+  var pdf=DriveApp.getFileById(doc.getId()).getAs('application/pdf');
+  pdf.setName('Rapport_Maintenance_S'+arrets.sem+'_'+kpi.mois.replace(' ','_')+'.pdf');
+  try{DriveApp.getFileById(doc.getId()).setTrashed(true);}catch(e){}
+  return pdf;
 }
 
 // ── Construction HTML du rapport (compatible Outlook desktop) ─
@@ -602,9 +791,10 @@ function envoyerRapportDepuisInterface(p) {
     var kpi    = rhGetKpi(mo, yr);
     var avis   = rhGetAvis(mo, yr);
     var html   = rhBuildHtml(arrets, kpi, avis);
+    var pdf    = rhGeneratePdf(arrets, kpi, avis);
     var MOIS   = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
     var sujet  = 'Rapport Hebdomadaire de Planification — S' + arrets.sem + ' · ' + MOIS[mo] + ' ' + yr;
-    sendEmailRH(p.emails, sujet, html, 'Bureau Méthode Daoui - Planification');
+    sendEmailRH(p.emails, sujet, html, 'Bureau Méthode Daoui - Planification', [pdf]);
     PropertiesService.getScriptProperties().setProperty('RH_EMAILS', p.emails);
     return { ok: true, msg: 'Rapport envoyé avec succès à : ' + p.emails };
   } catch(e) {
@@ -671,10 +861,11 @@ function executerRapportPlanifie(e) {
   var kpi    = rhGetKpi(mo, yr);
   var avis   = rhGetAvis(mo, yr);
   var html   = rhBuildHtml(arrets, kpi, avis);
+  var pdf    = rhGeneratePdf(arrets, kpi, avis);
   var MOIS   = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
   var sujet  = 'Rapport Hebdomadaire de Planification — S' + arrets.sem + ' · ' + MOIS[mo] + ' ' + yr;
 
-  sendEmailRH(emails, sujet, html, 'Bureau Méthode Daoui - Planification');
+  sendEmailRH(emails, sujet, html, 'Bureau Méthode Daoui - Planification', [pdf]);
 
   // Supprimer le trigger si "unique"
   if (cfg.frequence === 'unique' && triggerId) {
@@ -731,8 +922,9 @@ function testerRapportHebdo() {
   Logger.log('Avis : ' + (avis ? avis.total + ' total / ' + avis.ouverts + ' ouverts' : 'non disponibles'));
 
   var html  = rhBuildHtml(arrets, kpi, avis);
+  var pdf   = rhGeneratePdf(arrets, kpi, avis);
   var sujet = '[TEST] Rapport Hebdomadaire S' + arrets.sem;
 
-  sendEmailRH(RH_OCP_EMAIL, sujet, html, 'Bureau Méthode Daoui - Planification');
+  sendEmailRH(RH_OCP_EMAIL, sujet, html, 'Bureau Méthode Daoui - Planification', [pdf]);
   Logger.log('✅ Test envoyé à : ' + RH_OCP_EMAIL);
 }
