@@ -200,7 +200,7 @@ function rhGetKpi(mo, yr) {
   var cType = ci(["type d'ordre",'type ordre','type']);
   var cPost = ci(['poste de travail','poste travail','poste']);
 
-  var total=0,real=0,lanc=0,crpr=0,sys=0,cur=0,sysR=0,curR=0,backlog=0;
+  var total=0,real=0,lanc=0,crpr=0,sys=0,cur=0,sysR=0,curR=0,backlog=0,caract=0,nonCaract=0;
   var posteMap={}, typeMap={};
 
   for (var i=1;i<data.length;i++) {
@@ -217,6 +217,7 @@ function rhGetKpi(mo, yr) {
     if(ss_.includes('LANC')&&!ss_.includes('CONF')&&!ss_.includes('TCLO')) lanc++;
     if(su.includes('CRPR')) crpr++;
     if(su.includes('ATPL')&&ss_.includes('LANC')) backlog++;
+    if(su!=='SOPL'){if(su.length===9)caract++;else if(su.length===4)nonCaract++;}
     var isSys=['ZCON','ZEST','ZETL'].indexOf(tp)>=0, isCur=tp==='ZCOR';
     if(isSys){sys++;if(isR)sysR++;}
     if(isCur){cur++;if(isR)curR++;}
@@ -242,6 +243,8 @@ function rhGetKpi(mo, yr) {
     tauxPrev:p(sysR,sys), tauxPrevStr:ps(sysR,sys),
     tauxCor:p(curR,cur),  tauxCorStr:ps(curR,cur),
     postes:postes,
+    caract:caract, nonCaract:nonCaract,
+    tauxCaract:p(caract,caract+nonCaract), tauxCaractStr:ps(caract,caract+nonCaract),
     typeData:Object.keys(typeMap).map(function(k){return{type:k,count:typeMap[k]};}).sort(function(a,b){return b.count-a.count;})
   };
 }
@@ -605,15 +608,18 @@ function rhBuildHtml(arrets, kpi, avis) {
   // KPIs détaillés
   +secLabel('Indicateurs cl&#233;s du mois &#8212; '+kpi.mois)
 
-  // Global – 6 KPIs en une seule ligne
+  // Global – 7 KPIs en deux lignes
   +subSection('#eff6ff','#bfdbfe','#1d4ed8','&#9632; Global')
-  +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
+  +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:4px;"><tr>'
   +kpiCard('#eff6ff','#1d4ed8',kpi.total.toLocaleString('fr-FR'),'Total OT planifi&#233;s','Ordres de travail du mois',null,'16%')
   +kpiCard('#ecfdf5','#059669',kpi.real.toLocaleString('fr-FR'),'OT R&#233;alis&#233;s','Taux : <b>'+kpi.tauxRealStr+'</b>',kpi.tauxReal,'16%')
   +kpiCard('#fffbeb','#d97706',kpi.lanc.toLocaleString('fr-FR'),'OT Lanc&#233;s','En cours : <b>'+kpi.lancPct+'</b>',null,'16%')
   +kpiCard('#fef2f2','#dc2626',kpi.crpr.toLocaleString('fr-FR'),'Non lanc&#233;s (CRPR)','En attente de planification',null,'17%')
   +kpiCard('#f1f5f9','#475569',kpi.backlog.toLocaleString('fr-FR'),'Backlog','En attente de planification',null,'17%')
   +kpiCard('#fffbeb','#d97706',kpi.sys+'/'+kpi.cur,'Pr&#233;ventif / Correctif',kpi.sysPct+' / '+kpi.curPct,null,'18%')
+  +'</tr></table>'
+  +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
+  +kpiCard('#f0fdf4','#15803d',kpi.tauxCaractStr,'Taux de caract&#233;risation','<b>'+kpi.caract.toLocaleString('fr-FR')+'</b> caract&#233;ris&#233;s / <b>'+(kpi.caract+kpi.nonCaract).toLocaleString('fr-FR')+'</b> &middot; excl. SOPL',kpi.tauxCaract,'33%')
   +'</tr></table>'
 
   // Préventif + Correctif – 4 KPIs en une seule ligne
