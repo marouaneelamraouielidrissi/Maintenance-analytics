@@ -12,7 +12,8 @@
       "Bash(git -C /Users/mounaim/Desktop/mainAna push origin main)",
       "Bash(git commit -m 'Fix GAS rhGetPreparation: correct column index fallbacks:*)",
       "Bash(git commit -m 'Add targeted debug logging to rhGetPreparation:*)",
-      "Bash(git commit -m 'Remove debug logging from rhGetPreparation:*)"
+      "Bash(git commit -m 'Remove debug logging from rhGetPreparation:*)",
+      "Bash(git commit -m 'Fix: propagate otAttente+tempsMoyenStr in all 3 call sites:*)"
     ]
   },
   "hooks": {
