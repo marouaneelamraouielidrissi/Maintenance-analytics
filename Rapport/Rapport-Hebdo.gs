@@ -199,9 +199,7 @@ function rhGetKpi(mo, yr) {
   var cUtil = ci(['statut utilis.','statut util','statut utilis']);
   var cType = ci(["type d'ordre",'type ordre','type']);
   var cPost = ci(['poste de travail','poste travail','poste']);
-  var cPdr  = 18; // colonne S (0-indexed)
-
-  var total=0,real=0,lanc=0,crpr=0,sys=0,cur=0,sysR=0,curR=0,backlog=0,caract=0,nonCaract=0,pdrTotal=0,pdrConf=0;
+  var total=0,real=0,lanc=0,crpr=0,sys=0,cur=0,sysR=0,curR=0,backlog=0,caract=0,nonCaract=0;
   var posteMap={}, typeMap={};
 
   for (var i=1;i<data.length;i++) {
@@ -219,9 +217,6 @@ function rhGetKpi(mo, yr) {
     if(su.includes('CRPR')) crpr++;
     if(su.includes('ATPL')&&ss_.includes('LANC')) backlog++;
     if(su!=='SOPL'){if(su.length===9)caract++;else if(su.length===4)nonCaract++;}
-    var pdrVal=r.length>cPdr?r[cPdr].toString().trim():'';
-    if(pdrVal!=='')pdrTotal++;
-    if(su==='CRPR ATPD'||su==='CRPR AVPD')pdrConf++;
     var isSys=['ZCON','ZEST','ZETL'].indexOf(tp)>=0, isCur=tp==='ZCOR';
     if(isSys){sys++;if(isR)sysR++;}
     if(isCur){cur++;if(isR)curR++;}
@@ -249,10 +244,55 @@ function rhGetKpi(mo, yr) {
     postes:postes,
     caract:caract, nonCaract:nonCaract,
     tauxCaract:p(caract,caract+nonCaract), tauxCaractStr:ps(caract,caract+nonCaract),
-    pdrTotal:pdrTotal, pdrConf:pdrConf,
-    tauxPdrConf:p(pdrConf,pdrTotal), tauxPdrConfStr:ps(pdrConf,pdrTotal),
+    pdrTotal:0, pdrConf:0,
+    tauxPdrConf:0, tauxPdrConfStr:'—',
     typeData:Object.keys(typeMap).map(function(k){return{type:k,count:typeMap[k]};}).sort(function(a,b){return b.count-a.count;})
   };
+}
+
+// ── Lecture Préparation PDR (feuille Travaux hebdomadaire) ───
+function rhGetPreparation(mo, yr) {
+  try {
+    var ss    = SpreadsheetApp.openById(RH_AVIS_FILE_ID);
+    var sheet = ss.getSheetByName('Travaux hebdomadaire');
+    if (!sheet) { Logger.log('rhGetPreparation: feuille "Travaux hebdomadaire" introuvable'); return null; }
+    var data = sheet.getDataRange().getValues();
+    if (data.length < 2) return null;
+
+    var hdr = data[0];
+    function ci(names) {
+      for (var i=0;i<names.length;i++)
+        for (var j=0;j<hdr.length;j++)
+          if (hdr[j].toString().trim().toLowerCase()===names[i].toLowerCase()) return j;
+      return -1;
+    }
+    var cDate = ci(['début au plus tôt','debut au plus tot','date début','date debut','date','début','debut']);
+    var cUtil = ci(['statut utilis.','statut util','statut utilis']);
+    var cPdr  = 18; // colonne S (0-indexed)
+
+    var pdrTotal=0, pdrConf=0;
+    for (var i=1;i<data.length;i++) {
+      var r=data[i];
+      // Filtre mois/année
+      if (cDate>=0) {
+        var rawD=r[cDate], d;
+        if (rawD instanceof Date) d=rawD;
+        else if (typeof rawD==='number') d=new Date(Math.round((rawD-25569)*86400000));
+        else if (rawD) d=new Date(rawD);
+        else continue;
+        if (isNaN(d)||d.getFullYear()!==yr||d.getMonth()!==mo) continue;
+      }
+      var su=(cUtil>=0?r[cUtil]:'').toString().trim();
+      var pdrVal=r.length>cPdr?r[cPdr].toString().trim():'';
+      if (pdrVal!=='') pdrTotal++;
+      if (su==='CRPR ATPD'||su==='CRPR AVPD') pdrConf++;
+    }
+
+    function p(n,t){return t?parseFloat(((n/t)*100).toFixed(1)):0;}
+    function ps(n,t){return t?p(n,t).toFixed(1)+'%':'—';}
+    Logger.log('rhGetPreparation: pdrTotal='+pdrTotal+' pdrConf='+pdrConf);
+    return { pdrTotal:pdrTotal, pdrConf:pdrConf, tauxPdrConf:p(pdrConf,pdrTotal), tauxPdrConfStr:ps(pdrConf,pdrTotal) };
+  } catch(e) { Logger.log('rhGetPreparation error: '+e.message); return null; }
 }
 
 // ── Lecture des Avis (mois courant) ──────────────────────────
@@ -354,6 +394,72 @@ function rhGetAvis(mo, yr) {
       openByPoste:toArr(openByPoste,6), byInstall:toArr(byInstall,8)
     };
   } catch(e) { Logger.log('rhGetAvis error: '+e.message); return null; }
+}
+
+// ── Générateurs d'images haute résolution via QuickChart.io ─────
+function rhChartFetch_(chartStr, w, h) {
+  var payload = JSON.stringify({
+    chart: chartStr, width: w, height: h,
+    backgroundColor: 'white', format: 'png', devicePixelRatio: 2
+  });
+  var resp = UrlFetchApp.fetch('https://quickchart.io/chart', {
+    method: 'post', contentType: 'application/json',
+    payload: payload, muteHttpExceptions: true
+  });
+  if (resp.getResponseCode() !== 200)
+    throw new Error('QuickChart ' + resp.getResponseCode() + ': ' + resp.getContentText().slice(0, 200));
+  return 'data:image/png;base64,' + Utilities.base64Encode(resp.getContent());
+}
+
+function rhMakePieImg(labels, values, title, w, h) {
+  try {
+    var colors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16','#ec4899','#14b8a6'];
+    var chart = '{'
+      + 'type:"pie",'
+      + 'data:{labels:' + JSON.stringify(labels)
+        + ',datasets:[{data:' + JSON.stringify(values)
+          + ',backgroundColor:' + JSON.stringify(colors.slice(0, Math.min(labels.length, colors.length)))
+          + ',borderWidth:2,borderColor:"#fff"}]},'
+      + 'options:{'
+        + 'title:{display:' + (title ? 'true' : 'false') + ',text:' + JSON.stringify(title || '') + ',fontStyle:"bold",fontSize:13,fontColor:"#1e293b"},'
+        + 'legend:{position:"right",labels:{fontSize:11,fontColor:"#334155"}},'
+        + 'plugins:{datalabels:{'
+          + 'formatter:function(v,ctx){'
+            + 'var s=ctx.dataset.data.reduce(function(a,b){return a+b;},0);'
+            + 'return s>0?Math.round(v/s*100)+"%":"";'
+          + '},'
+          + 'color:"#fff",font:{size:12,weight:"bold"}'
+        + '}}'
+      + '}'
+    + '}';
+    return rhChartFetch_(chart, w || 700, h || 340);
+  } catch(e) { Logger.log('rhMakePieImg: ' + e.message); return ''; }
+}
+
+function rhMakeBarImg(labels, values, color, title, w, h) {
+  try {
+    var chart = '{'
+      + 'type:"horizontalBar",'
+      + 'data:{labels:' + JSON.stringify(labels)
+        + ',datasets:[{data:' + JSON.stringify(values)
+          + ',backgroundColor:' + JSON.stringify(color || '#3b82f6')
+          + '}]},'
+      + 'options:{'
+        + 'title:{display:' + (title ? 'true' : 'false') + ',text:' + JSON.stringify(title || '') + ',fontStyle:"bold",fontSize:13,fontColor:"#1e293b"},'
+        + 'legend:{display:false},'
+        + 'scales:{'
+          + 'xAxes:[{ticks:{beginAtZero:true,fontColor:"#475569",fontSize:10},gridLines:{color:"#e2e8f0"}}],'
+          + 'yAxes:[{ticks:{fontColor:"#475569",fontSize:10}}]'
+        + '},'
+        + 'plugins:{datalabels:{'
+          + 'anchor:"end",align:"right",'
+          + 'formatter:function(v){return v;},'
+          + 'color:"#1e293b",font:{size:10,weight:"bold"}'
+        + '}}'
+      + '}'
+    + '}';
+    return rhChartFetch_(chart, w || 700, h || 340);
+  } catch(e) { Logger.log('rhMakeBarImg: ' + e.message); return ''; }
 }
 
 // ── Graphique colonnes verticales HTML pur — compatible Outlook ──
@@ -488,10 +594,9 @@ function rhBuildHtml(arrets, kpi, avis) {
     w=w||'50%';
     if(!imgSrc) return '<td width="'+w+'" valign="top" style="padding:6px;"></td>';
     return '<td width="'+w+'" valign="top" style="padding:6px;">'
-      +'<table cellpadding="0" cellspacing="0" width="100%" height="260" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
-      +'<tr><td height="260" valign="middle" style="padding:12px 16px;">'
-      +'<div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">'+title+'</div>'
-      +'<img src="'+imgSrc+'" width="480" style="display:block;border:0;height:auto;" alt="'+title+'">'
+      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
+      +'<tr><td style="padding:12px 16px;">'
+      +'<img src="'+imgSrc+'" width="100%" style="display:block;border:0;height:auto;max-width:100%;" alt="'+title+'">'
       +'</td></tr></table></td>';
   }
 
@@ -596,18 +701,18 @@ function rhBuildHtml(arrets, kpi, avis) {
   +(function(){
     var typeD=kpi.typeData.slice(0,6);
     var postesD=kpi.postes.slice(0,7);
-    var TYPE_LBL={'ZEST':'Systématique','ZCOR':'Curatif','ZCON':'Conditionnel','ZETL':'Etalonnage'};
-    var colType=typeD.length?rhMakeColHtml(
+    var TYPE_LBL={'ZEST':'Syst\u00e9matique','ZCOR':'Curatif','ZCON':'Conditionnel','ZETL':'Etalonnage'};
+    var imgType=typeD.length?rhMakePieImg(
       typeD.map(function(x){return TYPE_LBL[x.type]||x.type;}),
       typeD.map(function(x){return x.count;}),
-      '#6366f1'):'';
-    var barPoste=postesD.length?rhMakeBarHtml(
+      'R\u00e9partition par type d\'ordre'):'';
+    var imgPoste=postesD.length?rhMakeBarImg(
       postesD.map(function(x){return x.nom;}),
       postesD.map(function(x){return x.total;}),
-      '#3b82f6'):'';
+      '#3b82f6','Volume OT par corps de m\u00e9tier'):'';
     return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
-      +barChartCard(colType,'R&#233;partition par type d\'ordre')
-      +barChartCard(barPoste,'Volume OT par corps de m&#233;tier')
+      +chartCard(imgType,'R&#233;partition par type d\'ordre')
+      +chartCard(imgPoste,'Volume OT par corps de m&#233;tier')
       +'</tr></table>';
   })()
 
@@ -660,32 +765,32 @@ function rhBuildHtml(arrets, kpi, avis) {
     +'</tr></table>'
     // Graphiques Avis ligne 1 : Répartition par secteur + Corps de Métier
     +(function(){
-      var colSect=avis.bySecteur.length?rhMakeColHtml(
+      var imgSect=avis.bySecteur.length?rhMakePieImg(
         avis.bySecteur.map(function(x){return x.label;}),
         avis.bySecteur.map(function(x){return x.count;}),
-        '#6366f1'):'';
-      var barPoste=avis.byPoste.length?rhMakeBarHtml(
+        'R\u00e9partition par secteur'):'';
+      var imgPoste=avis.byPoste.length?rhMakeBarImg(
         avis.byPoste.map(function(x){return x.label;}),
         avis.byPoste.map(function(x){return x.count;}),
-        '#7c3aed'):'';
+        '#7c3aed','Corps de M\u00e9tier (Poste trav.)'):'';
       return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-        +barChartCard(colSect,'R&#233;partition par secteur')
-        +barChartCard(barPoste,'Corps de M&#233;tier (Poste trav.)')
+        +chartCard(imgSect,'R&#233;partition par secteur')
+        +chartCard(imgPoste,'Corps de M&#233;tier (Poste trav.)')
         +'</tr></table>';
     })()
     // Graphiques Avis ligne 2 : Non Clôturés + Par installation
     +(function(){
-      var barOpen=avis.openByPoste.length?rhMakeBarHtml(
+      var imgOpen=avis.openByPoste.length?rhMakeBarImg(
         avis.openByPoste.map(function(x){return x.label;}),
         avis.openByPoste.map(function(x){return x.count;}),
-        '#dc2626'):'';
-      var barInst=avis.byInstall.length?rhMakeBarHtml(
+        '#dc2626','Avis non cl\u00f4tur\u00e9s par corps de m\u00e9tier'):'';
+      var imgInst=avis.byInstall.length?rhMakeBarImg(
         avis.byInstall.slice(0,8).map(function(x){return x.label;}),
         avis.byInstall.slice(0,8).map(function(x){return x.count;}),
-        '#0891b2'):'';
+        '#0891b2','Avis par installation'):'';
       return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
-        +barChartCard(barOpen,'Avis non cl&#244;tur&#233;s par corps de m&#233;tier')
-        +barChartCard(barInst,'Avis par installation')
+        +chartCard(imgOpen,'Avis non cl&#244;tur&#233;s par corps de m&#233;tier')
+        +chartCard(imgInst,'Avis par installation')
         +'</tr></table>';
     })()
   ) : '')
@@ -716,6 +821,8 @@ function envoyerRapportDepuisInterface(p) {
     var mo = parseInt(p.mo), yr = parseInt(p.yr);
     var arrets = rhGetArrets();
     var kpi    = rhGetKpi(mo, yr);
+    var prep   = rhGetPreparation(mo, yr);
+    if (prep) { kpi.pdrTotal=prep.pdrTotal; kpi.pdrConf=prep.pdrConf; kpi.tauxPdrConf=prep.tauxPdrConf; kpi.tauxPdrConfStr=prep.tauxPdrConfStr; }
     var avis   = rhGetAvis(mo, yr);
     var html   = rhBuildHtml(arrets, kpi, avis);
     var MOIS   = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
@@ -785,6 +892,8 @@ function executerRapportPlanifie(e) {
   var emails = cfg.emails || props.getProperty('RH_EMAILS') || RH_OCP_EMAIL;
   var arrets = rhGetArrets();
   var kpi    = rhGetKpi(mo, yr);
+  var prep   = rhGetPreparation(mo, yr);
+  if (prep) { kpi.pdrTotal=prep.pdrTotal; kpi.pdrConf=prep.pdrConf; kpi.tauxPdrConf=prep.tauxPdrConf; kpi.tauxPdrConfStr=prep.tauxPdrConfStr; }
   var avis   = rhGetAvis(mo, yr);
   var html   = rhBuildHtml(arrets, kpi, avis);
   var MOIS   = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
@@ -839,6 +948,8 @@ function testerRapportHebdo() {
   var mo     = now.getMonth(), yr = now.getFullYear();
   var arrets = rhGetArrets();
   var kpi    = rhGetKpi(mo, yr);
+  var prep   = rhGetPreparation(mo, yr);
+  if (prep) { kpi.pdrTotal=prep.pdrTotal; kpi.pdrConf=prep.pdrConf; kpi.tauxPdrConf=prep.tauxPdrConf; kpi.tauxPdrConfStr=prep.tauxPdrConfStr; }
   var avis   = rhGetAvis(mo, yr);
 
   Logger.log('Semaine : S' + arrets.sem + ' (' + arrets.s0 + ' → ' + arrets.s1 + ')');
