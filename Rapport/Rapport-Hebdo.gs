@@ -349,12 +349,15 @@ function rhMakePieImg(labels, values, title, w, h) {
       .addColumn(Charts.ColumnType.NUMBER,'Val');
     for(var i=0;i<labels.length;i++) dt.addRow([labels[i],values[i]]);
     dt.build();
-    var c=Charts.newPieChart().setDataTable(dt).setDimensions(w||760,h||380)
+    var c=Charts.newPieChart().setDataTable(dt).setDimensions(w||880,h||420)
       .setOption('title',title||'')
+      .setOption('titleTextStyle',{fontSize:13,bold:true,color:'#1e293b'})
       .setOption('backgroundColor','#ffffff')
-      .setOption('chartArea',{left:10,top:40,width:'62%',height:'80%'})
-      .setOption('legend',{position:'right',textStyle:{fontSize:12}})
-      .setOption('pieSliceTextStyle',{fontSize:11})
+      .setOption('chartArea',{left:10,top:48,width:'58%',height:'80%'})
+      .setOption('legend',{position:'right',textStyle:{fontSize:12,color:'#334155'}})
+      // Afficher "valeur (x%)" dans chaque tranche
+      .setOption('pieSliceText','value')
+      .setOption('pieSliceTextStyle',{fontSize:12,bold:true,color:'#ffffff'})
       .build();
     return 'data:image/png;base64,'+Utilities.base64Encode(c.getAs('image/png').getBytes());
   } catch(e){ Logger.log('rhMakePieImg: '+e.message); return ''; }
@@ -367,14 +370,17 @@ function rhMakeBarImg(labels, values, color, title, w, h) {
       .addColumn(Charts.ColumnType.NUMBER,'Count');
     for(var i=0;i<labels.length;i++) dt.addRow([labels[i],values[i]]);
     dt.build();
-    var c=Charts.newBarChart().setDataTable(dt).setDimensions(w||760,h||380)
+    var c=Charts.newBarChart().setDataTable(dt).setDimensions(w||880,h||420)
       .setOption('title',title||'')
+      .setOption('titleTextStyle',{fontSize:13,bold:true,color:'#1e293b'})
       .setOption('backgroundColor','#ffffff')
       .setOption('colors',[color||'#3b82f6'])
       .setOption('legend',{position:'none'})
-      .setOption('chartArea',{left:130,top:40,width:'60%',height:'78%'})
-      .setOption('hAxis',{textStyle:{fontSize:11}})
-      .setOption('vAxis',{textStyle:{fontSize:11}})
+      .setOption('chartArea',{left:140,top:48,width:'58%',height:'78%'})
+      .setOption('hAxis',{textStyle:{fontSize:11,color:'#475569'},gridlines:{color:'#e2e8f0'}})
+      .setOption('vAxis',{textStyle:{fontSize:11,color:'#475569'}})
+      // Étiquettes de valeur au bout de chaque barre
+      .setOption('annotations',{alwaysOutside:true,textStyle:{fontSize:11,bold:true,color:'#1e293b'}})
       .build();
     return 'data:image/png;base64,'+Utilities.base64Encode(c.getAs('image/png').getBytes());
   } catch(e){ Logger.log('rhMakeBarImg: '+e.message); return ''; }
@@ -511,7 +517,7 @@ function rhBuildHtml(arrets, kpi, avis) {
 
   // ── Wrapper centré ──
   +'<table cellpadding="0" cellspacing="0" width="100%"><tr><td align="center" style="padding:24px 16px 48px;">'
-  +'<table cellpadding="0" cellspacing="0" width="900" style="max-width:900px;">'
+  +'<table cellpadding="0" cellspacing="0" width="1100" style="max-width:1100px;">'
 
   // ── Header ──
   +'<tr><td style="background:#1d4ed8;border-radius:10px 10px 0 0;padding:20px 32px;">'
