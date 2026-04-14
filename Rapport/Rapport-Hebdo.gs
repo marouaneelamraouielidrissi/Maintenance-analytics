@@ -480,13 +480,11 @@ function rhMakePieImg(labels, values, title, w, h) {
 
 function rhMakeBarImg(labels, values, color, title, w, h) {
   try {
-    var palette = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16'];
-    var colors = labels.map(function(_,i){ return palette[i % palette.length]; });
     var chart = '{'
       + 'type:"horizontalBar",'
       + 'data:{labels:' + JSON.stringify(labels)
         + ',datasets:[{data:' + JSON.stringify(values)
-          + ',backgroundColor:' + JSON.stringify(colors)
+          + ',backgroundColor:' + JSON.stringify(color || '#3b82f6')
           + ',borderWidth:0}]},'
       + 'options:{'
         + 'title:{display:' + (title ? 'true' : 'false') + ',text:' + JSON.stringify(title || '') + ',fontStyle:"bold",fontSize:15,fontColor:"#0f172a",padding:16},'
