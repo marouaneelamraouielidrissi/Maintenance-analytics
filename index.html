@@ -2945,52 +2945,68 @@ td { padding: 9px 14px; vertical-align: middle; }
       </div>
     </div>
 
-    <!-- PRÉVENTIF -->
-    <div class="kpi-section no-break">
-      <div class="kpi-section-label prev">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Préventif
-      </div>
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-card-top"><div class="kpi-icon-box purple"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div></div>
-          <div class="kpi-value" id="kpi-sys">—</div>
-          <div class="kpi-label">OT Préventif systématique</div>
-          <div class="kpi-sub">ZCON + ZEST + ZETL : <b id="kpi-sys-pct">—</b></div>
+    <!-- PRÉVENTIF + CORRECTIF côte à côte -->
+    <div style="display:flex;gap:12px;align-items:flex-start;">
+      <div class="kpi-section no-break" style="flex:1;min-width:0;">
+        <div class="kpi-section-label prev">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Préventif
         </div>
-        <div class="kpi-card">
-          <div class="kpi-card-top">
-            <div class="kpi-icon-box green"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-            <span class="kpi-tag neu" id="kpi-taux-prev-tag">—</span>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-card-top"><div class="kpi-icon-box purple"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div></div>
+            <div class="kpi-value" id="kpi-sys">—</div>
+            <div class="kpi-label">OT Préventif systématique</div>
+            <div class="kpi-sub">ZCON + ZEST + ZETL : <b id="kpi-sys-pct">—</b></div>
           </div>
-          <div class="kpi-value" id="kpi-taux-prev">—</div>
-          <div class="kpi-label">Taux réalisation préventif</div>
-          <div class="kpi-sub">CONF+TCLO+CLOT / total ZCON+ZEST+ZETL</div>
+          <div class="kpi-card">
+            <div class="kpi-card-top">
+              <div class="kpi-icon-box green"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+              <span class="kpi-tag neu" id="kpi-taux-prev-tag">—</span>
+            </div>
+            <div class="kpi-value" id="kpi-taux-prev">—</div>
+            <div class="kpi-label">Taux réalisation préventif</div>
+            <div class="kpi-sub">CONF+TCLO+CLOT / total ZCON+ZEST+ZETL</div>
+          </div>
+        </div>
+      </div>
+      <div class="kpi-section no-break" style="flex:1;min-width:0;">
+        <div class="kpi-section-label cor">
+          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Correctif
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-card-top"><div class="kpi-icon-box red"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div></div>
+            <div class="kpi-value" id="kpi-curatif-total">—</div>
+            <div class="kpi-label">OT Correctif (ZCOR)</div>
+            <div class="kpi-sub">Part du total : <b id="kpi-curatif-pct">—</b></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top">
+              <div class="kpi-icon-box red"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+              <span class="kpi-tag neu" id="kpi-taux-cor-tag">—</span>
+            </div>
+            <div class="kpi-value" id="kpi-taux-cor">—</div>
+            <div class="kpi-label">Taux réalisation correctif</div>
+            <div class="kpi-sub">CONF+TCLO+CLOT / total ZCOR</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- CORRECTIF -->
+    <!-- PRÉPARATION -->
     <div class="kpi-section no-break">
-      <div class="kpi-section-label cor">
-        <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-        Correctif
+      <div class="kpi-section-label" style="background:#fff7ed;color:#c2410c;border:1px solid #fdba74;">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Préparation
       </div>
       <div class="kpi-grid">
         <div class="kpi-card">
-          <div class="kpi-card-top"><div class="kpi-icon-box red"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div></div>
-          <div class="kpi-value" id="kpi-curatif-total">—</div>
-          <div class="kpi-label">OT Correctif (ZCOR)</div>
-          <div class="kpi-sub">Part du total : <b id="kpi-curatif-pct">—</b></div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-card-top">
-            <div class="kpi-icon-box red"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-            <span class="kpi-tag neu" id="kpi-taux-cor-tag">—</span>
-          </div>
-          <div class="kpi-value" id="kpi-taux-cor">—</div>
-          <div class="kpi-label">Taux réalisation correctif</div>
-          <div class="kpi-sub">CONF+TCLO+CLOT / total ZCOR</div>
+          <div class="kpi-card-top"><div class="kpi-icon-box amber"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div></div>
+          <div class="kpi-value" id="kpi-pdr-conf">—</div>
+          <div class="kpi-label">Taux confirmation PDR</div>
+          <div class="kpi-sub"><b id="kpi-pdr-conf-nb">—</b> confirmés · CRPR ATPD / CRPR AVPD</div>
         </div>
       </div>
     </div>
@@ -3150,52 +3166,68 @@ td { padding: 9px 14px; vertical-align: middle; }
       </div>
     </div>
 
-    <!-- PRÉVENTIF -->
-    <div class="kpi-section no-break">
-      <div class="kpi-section-label prev">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Préventif
-      </div>
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-card-top"><div class="kpi-icon-box purple"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div></div>
-          <div class="kpi-value" id="ann-sys">—</div>
-          <div class="kpi-label">OT Préventif systématique</div>
-          <div class="kpi-sub">ZCON + ZEST + ZETL : <b id="ann-sys-pct">—</b></div>
+    <!-- PRÉVENTIF + CORRECTIF côte à côte -->
+    <div style="display:flex;gap:12px;align-items:flex-start;">
+      <div class="kpi-section no-break" style="flex:1;min-width:0;">
+        <div class="kpi-section-label prev">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Préventif
         </div>
-        <div class="kpi-card">
-          <div class="kpi-card-top">
-            <div class="kpi-icon-box green"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-            <span class="kpi-tag neu" id="ann-taux-prev-tag">—</span>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-card-top"><div class="kpi-icon-box purple"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div></div>
+            <div class="kpi-value" id="ann-sys">—</div>
+            <div class="kpi-label">OT Préventif systématique</div>
+            <div class="kpi-sub">ZCON + ZEST + ZETL : <b id="ann-sys-pct">—</b></div>
           </div>
-          <div class="kpi-value" id="ann-taux-prev">—</div>
-          <div class="kpi-label">Taux réalisation préventif</div>
-          <div class="kpi-sub">CONF+TCLO+CLOT / total ZCON+ZEST+ZETL</div>
+          <div class="kpi-card">
+            <div class="kpi-card-top">
+              <div class="kpi-icon-box green"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+              <span class="kpi-tag neu" id="ann-taux-prev-tag">—</span>
+            </div>
+            <div class="kpi-value" id="ann-taux-prev">—</div>
+            <div class="kpi-label">Taux réalisation préventif</div>
+            <div class="kpi-sub">CONF+TCLO+CLOT / total ZCON+ZEST+ZETL</div>
+          </div>
+        </div>
+      </div>
+      <div class="kpi-section no-break" style="flex:1;min-width:0;">
+        <div class="kpi-section-label cor">
+          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Correctif
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-card-top"><div class="kpi-icon-box red"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div></div>
+            <div class="kpi-value" id="ann-curatif-total">—</div>
+            <div class="kpi-label">OT Correctif (ZCOR)</div>
+            <div class="kpi-sub">Part du total : <b id="ann-curatif-pct">—</b></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top">
+              <div class="kpi-icon-box red"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+              <span class="kpi-tag neu" id="ann-taux-cor-tag">—</span>
+            </div>
+            <div class="kpi-value" id="ann-taux-cor">—</div>
+            <div class="kpi-label">Taux réalisation correctif</div>
+            <div class="kpi-sub">CONF+TCLO+CLOT / total ZCOR</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- CORRECTIF -->
+    <!-- PRÉPARATION annuelle -->
     <div class="kpi-section no-break">
-      <div class="kpi-section-label cor">
-        <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-        Correctif
+      <div class="kpi-section-label" style="background:#fff7ed;color:#c2410c;border:1px solid #fdba74;">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Préparation
       </div>
       <div class="kpi-grid">
         <div class="kpi-card">
-          <div class="kpi-card-top"><div class="kpi-icon-box red"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div></div>
-          <div class="kpi-value" id="ann-curatif-total">—</div>
-          <div class="kpi-label">OT Correctif (ZCOR)</div>
-          <div class="kpi-sub">Part du total : <b id="ann-curatif-pct">—</b></div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-card-top">
-            <div class="kpi-icon-box red"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-            <span class="kpi-tag neu" id="ann-taux-cor-tag">—</span>
-          </div>
-          <div class="kpi-value" id="ann-taux-cor">—</div>
-          <div class="kpi-label">Taux réalisation correctif</div>
-          <div class="kpi-sub">CONF+TCLO+CLOT / total ZCOR</div>
+          <div class="kpi-card-top"><div class="kpi-icon-box amber"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div></div>
+          <div class="kpi-value" id="ann-pdr-conf">—</div>
+          <div class="kpi-label">Taux confirmation PDR</div>
+          <div class="kpi-sub"><b id="ann-pdr-conf-nb">—</b> confirmés · CRPR ATPD / CRPR AVPD</div>
         </div>
       </div>
     </div>
@@ -3579,6 +3611,7 @@ function processData(raw, sourceName) {
     statutSys:   row['Statut système']||'',
     poste:       (row['Poste de travail']||'').trim(),
     statutUtil:  row['Statut utilis.']||'',
+    pdrCol:      row['PDR']||row['Pièces de rechange']||row['Réservation PDR']||row['Besoin PDR']||row['N° réservation']||'',
     avis:        String(row['Avis']||row['N° avis']||''),
     secteur:     '',  // rempli depuis Obj. technique (col F)
   }));
@@ -3990,6 +4023,10 @@ function generateReport() {
   const nonCaractNb = caractOTs.filter(r => r.statutUtil.length === 4).length;
   const caractBase = caractNb + nonCaractNb;
   const tauxCaract = caractBase > 0 ? (caractNb / caractBase * 100).toFixed(1) + '%' : '—';
+  // Taux confirmation PDR : CRPR ATPD ou CRPR AVPD / total OTs avec colonne PDR non vide
+  const pdrBase = filtered.filter(r => r.pdrCol !== '').length;
+  const pdrConf = filtered.filter(r => r.statutUtil === 'CRPR ATPD' || r.statutUtil === 'CRPR AVPD').length;
+  const tauxPdrConf = pdrBase > 0 ? (pdrConf / pdrBase * 100).toFixed(1) + '%' : '—';
 
   set('kpi-total',       total.toLocaleString('fr-FR'));
   set('kpi-realise',     realise.toLocaleString('fr-FR'));
@@ -4010,6 +4047,8 @@ function generateReport() {
   set('kpi-backlog',     backlog);
   set('kpi-caract',      tauxCaract);
   set('kpi-caract-nb',   caractNb.toLocaleString('fr-FR') + ' / ' + caractBase.toLocaleString('fr-FR'));
+  set('kpi-pdr-conf',    tauxPdrConf);
+  set('kpi-pdr-conf-nb', pdrConf.toLocaleString('fr-FR') + ' / ' + pdrBase.toLocaleString('fr-FR'));
   // Tags colorés préventif / correctif
   const tPrevTag = document.getElementById('kpi-taux-prev-tag');
   if(tPrevTag){ tPrevTag.textContent=tauxPrev.toFixed(1)+'%'; tPrevTag.className='kpi-tag '+(tauxPrev>=80?'up':tauxPrev>=50?'neu':'down'); }
@@ -4156,6 +4195,10 @@ function generateAnnualReport() {
   const nonCaractNb = caractOTs.filter(r => r.statutUtil.length === 4).length;
   const caractBase = caractNb + nonCaractNb;
   const tauxCaract = caractBase > 0 ? (caractNb / caractBase * 100).toFixed(1) + '%' : '—';
+  // Taux confirmation PDR annuel
+  const pdrBase = filtered.filter(r => r.pdrCol !== '').length;
+  const pdrConf = filtered.filter(r => r.statutUtil === 'CRPR ATPD' || r.statutUtil === 'CRPR AVPD').length;
+  const tauxPdrConf = pdrBase > 0 ? (pdrConf / pdrBase * 100).toFixed(1) + '%' : '—';
 
   // Banner
   set('rpt-badge',   yr.toString());
@@ -4191,6 +4234,8 @@ function generateAnnualReport() {
   set('ann-backlog',     backlog);
   set('ann-caract',      tauxCaract);
   set('ann-caract-nb',   caractNb.toLocaleString('fr-FR') + ' / ' + caractBase.toLocaleString('fr-FR'));
+  set('ann-pdr-conf',    tauxPdrConf);
+  set('ann-pdr-conf-nb', pdrConf.toLocaleString('fr-FR') + ' / ' + pdrBase.toLocaleString('fr-FR'));
   const tPrevTagA = document.getElementById('ann-taux-prev-tag');
   if(tPrevTagA){ tPrevTagA.textContent=tauxPrev.toFixed(1)+'%'; tPrevTagA.className='kpi-tag '+(tauxPrev>=80?'up':tauxPrev>=50?'neu':'down'); }
   const tCorTagA = document.getElementById('ann-taux-cor-tag');

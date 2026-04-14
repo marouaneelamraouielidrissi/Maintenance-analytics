@@ -199,8 +199,9 @@ function rhGetKpi(mo, yr) {
   var cUtil = ci(['statut utilis.','statut util','statut utilis']);
   var cType = ci(["type d'ordre",'type ordre','type']);
   var cPost = ci(['poste de travail','poste travail','poste']);
+  var cPdr  = 18; // colonne S (0-indexed)
 
-  var total=0,real=0,lanc=0,crpr=0,sys=0,cur=0,sysR=0,curR=0,backlog=0,caract=0,nonCaract=0;
+  var total=0,real=0,lanc=0,crpr=0,sys=0,cur=0,sysR=0,curR=0,backlog=0,caract=0,nonCaract=0,pdrTotal=0,pdrConf=0;
   var posteMap={}, typeMap={};
 
   for (var i=1;i<data.length;i++) {
@@ -218,6 +219,9 @@ function rhGetKpi(mo, yr) {
     if(su.includes('CRPR')) crpr++;
     if(su.includes('ATPL')&&ss_.includes('LANC')) backlog++;
     if(su!=='SOPL'){if(su.length===9)caract++;else if(su.length===4)nonCaract++;}
+    var pdrVal=r.length>cPdr?r[cPdr].toString().trim():'';
+    if(pdrVal!=='')pdrTotal++;
+    if(su==='CRPR ATPD'||su==='CRPR AVPD')pdrConf++;
     var isSys=['ZCON','ZEST','ZETL'].indexOf(tp)>=0, isCur=tp==='ZCOR';
     if(isSys){sys++;if(isR)sysR++;}
     if(isCur){cur++;if(isR)curR++;}
@@ -245,6 +249,8 @@ function rhGetKpi(mo, yr) {
     postes:postes,
     caract:caract, nonCaract:nonCaract,
     tauxCaract:p(caract,caract+nonCaract), tauxCaractStr:ps(caract,caract+nonCaract),
+    pdrTotal:pdrTotal, pdrConf:pdrConf,
+    tauxPdrConf:p(pdrConf,pdrTotal), tauxPdrConfStr:ps(pdrConf,pdrTotal),
     typeData:Object.keys(typeMap).map(function(k){return{type:k,count:typeMap[k]};}).sort(function(a,b){return b.count-a.count;})
   };
 }
@@ -627,6 +633,12 @@ function rhBuildHtml(arrets, kpi, avis) {
   +kpiCard('#ecfdf5','#059669',kpi.tauxPrevStr,'Taux r&#233;alisation','CONF+TCLO+CLOT / ZCON+ZEST+ZETL',kpi.tauxPrev,'25%')
   +kpiCard('#fef2f2','#dc2626',kpi.cur.toLocaleString('fr-FR'),'OT Correctif (ZCOR)','Part : <b>'+kpi.curPct+'</b>',null,'25%')
   +kpiCard('#fef2f2','#dc2626',kpi.tauxCorStr,'Taux r&#233;alisation','CONF+TCLO+CLOT / total ZCOR',kpi.tauxCor,'25%')
+  +'</tr></table>'
+
+  // Préparation
+  +subSection('#fff7ed','#fdba74','#c2410c','&#9632; Pr&#233;paration')
+  +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
+  +kpiCard('#fff7ed','#c2410c',kpi.tauxPdrConfStr,'Taux confirmation PDR','<b>'+kpi.pdrConf.toLocaleString('fr-FR')+'</b> confirm&#233;s (CRPR ATPD / CRPR AVPD) sur <b>'+kpi.pdrTotal.toLocaleString('fr-FR')+'</b> OTs avec PDR',kpi.tauxPdrConf,'50%')
   +'</tr></table>'
 
   // Postes
