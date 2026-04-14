@@ -433,19 +433,22 @@ function rhGetAvis(mo, yr) {
   } catch(e) { Logger.log('rhGetAvis error: '+e.message); return null; }
 }
 
-// ── Générateurs d'images haute résolution via QuickChart.io ─────
+// ── Générateurs d'images via QuickChart.io (URL externe — compatible Outlook/OWA) ─────
 function rhChartFetch_(chartStr, w, h) {
   var payload = JSON.stringify({
     chart: chartStr, width: w, height: h,
     backgroundColor: 'white', format: 'png', devicePixelRatio: 1
   });
-  var resp = UrlFetchApp.fetch('https://quickchart.io/chart', {
+  // /chart/create retourne une URL permanente au lieu de base64 (meilleure compatibilité email)
+  var resp = UrlFetchApp.fetch('https://quickchart.io/chart/create', {
     method: 'post', contentType: 'application/json',
     payload: payload, muteHttpExceptions: true
   });
   if (resp.getResponseCode() !== 200)
-    throw new Error('QuickChart ' + resp.getResponseCode() + ': ' + resp.getContentText().slice(0, 200));
-  return 'data:image/png;base64,' + Utilities.base64Encode(resp.getContent());
+    throw new Error('QuickChart create ' + resp.getResponseCode() + ': ' + resp.getContentText().slice(0, 200));
+  var result = JSON.parse(resp.getContentText());
+  if (!result.success || !result.url) throw new Error('QuickChart: pas d\'URL dans la réponse');
+  return result.url;
 }
 
 function rhMakePieImg(labels, values, title, w, h) {
