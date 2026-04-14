@@ -278,11 +278,6 @@ function rhGetPreparation(mo, yr) {
     var cPdr   = 18;                                  // col S
     var cCreat = ciContains(['créé le','cree le','date création','date creation','cree'], 12); // col M
     var cSys   = ciContains(['statut système','statut systeme','statut sys'], 7);       // col H (détecté via web app)
-    Logger.log('rhGetPreparation cols: cDate='+cDate+' cUtil='+cUtil+' cSys='+cSys+' cCreat='+cCreat);
-    Logger.log('Headers: '+hdr.map(function(h){return h.toString().trim();}).join(' | '));
-    // Échantillon des 5 premières valeurs col K (statut utilis.)
-    var sample=[];for(var s=1;s<Math.min(6,data.length);s++)sample.push('"'+(data[s][cUtil]||'').toString().trim()+'"');
-    Logger.log('Sample col K (statut utilis.): '+sample.join(', '));
 
     var pdrTotal=0, pdrConf=0, otAttente=0, tempsSomme=0, tempsCount=0;
     var today = new Date();
