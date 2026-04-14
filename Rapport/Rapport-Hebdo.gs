@@ -306,7 +306,7 @@ function rhGetPreparation(mo, yr) {
       if (su==='CRPR ATPD'||su==='CRPR AVPD') {
         otAttente++;
         // ── Temps moyen : filtre statut système = 'créé' ──
-        if (sysStat==='créé') {
+        if (sysStat.includes('créé')) {
           var rawC=r[cCreat], dc;
           if (rawC instanceof Date) dc=rawC;
           else if (typeof rawC==='number') dc=new Date(Math.round((rawC-25569)*86400000));
