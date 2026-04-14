@@ -781,8 +781,8 @@ function rhBuildHtml(arrets, kpi, avis) {
   +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
   +kpiCard('#f0fdf4','#15803d',kpi.tauxCaractStr,'Taux caract&#233;risation','<b>'+kpi.caract.toLocaleString('fr-FR')+'</b> / <b>'+(kpi.caract+kpi.nonCaract).toLocaleString('fr-FR')+'</b> &middot; excl. SOPL',kpi.tauxCaract,'25%')
   +kpiCard('#fff7ed','#c2410c',kpi.tauxPdrConfStr,'Taux confirmation PDR','<b>'+kpi.pdrConf.toLocaleString('fr-FR')+'</b> confirm&#233;s sur <b>'+kpi.pdrTotal.toLocaleString('fr-FR')+'</b> OTs avec PDR',kpi.tauxPdrConf,'25%')
-  +kpiCard('#eff6ff','#1d4ed8',kpi.otAttente.toLocaleString('fr-FR'),'OT en attente confirmation PDR','Statut utilis. CRPR ATPD / CRPR AVPD',null,'25%')
-  +kpiCard('#fdf4ff','#7c3aed',kpi.tempsMoyenStr,'Temps moyen de pr&#233;paration','Moy. (aujourd\'hui &minus; date cr&#233;ation) &middot; statut syst. <b>cr&#233;&#233;</b>',null,'25%')
+  +kpiCard('#eff6ff','#1d4ed8',(kpi.otAttente||0).toLocaleString('fr-FR'),'OT en attente confirmation PDR','Statut utilis. CRPR ATPD / CRPR AVPD',null,'25%')
+  +kpiCard('#fdf4ff','#7c3aed',kpi.tempsMoyenStr||'—','Temps moyen de pr&#233;paration','Moy. (aujourd\'hui &minus; date cr&#233;ation) &middot; statut syst. <b>cr&#233;&#233;</b>',null,'25%')
   +'</tr></table>'
 
   // Postes
@@ -794,6 +794,7 @@ function rhBuildHtml(arrets, kpi, avis) {
   +'</td></tr></table>'
 
   // ── Section Avis ──
+  +(avis && Logger.log('Avis charts: bySecteur='+avis.bySecteur.length+' byPoste='+avis.byPoste.length+' openByPoste='+avis.openByPoste.length+' byInstall='+avis.byInstall.length), '')
   +(avis ? (
     secLabel('Analyse des Avis (ZC) &#8212; '+kpi.mois)
     // KPIs Avis
