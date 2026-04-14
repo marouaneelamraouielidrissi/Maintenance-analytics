@@ -7706,38 +7706,43 @@ async function updatePdrKpiFromTravHebdo(mo, yr, isAnnual) {
     const hdr = csvRows[0].map(h => (h||'').toString().trim().toLowerCase()
       .normalize('NFD').replace(/[\u0300-\u036f]/g,''));
 
-    function ci(names) {
+    function ci(names, fallback) {
       for (const n of names) {
         const i = hdr.findIndex(h => h.includes(n));
         if (i >= 0) return i;
       }
-      return -1;
+      return fallback !== undefined ? fallback : -1;
     }
-    const iDate = ci(['debut', 'date', 'start']);    // colonne date début
-    const iPdr  = ci(['pdr']);                        // colonne PDR (fallback 18)
-    const iUtil = ci(['statut util', 'statut utilis', 'util.']); // statut utilis.
-    const iDateFinal = iDate >= 0 ? iDate : 7;
-    const iPdrFinal  = iPdr  >= 0 ? iPdr  : 18;
+    const iDateFinal = ci(['debut', 'date', 'start'], 7);
+    const iPdrFinal  = ci(['pdr'], 18);
+    const iUtil      = ci(['statut util', 'statut utilis', 'util'], 10); // col K fallback
+
+    // Parse gviz date format "Date(YYYY,M,D)" (months 0-indexed) or ISO/FR
+    function parseTravDate(s) {
+      if (!s) return null;
+      const gviz = s.match(/^Date\((\d{4}),(\d{1,2}),(\d{1,2})\)$/);
+      if (gviz) return new Date(+gviz[1], +gviz[2], +gviz[3]);  // months already 0-indexed in gviz
+      const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
+      const fr = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+      if (fr) return new Date(+fr[3], +fr[2]-1, +fr[1]);
+      const d = new Date(s); return isNaN(d) ? null : d;
+    }
 
     let pdrTotal = 0, pdrConf = 0;
     for (let i = 1; i < csvRows.length; i++) {
       const r = csvRows[i];
       if (!r || !r.length) continue;
       // Filtre date
-      const rawD = (r[iDateFinal] || '').trim();
-      if (!rawD) continue;
-      const d = new Date(rawD);
-      if (isNaN(d)) continue;
+      const d = parseTravDate((r[iDateFinal] || '').trim());
+      if (!d || isNaN(d)) continue;
       if (isAnnual ? d.getFullYear() !== yr : (d.getFullYear() !== yr || d.getMonth() !== mo)) continue;
-      // PDR non vide
+      // pdrTotal : colonne PDR non vide (indépendant du statut utilis.)
       const pdrVal = (r[iPdrFinal] || '').trim();
-      if (!pdrVal) continue;
-      pdrTotal++;
-      // Statut utilis. confirmé
-      if (iUtil >= 0) {
-        const su = (r[iUtil] || '').trim().toUpperCase();
-        if (su === 'CRPR ATPD' || su === 'CRPR AVPD') pdrConf++;
-      }
+      if (pdrVal) pdrTotal++;
+      // pdrConf : statut utilis. confirmé (indépendant de pdrVal — même logique que GAS)
+      const su = (r[iUtil] || '').trim().toUpperCase();
+      if (su === 'CRPR ATPD' || su === 'CRPR AVPD') pdrConf++;
     }
     const taux = pdrTotal > 0 ? (pdrConf / pdrTotal * 100).toFixed(1) + '%' : '—';
     const nb   = pdrConf.toLocaleString('fr-FR') + ' / ' + pdrTotal.toLocaleString('fr-FR');
