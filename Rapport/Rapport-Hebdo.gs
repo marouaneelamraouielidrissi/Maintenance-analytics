@@ -342,28 +342,29 @@ function rhGetAvis(mo, yr) {
   } catch(e) { Logger.log('rhGetAvis error: '+e.message); return null; }
 }
 
-// ── Générateurs de graphiques (GAS Charts → base64 PNG) ──────
-function rhMakePieImg(labels, values, title, w, h) {
-  try {
-    var dt=Charts.newDataTable()
-      .addColumn(Charts.ColumnType.STRING,'Cat')
-      .addColumn(Charts.ColumnType.NUMBER,'Val')
-      .addColumn(Charts.ColumnType.STRING,'Ann');
-    for(var i=0;i<labels.length;i++) dt.addRow([labels[i],values[i],''+values[i]]);
-    dt.build();
-    var c=Charts.newColumnChart().setDataTable(dt).setDimensions(w||880,h||420)
-      .setOption('title','')
-      .setOption('backgroundColor','#ffffff')
-      .setOption('chartArea',{left:50,top:20,width:'82%',height:'72%'})
-      .setOption('legend',{position:'none'})
-      .setOption('hAxis',{textStyle:{fontSize:11,color:'#334155'},slantedText:true,slantedTextAngle:30})
-      .setOption('vAxis',{textStyle:{fontSize:11,color:'#94a3b8'},gridlines:{color:'#f1f5f9'},minValue:0})
-      .setOption('annotations',{alwaysOutside:false,textStyle:{fontSize:12,bold:true,color:'#ffffff'}})
-      .setOption('colors',['#6366f1'])
-      .setOption('bar',{groupWidth:'55%'})
-      .build();
-    return 'data:image/png;base64,'+Utilities.base64Encode(c.getAs('image/png').getBytes());
-  } catch(e){ Logger.log('rhMakePieImg: '+e.message); return ''; }
+// ── Graphique colonnes verticales HTML pur — compatible Outlook ──
+function rhMakeColHtml(labels, values, color) {
+  if (!labels.length) return '';
+  var maxVal = Math.max.apply(null, values) || 1;
+  var col = color || '#6366f1';
+  var MAX_H = 140;
+  var n = labels.length;
+  var colW = Math.floor(100 / n);
+  var html = '<table cellpadding="0" cellspacing="0" width="100%"><tr>';
+  for (var i = 0; i < n; i++) {
+    var barH = Math.max(4, Math.round((values[i] / maxVal) * MAX_H));
+    var spacerH = MAX_H - barH;
+    html += '<td width="' + colW + '%" align="center" valign="top">'
+      + '<table cellpadding="0" cellspacing="0" align="center">'
+      + '<tr><td align="center" style="font-size:11px;font-weight:700;color:' + col + ';padding-bottom:3px;white-space:nowrap;">' + values[i] + '</td></tr>'
+      + (spacerH > 0 ? '<tr><td height="' + spacerH + '" style="font-size:1px;">&nbsp;</td></tr>' : '')
+      + '<tr><td width="36" height="' + barH + '" bgcolor="' + col + '" style="font-size:1px;">&nbsp;</td></tr>'
+      + '<tr><td align="center" style="font-size:10px;font-weight:600;color:#334155;padding-top:5px;white-space:nowrap;">' + labels[i] + '</td></tr>'
+      + '</table>'
+      + '</td>';
+  }
+  html += '</tr></table>';
+  return html;
 }
 
 // Graphique barres en HTML pur — compatible Outlook, valeurs affichées
@@ -581,16 +582,16 @@ function rhBuildHtml(arrets, kpi, avis) {
   +(function(){
     var typeD=kpi.typeData.slice(0,6);
     var postesD=kpi.postes.slice(0,7);
-    var imgType=typeD.length?rhMakePieImg(
+    var colType=typeD.length?rhMakeColHtml(
       typeD.map(function(x){return x.type;}),
       typeD.map(function(x){return x.count;}),
-      'R&#233;partition par type d\'ordre'):'';
+      '#6366f1'):'';
     var barPoste=postesD.length?rhMakeBarHtml(
       postesD.map(function(x){return x.nom;}),
       postesD.map(function(x){return x.total;}),
       '#3b82f6'):'';
     return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
-      +chartCard(imgType,'R&#233;partition par type d\'ordre')
+      +barChartCard(colType,'R&#233;partition par type d\'ordre')
       +barChartCard(barPoste,'Volume OT par corps de m&#233;tier')
       +'</tr></table>';
   })()
@@ -638,16 +639,16 @@ function rhBuildHtml(arrets, kpi, avis) {
     +'</tr></table>'
     // Graphiques Avis ligne 1 : Répartition par secteur + Corps de Métier
     +(function(){
-      var imgSect=avis.bySecteur.length?rhMakePieImg(
+      var colSect=avis.bySecteur.length?rhMakeColHtml(
         avis.bySecteur.map(function(x){return x.label;}),
         avis.bySecteur.map(function(x){return x.count;}),
-        ''):'';
+        '#6366f1'):'';
       var barPoste=avis.byPoste.length?rhMakeBarHtml(
         avis.byPoste.map(function(x){return x.label;}),
         avis.byPoste.map(function(x){return x.count;}),
         '#7c3aed'):'';
       return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-        +chartCard(imgSect,'R&#233;partition par secteur')
+        +barChartCard(colSect,'R&#233;partition par secteur')
         +barChartCard(barPoste,'Corps de M&#233;tier (Poste trav.)')
         +'</tr></table>';
     })()
