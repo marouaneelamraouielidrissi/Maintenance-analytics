@@ -2936,6 +2936,12 @@ td { padding: 9px 14px; vertical-align: middle; }
           <div class="kpi-label">Backlog</div>
           <div class="kpi-sub">En attente de planification</div>
         </div>
+        <div class="kpi-card">
+          <div class="kpi-card-top"><div class="kpi-icon-box green"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div></div>
+          <div class="kpi-value" id="kpi-caract">—</div>
+          <div class="kpi-label">Taux caractérisation</div>
+          <div class="kpi-sub"><b id="kpi-caract-nb">—</b> caractérisés · excl. SOPL</div>
+        </div>
       </div>
     </div>
 
@@ -3125,6 +3131,12 @@ td { padding: 9px 14px; vertical-align: middle; }
           <div class="kpi-value" id="ann-backlog">—</div>
           <div class="kpi-label">Backlog</div>
           <div class="kpi-sub">En attente de planification</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card-top"><div class="kpi-icon-box green"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div></div>
+          <div class="kpi-value" id="ann-caract">—</div>
+          <div class="kpi-label">Taux caractérisation</div>
+          <div class="kpi-sub"><b id="ann-caract-nb">—</b> caractérisés · excl. SOPL</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-card-top">
@@ -3972,6 +3984,12 @@ function generateReport() {
   const backlogOT = filtered.filter(r => r.statutUtil.includes('ATPL') && r.statutSys.includes('LANC')).length;
   const backlogPct = total > 0 ? ((backlogOT / total) * 100).toFixed(1) : 0;
   const backlog = total > 0 ? backlogOT.toLocaleString('fr-FR') + ' OT (' + backlogPct + '%)' : '—';
+  // Caractérisation : statut utilis. 9 car = caractérisé, 4 car = non caractérisé, excl. SOPL
+  const caractOTs = filtered.filter(r => r.statutUtil !== 'SOPL');
+  const caractNb  = caractOTs.filter(r => r.statutUtil.length === 9).length;
+  const nonCaractNb = caractOTs.filter(r => r.statutUtil.length === 4).length;
+  const caractBase = caractNb + nonCaractNb;
+  const tauxCaract = caractBase > 0 ? (caractNb / caractBase * 100).toFixed(1) + '%' : '—';
 
   set('kpi-total',       total.toLocaleString('fr-FR'));
   set('kpi-realise',     realise.toLocaleString('fr-FR'));
@@ -3990,6 +4008,8 @@ function generateReport() {
   set('kpi-ratio-pc-prev', prevPct);
   set('kpi-ratio-pc-cor',  corPct);
   set('kpi-backlog',     backlog);
+  set('kpi-caract',      tauxCaract);
+  set('kpi-caract-nb',   caractNb.toLocaleString('fr-FR') + ' / ' + caractBase.toLocaleString('fr-FR'));
   // Tags colorés préventif / correctif
   const tPrevTag = document.getElementById('kpi-taux-prev-tag');
   if(tPrevTag){ tPrevTag.textContent=tauxPrev.toFixed(1)+'%'; tPrevTag.className='kpi-tag '+(tauxPrev>=80?'up':tauxPrev>=50?'neu':'down'); }
@@ -4130,6 +4150,12 @@ function generateAnnualReport() {
   const backlogOT = filtered.filter(r => r.statutUtil.includes('ATPL') && r.statutSys.includes('LANC')).length;
   const backlogPct = total > 0 ? ((backlogOT / total) * 100).toFixed(1) : 0;
   const backlog = total > 0 ? backlogOT.toLocaleString('fr-FR') + ' OT (' + backlogPct + '%)' : '—';
+  // Caractérisation annuelle
+  const caractOTs = filtered.filter(r => r.statutUtil !== 'SOPL');
+  const caractNb  = caractOTs.filter(r => r.statutUtil.length === 9).length;
+  const nonCaractNb = caractOTs.filter(r => r.statutUtil.length === 4).length;
+  const caractBase = caractNb + nonCaractNb;
+  const tauxCaract = caractBase > 0 ? (caractNb / caractBase * 100).toFixed(1) + '%' : '—';
 
   // Banner
   set('rpt-badge',   yr.toString());
@@ -4163,6 +4189,8 @@ function generateAnnualReport() {
   set('ann-ratio-pc-prev', prevPct);
   set('ann-ratio-pc-cor',  corPct);
   set('ann-backlog',     backlog);
+  set('ann-caract',      tauxCaract);
+  set('ann-caract-nb',   caractNb.toLocaleString('fr-FR') + ' / ' + caractBase.toLocaleString('fr-FR'));
   const tPrevTagA = document.getElementById('ann-taux-prev-tag');
   if(tPrevTagA){ tPrevTagA.textContent=tauxPrev.toFixed(1)+'%'; tPrevTagA.className='kpi-tag '+(tauxPrev>=80?'up':tauxPrev>=50?'neu':'down'); }
   const tCorTagA = document.getElementById('ann-taux-cor-tag');
