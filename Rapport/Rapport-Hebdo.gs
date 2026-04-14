@@ -606,8 +606,8 @@ function rhBuildHtml(arrets, kpi, avis) {
   +kpiCard('#ecfdf5','#059669',kpi.real.toLocaleString('fr-FR'),'OT R&#233;alis&#233;s','Taux : <b>'+kpi.tauxRealStr+'</b>',kpi.tauxReal,'33%')
   +kpiCard('#fffbeb','#d97706',kpi.lanc.toLocaleString('fr-FR'),'OT Lanc&#233;s','En cours : <b>'+kpi.lancPct+'</b>',null,'33%')
   +'</tr><tr>'
-  +kpiCard('#fef2f2','#dc2626',kpi.crpr.toLocaleString('fr-FR'),'Non lanc&#233;s (CRPR)','Part : <b>'+kpi.crprPct+'</b>',null,'33%')
-  +kpiCard('#f1f5f9','#475569',kpi.backlog.toLocaleString('fr-FR'),'Backlog','ATPL + LANC',null,'33%')
+  +kpiCard('#fef2f2','#dc2626',kpi.crpr.toLocaleString('fr-FR'),'Non lanc&#233;s (CRPR)','En attente de planification',null,'33%')
+  +kpiCard('#f1f5f9','#475569',kpi.backlog.toLocaleString('fr-FR'),'Backlog','En attente de planification',null,'33%')
   +kpiCard('#fffbeb','#d97706',kpi.sys+'/'+kpi.cur,'Pr&#233;ventif / Correctif',kpi.sysPct+' / '+kpi.curPct,null,'33%')
   +'</tr></table>'
 
