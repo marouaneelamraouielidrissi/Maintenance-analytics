@@ -5,7 +5,11 @@
       "Bash(git add:*)",
       "Bash(git commit -m ':*)",
       "Bash(git push:*)",
-      "Bash(rm /Users/mounaim/Desktop/mainAna/.git/index.lock)"
+      "Bash(rm /Users/mounaim/Desktop/mainAna/.git/index.lock)",
+      "Bash(rm -f /Users/mounaim/Desktop/mainAna/.git/index.lock)",
+      "Bash(git -C /Users/mounaim/Desktop/mainAna add index.html)",
+      "Bash(git -C /Users/mounaim/Desktop/mainAna commit -m ':*)",
+      "Bash(git -C /Users/mounaim/Desktop/mainAna push origin main)"
     ]
   },
   "hooks": {
