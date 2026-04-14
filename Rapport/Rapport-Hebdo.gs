@@ -222,7 +222,8 @@ function rhGetKpi(mo, yr) {
   function p(n,t){return t?parseFloat(((n/t)*100).toFixed(1)):0;}
   function ps(n,t){return t?p(n,t).toFixed(1)+'%':'—';}
 
-  var postes=Object.keys(posteMap).map(function(k){return{nom:k,total:posteMap[k].total,real:posteMap[k].real,taux:p(posteMap[k].real,posteMap[k].total)};}).sort(function(a,b){return b.total-a.total;}).slice(0,10);
+  var EXCL_POSTES=['421-GRAI','425-INCD'];
+  var postes=Object.keys(posteMap).filter(function(k){return EXCL_POSTES.indexOf(k)<0;}).map(function(k){return{nom:k,total:posteMap[k].total,real:posteMap[k].real,taux:p(posteMap[k].real,posteMap[k].total)};}).sort(function(a,b){return b.total-a.total;}).slice(0,10);
 
   var MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
   return {
@@ -349,7 +350,7 @@ function rhMakePieImg(labels, values, title, w, h) {
       .addColumn(Charts.ColumnType.NUMBER,'Val');
     for(var i=0;i<labels.length;i++) dt.addRow([labels[i],values[i]]);
     dt.build();
-    var c=Charts.newPieChart().setDataTable(dt).setDimensions(w||660,h||310)
+    var c=Charts.newPieChart().setDataTable(dt).setDimensions(w||500,h||240)
       .setOption('title','')
       .setOption('backgroundColor','#ffffff')
       .setOption('chartArea',{left:10,top:10,width:'92%',height:'92%'})
@@ -472,7 +473,7 @@ function rhBuildHtml(arrets, kpi, avis) {
       +'<table cellpadding="0" cellspacing="0" width="100%" height="260" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
       +'<tr><td height="260" valign="middle" style="padding:12px 16px;">'
       +'<div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">'+title+'</div>'
-      +'<img src="'+imgSrc+'" width="360" style="display:block;border:0;height:auto;" alt="'+title+'">'
+      +'<img src="'+imgSrc+'" width="280" style="display:block;border:0;height:auto;" alt="'+title+'">'
       +'</td></tr></table></td>';
   }
 
