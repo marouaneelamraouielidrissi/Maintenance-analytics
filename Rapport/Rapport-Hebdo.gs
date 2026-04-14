@@ -437,7 +437,7 @@ function rhGetAvis(mo, yr) {
 function rhChartFetch_(chartStr, w, h) {
   var payload = JSON.stringify({
     chart: chartStr, width: w, height: h,
-    backgroundColor: 'white', format: 'png', devicePixelRatio: 2
+    backgroundColor: 'white', format: 'png', devicePixelRatio: 1
   });
   var resp = UrlFetchApp.fetch('https://quickchart.io/chart', {
     method: 'post', contentType: 'application/json',
@@ -469,7 +469,7 @@ function rhMakePieImg(labels, values, title, w, h) {
         + '}}'
       + '}'
     + '}';
-    return rhChartFetch_(chart, w || 700, h || 340);
+    return rhChartFetch_(chart, w || 500, h || 260);
   } catch(e) { Logger.log('rhMakePieImg: ' + e.message); return ''; }
 }
 
@@ -495,7 +495,7 @@ function rhMakeBarImg(labels, values, color, title, w, h) {
         + '}}'
       + '}'
     + '}';
-    return rhChartFetch_(chart, w || 700, h || 340);
+    return rhChartFetch_(chart, w || 500, h || 260);
   } catch(e) { Logger.log('rhMakeBarImg: ' + e.message); return ''; }
 }
 
@@ -794,7 +794,6 @@ function rhBuildHtml(arrets, kpi, avis) {
   +'</td></tr></table>'
 
   // ── Section Avis ──
-  +(avis && Logger.log('Avis charts: bySecteur='+avis.bySecteur.length+' byPoste='+avis.byPoste.length+' openByPoste='+avis.openByPoste.length+' byInstall='+avis.byInstall.length), '')
   +(avis ? (
     secLabel('Analyse des Avis (ZC) &#8212; '+kpi.mois)
     // KPIs Avis
