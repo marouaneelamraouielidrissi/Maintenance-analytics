@@ -608,18 +608,16 @@ function rhBuildHtml(arrets, kpi, avis) {
   // KPIs détaillés
   +secLabel('Indicateurs cl&#233;s du mois &#8212; '+kpi.mois)
 
-  // Global – 7 KPIs en deux lignes
+  // Global – 7 KPIs en une seule ligne
   +subSection('#eff6ff','#bfdbfe','#1d4ed8','&#9632; Global')
-  +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:4px;"><tr>'
-  +kpiCard('#eff6ff','#1d4ed8',kpi.total.toLocaleString('fr-FR'),'Total OT planifi&#233;s','Ordres de travail du mois',null,'16%')
-  +kpiCard('#ecfdf5','#059669',kpi.real.toLocaleString('fr-FR'),'OT R&#233;alis&#233;s','Taux : <b>'+kpi.tauxRealStr+'</b>',kpi.tauxReal,'16%')
-  +kpiCard('#fffbeb','#d97706',kpi.lanc.toLocaleString('fr-FR'),'OT Lanc&#233;s','En cours : <b>'+kpi.lancPct+'</b>',null,'16%')
-  +kpiCard('#fef2f2','#dc2626',kpi.crpr.toLocaleString('fr-FR'),'Non lanc&#233;s (CRPR)','En attente de planification',null,'17%')
-  +kpiCard('#f1f5f9','#475569',kpi.backlog.toLocaleString('fr-FR'),'Backlog','En attente de planification',null,'17%')
-  +kpiCard('#fffbeb','#d97706',kpi.sys+'/'+kpi.cur,'Pr&#233;ventif / Correctif',kpi.sysPct+' / '+kpi.curPct,null,'18%')
-  +'</tr></table>'
   +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-  +kpiCard('#f0fdf4','#15803d',kpi.tauxCaractStr,'Taux de caract&#233;risation','<b>'+kpi.caract.toLocaleString('fr-FR')+'</b> caract&#233;ris&#233;s / <b>'+(kpi.caract+kpi.nonCaract).toLocaleString('fr-FR')+'</b> &middot; excl. SOPL',kpi.tauxCaract,'33%')
+  +kpiCard('#eff6ff','#1d4ed8',kpi.total.toLocaleString('fr-FR'),'Total OT planifi&#233;s','Ordres de travail du mois',null,'14%')
+  +kpiCard('#ecfdf5','#059669',kpi.real.toLocaleString('fr-FR'),'OT R&#233;alis&#233;s','Taux : <b>'+kpi.tauxRealStr+'</b>',kpi.tauxReal,'14%')
+  +kpiCard('#fffbeb','#d97706',kpi.lanc.toLocaleString('fr-FR'),'OT Lanc&#233;s','En cours : <b>'+kpi.lancPct+'</b>',null,'14%')
+  +kpiCard('#fef2f2','#dc2626',kpi.crpr.toLocaleString('fr-FR'),'Non lanc&#233;s (CRPR)','En attente de planification',null,'14%')
+  +kpiCard('#f1f5f9','#475569',kpi.backlog.toLocaleString('fr-FR'),'Backlog','En attente de planification',null,'14%')
+  +kpiCard('#fffbeb','#d97706',kpi.sys+'/'+kpi.cur,'Pr&#233;ventif / Correctif',kpi.sysPct+' / '+kpi.curPct,null,'15%')
+  +kpiCard('#f0fdf4','#15803d',kpi.tauxCaractStr,'Taux caract&#233;risation','<b>'+kpi.caract.toLocaleString('fr-FR')+'</b> / <b>'+(kpi.caract+kpi.nonCaract).toLocaleString('fr-FR')+'</b> &middot; excl. SOPL',kpi.tauxCaract,'15%')
   +'</tr></table>'
 
   // Préventif + Correctif – 4 KPIs en une seule ligne
