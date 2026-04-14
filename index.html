@@ -7742,6 +7742,8 @@ async function updatePdrKpiFromTravHebdo(mo, yr, isAnnual) {
     const iUtil      = ci(['statut util', 'statut utilis', 'util'], 10); // col K
     const iCreat     = ci(['cree le', 'date creation', 'cree'], 12);     // col M
     const iSys       = ci(['statut systeme', 'statut sys'], 21);         // col V
+    console.log('[TravHebdo] headers:', hdr);
+    console.log('[TravHebdo] iUtil='+iUtil+' iCreat='+iCreat+' iSys='+iSys+' iDateFinal='+iDateFinal);
 
     // Parse gviz date format "Date(YYYY,M,D)" (months 0-indexed) or ISO/FR
     function parseTravDate(s) {
@@ -7778,6 +7780,7 @@ async function updatePdrKpiFromTravHebdo(mo, yr, isAnnual) {
       // ── Sans filtre date : OT en attente + temps moyen ──
       if (su === 'CRPR ATPD' || su === 'CRPR AVPD') {
         otAttente++;
+        if (otAttente <= 5) console.log('[TravHebdo] OT#'+i+' su='+su+' sys='+JSON.stringify((r[iSys]||''))+'  creAt='+JSON.stringify((r[iCreat]||'')));
         if (sys === 'cree' || sys === 'créé' || sys === 'cree') {
           const dc = parseTravDate((r[iCreat] || '').trim());
           if (dc && !isNaN(dc)) {
