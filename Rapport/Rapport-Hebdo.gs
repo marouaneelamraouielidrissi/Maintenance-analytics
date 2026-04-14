@@ -631,18 +631,19 @@ function rhBuildHtml(arrets, kpi, avis) {
     +kpiCard('#ecfdf5','#059669',avis.avecOT.toLocaleString('fr-FR'),'Convertis en OT','Taux : <b>'+avis.txConv.toFixed(1)+'%</b>',avis.txConv,'33%')
     +kpiCard('#fef2f2','#dc2626',avis.ouverts.toLocaleString('fr-FR'),'Avis Ouverts','AOUV + AENC',null,'33%')
     +'</tr></table>'
-    // Graphiques Avis ligne 1 : Secteur + Corps de Métier
+    // Graphiques Avis ligne 1 : Type d'ordre + Corps de Métier
     +(function(){
-      var imgSect=avis.bySecteur.length?rhMakePieImg(
-        avis.bySecteur.map(function(x){return x.label;}),
-        avis.bySecteur.map(function(x){return x.count;}),
-        'R&#233;partition par secteur'):'';
+      var typeD=kpi.typeData.slice(0,6);
+      var imgType=typeD.length?rhMakePieImg(
+        typeD.map(function(x){return x.type;}),
+        typeD.map(function(x){return x.count;}),
+        ''):'';
       var barPoste=avis.byPoste.length?rhMakeBarHtml(
         avis.byPoste.map(function(x){return x.label;}),
         avis.byPoste.map(function(x){return x.count;}),
         '#7c3aed'):'';
       return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-        +chartCard(imgSect,'R&#233;partition par secteur')
+        +chartCard(imgType,'R&#233;partition par type d\'ordre')
         +barChartCard(barPoste,'Corps de M&#233;tier (Poste trav.)')
         +'</tr></table>';
     })()
