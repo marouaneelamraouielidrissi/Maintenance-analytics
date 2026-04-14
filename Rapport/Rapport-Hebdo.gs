@@ -273,11 +273,13 @@ function rhGetPreparation(mo, yr) {
           if (hdr[j].toString().trim().toLowerCase().indexOf(names[i].toLowerCase())>=0) return j;
       return fallback !== undefined ? fallback : -1;
     }
-    var cDate  = ciContains(['début au plus tôt','debut au plus tot','date début','date debut']);
+    var cDate  = ciContains(['début au plus tôt','debut au plus tot','date début','date debut','debut','date'], 6); // col G
     var cUtil  = ciContains(['statut utilis'], 10);   // col K
     var cPdr   = 18;                                  // col S
-    var cCreat = ciContains(['créé le','cree le','date création','date creation'], 12); // col M
-    var cSys   = ciContains(['statut système','statut systeme','statut sys'], 21);      // col V
+    var cCreat = ciContains(['créé le','cree le','date création','date creation','cree'], 12); // col M
+    var cSys   = ciContains(['statut système','statut systeme','statut sys'], 7);       // col H (détecté via web app)
+    Logger.log('rhGetPreparation cols: cDate='+cDate+' cUtil='+cUtil+' cSys='+cSys+' cCreat='+cCreat);
+    Logger.log('rhGetPreparation sample row[1]: '+JSON.stringify(data[1]));
 
     var pdrTotal=0, pdrConf=0, otAttente=0, tempsSomme=0, tempsCount=0;
     var today = new Date();
