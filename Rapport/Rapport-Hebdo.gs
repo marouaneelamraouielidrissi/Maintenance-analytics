@@ -437,7 +437,7 @@ function rhGetAvis(mo, yr) {
 function rhChartFetch_(chartStr, w, h) {
   var payload = JSON.stringify({
     chart: chartStr, width: w, height: h,
-    backgroundColor: 'white', format: 'png', devicePixelRatio: 2
+    backgroundColor: 'white', format: 'png', devicePixelRatio: 3
   });
   // /chart/create retourne une URL permanente au lieu de base64 (meilleure compatibilité email)
   var resp = UrlFetchApp.fetch('https://quickchart.io/chart/create', {
@@ -455,50 +455,55 @@ function rhMakePieImg(labels, values, title, w, h) {
   try {
     var colors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16','#ec4899','#14b8a6'];
     var chart = '{'
-      + 'type:"pie",'
+      + 'type:"doughnut",'
       + 'data:{labels:' + JSON.stringify(labels)
         + ',datasets:[{data:' + JSON.stringify(values)
           + ',backgroundColor:' + JSON.stringify(colors.slice(0, Math.min(labels.length, colors.length)))
-          + ',borderWidth:2,borderColor:"#fff"}]},'
+          + ',borderWidth:3,borderColor:"#ffffff",hoverBorderWidth:4}]},'
       + 'options:{'
-        + 'title:{display:' + (title ? 'true' : 'false') + ',text:' + JSON.stringify(title || '') + ',fontStyle:"bold",fontSize:13,fontColor:"#1e293b"},'
-        + 'legend:{position:"right",labels:{fontSize:11,fontColor:"#334155"}},'
+        + 'cutoutPercentage:50,'
+        + 'title:{display:' + (title ? 'true' : 'false') + ',text:' + JSON.stringify(title || '') + ',fontStyle:"bold",fontSize:15,fontColor:"#0f172a",padding:16},'
+        + 'legend:{position:"right",labels:{fontSize:13,fontColor:"#334155",padding:16,usePointStyle:true}},'
         + 'plugins:{datalabels:{'
           + 'formatter:function(v,ctx){'
             + 'var s=ctx.dataset.data.reduce(function(a,b){return a+b;},0);'
-            + 'return s>0?Math.round(v/s*100)+"%":"";'
+            + 'return s>0&&(v/s)>0.04?Math.round(v/s*100)+"%":"";'
           + '},'
-          + 'color:"#fff",font:{size:12,weight:"bold"}'
+          + 'color:"#fff",font:{size:13,weight:"bold"},'
+          + 'textShadowBlur:4,textShadowColor:"rgba(0,0,0,0.35)"'
         + '}}'
       + '}'
     + '}';
-    return rhChartFetch_(chart, w || 700, h || 340);
+    return rhChartFetch_(chart, w || 780, h || 370);
   } catch(e) { Logger.log('rhMakePieImg: ' + e.message); return ''; }
 }
 
 function rhMakeBarImg(labels, values, color, title, w, h) {
   try {
+    var palette = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16'];
+    var colors = labels.map(function(_,i){ return palette[i % palette.length]; });
     var chart = '{'
       + 'type:"horizontalBar",'
       + 'data:{labels:' + JSON.stringify(labels)
         + ',datasets:[{data:' + JSON.stringify(values)
-          + ',backgroundColor:' + JSON.stringify(color || '#3b82f6')
-          + '}]},'
+          + ',backgroundColor:' + JSON.stringify(colors)
+          + ',borderWidth:0}]},'
       + 'options:{'
-        + 'title:{display:' + (title ? 'true' : 'false') + ',text:' + JSON.stringify(title || '') + ',fontStyle:"bold",fontSize:13,fontColor:"#1e293b"},'
+        + 'title:{display:' + (title ? 'true' : 'false') + ',text:' + JSON.stringify(title || '') + ',fontStyle:"bold",fontSize:15,fontColor:"#0f172a",padding:16},'
         + 'legend:{display:false},'
+        + 'layout:{padding:{right:50}},'
         + 'scales:{'
-          + 'xAxes:[{ticks:{beginAtZero:true,fontColor:"#475569",fontSize:10},gridLines:{color:"#e2e8f0"}}],'
-          + 'yAxes:[{ticks:{fontColor:"#475569",fontSize:10}}]'
+          + 'xAxes:[{ticks:{beginAtZero:true,fontColor:"#64748b",fontSize:12},gridLines:{color:"#f1f5f9",zeroLineColor:"#e2e8f0"}}],'
+          + 'yAxes:[{ticks:{fontColor:"#1e293b",fontSize:13},gridLines:{display:false}}]'
         + '},'
         + 'plugins:{datalabels:{'
           + 'anchor:"end",align:"right",'
           + 'formatter:function(v){return v;},'
-          + 'color:"#1e293b",font:{size:10,weight:"bold"}'
+          + 'color:"#0f172a",font:{size:12,weight:"bold"}'
         + '}}'
       + '}'
     + '}';
-    return rhChartFetch_(chart, w || 500, h || 260);
+    return rhChartFetch_(chart, w || 780, h || 370);
   } catch(e) { Logger.log('rhMakeBarImg: ' + e.message); return ''; }
 }
 
