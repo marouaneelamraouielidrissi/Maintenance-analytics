@@ -266,7 +266,7 @@ function rhBuildHtml(arrets, kpi) {
         else items.forEach(function(it){
           var bg=it.statut==='realise'?'#dcfce7':it.statut==='imprevu'?'#ffedd5':'#fee2e2';
           var fg=it.statut==='realise'?'#166534':it.statut==='imprevu'?'#9a3412':'#991b1b';
-          html+='<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;background:'+bg+';color:'+fg+';white-space:nowrap;margin:1px;">'+it.label+'</span>';
+          html+='<div style="font-size:10px;font-weight:600;padding:2px 6px;background:'+bg+';color:'+fg+';white-space:nowrap;margin-bottom:4px;">'+it.label+'</div>';
         });
         html+='</td>';
       }
@@ -277,13 +277,14 @@ function rhBuildHtml(arrets, kpi) {
   }
 
   // ── KPI card (table-based, Outlook-safe) ──
-  function kpiCard(iconBg,iconFg,val,label,sub,taux) {
+  function kpiCard(iconBg,iconFg,val,label,sub,taux,w) {
+    w = w || '50%';
     var tagHtml='';
     if(taux!==null&&taux!==undefined){
       var tc=taux>=80?{bg:'#dcfce7',fg:'#166534'}:taux>=50?{bg:'#fef9c3',fg:'#854d0e'}:{bg:'#fee2e2',fg:'#991b1b'};
       tagHtml='<div style="text-align:right;"><span style="font-size:11px;font-weight:700;padding:2px 8px;background:'+tc.bg+';color:'+tc.fg+';">'+taux.toFixed(1)+'%</span></div>';
     }
-    return '<td width="50%" valign="top" style="padding:6px;">'
+    return '<td width="'+w+'" valign="top" style="padding:6px;">'
       +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;">'
       +'<tr><td style="padding:14px 16px;">'
       +'<table cellpadding="0" cellspacing="0" width="100%"><tr>'
@@ -353,7 +354,7 @@ function rhBuildHtml(arrets, kpi) {
 
   // Calendrier
   +secLabel('Calendrier des arr&#234;ts pr&#233;ventifs &#8212; Semaine S'+s)
-  +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #dde2ea;margin-bottom:14px;">'
+  +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #dde2ea;margin-bottom:12px;">'
   +'<tr><td style="padding:18px 20px;">'
   +'<div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:6px;">Arr&#234;ts S'+s+' &middot; '+arrets.rows.length+' enregistr&#233;(s)</div>'
   +'<div style="font-size:11px;margin-bottom:12px;">'
@@ -364,34 +365,40 @@ function rhBuildHtml(arrets, kpi) {
   +buildCal()
   +'</td></tr></table>'
 
-  // KPIs
+  // ── KPIs synthèse sous le calendrier ──
+  +(function(){
+    var nbA=arrets.rows.length;
+    var nbR=arrets.rows.filter(function(r){return r.statut==='realise';}).length;
+    var tA=nbA?parseFloat(((nbR/nbA)*100).toFixed(1)):0;
+    var tAStr=nbA?tA.toFixed(1)+'%':'&#8212;';
+    return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
+      +kpiCard('#ecfdf5','#059669',kpi.tauxRealStr,'Taux r&#233;alisation OT','Mois courant &middot; <b>'+kpi.real.toLocaleString('fr-FR')+'</b> / <b>'+kpi.total.toLocaleString('fr-FR')+'</b>',kpi.tauxReal)
+      +kpiCard('#eff6ff','#1d4ed8',tAStr,'Taux r&#233;alisation arr&#234;ts','Semaine S'+s+' &middot; <b>'+nbR+'</b> r&#233;alis&#233;(s) / <b>'+nbA+'</b>',tA)
+      +'</tr></table>';
+  })()
+
+  // KPIs détaillés
   +secLabel('Indicateurs cl&#233;s du mois &#8212; '+kpi.mois)
 
-  // Global
+  // Global – 3 KPIs par ligne
   +subSection('#eff6ff','#bfdbfe','#1d4ed8','&#9632; Global')
   +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-  +kpiCard('#eff6ff','#1d4ed8',kpi.total.toLocaleString('fr-FR'),'Total OT planifi&#233;s','Ordres de travail du mois',null)
-  +kpiCard('#ecfdf5','#059669',kpi.real.toLocaleString('fr-FR'),'OT R&#233;alis&#233;s','Taux : <b>'+kpi.tauxRealStr+'</b>',kpi.tauxReal)
+  +kpiCard('#eff6ff','#1d4ed8',kpi.total.toLocaleString('fr-FR'),'Total OT planifi&#233;s','Ordres de travail du mois',null,'33%')
+  +kpiCard('#ecfdf5','#059669',kpi.real.toLocaleString('fr-FR'),'OT R&#233;alis&#233;s','Taux : <b>'+kpi.tauxRealStr+'</b>',kpi.tauxReal,'33%')
+  +kpiCard('#fffbeb','#d97706',kpi.lanc.toLocaleString('fr-FR'),'OT Lanc&#233;s','En cours : <b>'+kpi.lancPct+'</b>',null,'33%')
   +'</tr><tr>'
-  +kpiCard('#fffbeb','#d97706',kpi.lanc.toLocaleString('fr-FR'),'OT Lanc&#233;s','En cours : <b>'+kpi.lancPct+'</b>',null)
-  +kpiCard('#fef2f2','#dc2626',kpi.crpr.toLocaleString('fr-FR'),'Non lanc&#233;s (CRPR)','Part : <b>'+kpi.crprPct+'</b>',null)
-  +'</tr><tr>'
-  +kpiCard('#f1f5f9','#475569',kpi.backlog.toLocaleString('fr-FR'),'Backlog','ATPL + LANC',null)
-  +kpiCard('#fffbeb','#d97706',kpi.sys+'/'+kpi.cur,'Pr&#233;ventif / Correctif',kpi.sysPct+' / '+kpi.curPct,null)
+  +kpiCard('#fef2f2','#dc2626',kpi.crpr.toLocaleString('fr-FR'),'Non lanc&#233;s (CRPR)','Part : <b>'+kpi.crprPct+'</b>',null,'33%')
+  +kpiCard('#f1f5f9','#475569',kpi.backlog.toLocaleString('fr-FR'),'Backlog','ATPL + LANC',null,'33%')
+  +kpiCard('#fffbeb','#d97706',kpi.sys+'/'+kpi.cur,'Pr&#233;ventif / Correctif',kpi.sysPct+' / '+kpi.curPct,null,'33%')
   +'</tr></table>'
 
-  // Préventif
-  +subSection('#ecfdf5','#a7f3d0','#059669','&#9632; Pr&#233;ventif')
+  // Préventif + Correctif – 4 KPIs en une seule ligne
+  +subSection('#e0e7ff','#a5b4fc','#3730a3','&#9632; Pr&#233;ventif &nbsp;&nbsp;&#9632; Correctif')
   +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-  +kpiCard('#f5f3ff','#7c3aed',kpi.sys.toLocaleString('fr-FR'),'OT Pr&#233;ventif syst&#233;matique','ZCON + ZEST + ZETL : <b>'+kpi.sysPct+'</b>',null)
-  +kpiCard('#ecfdf5','#059669',kpi.tauxPrevStr,'Taux r&#233;alisation pr&#233;ventif','CONF+TCLO+CLOT / total ZCON+ZEST+ZETL',kpi.tauxPrev)
-  +'</tr></table>'
-
-  // Correctif
-  +subSection('#fef2f2','#fca5a5','#dc2626','&#9632; Correctif')
-  +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-  +kpiCard('#fef2f2','#dc2626',kpi.cur.toLocaleString('fr-FR'),'OT Correctif (ZCOR)','Part : <b>'+kpi.curPct+'</b>',null)
-  +kpiCard('#fef2f2','#dc2626',kpi.tauxCorStr,'Taux r&#233;alisation correctif','CONF+TCLO+CLOT / total ZCOR',kpi.tauxCor)
+  +kpiCard('#f5f3ff','#7c3aed',kpi.sys.toLocaleString('fr-FR'),'OT Pr&#233;ventif','ZCON + ZEST + ZETL : <b>'+kpi.sysPct+'</b>',null,'25%')
+  +kpiCard('#ecfdf5','#059669',kpi.tauxPrevStr,'Taux r&#233;alisation','CONF+TCLO+CLOT / ZCON+ZEST+ZETL',kpi.tauxPrev,'25%')
+  +kpiCard('#fef2f2','#dc2626',kpi.cur.toLocaleString('fr-FR'),'OT Correctif (ZCOR)','Part : <b>'+kpi.curPct+'</b>',null,'25%')
+  +kpiCard('#fef2f2','#dc2626',kpi.tauxCorStr,'Taux r&#233;alisation','CONF+TCLO+CLOT / total ZCOR',kpi.tauxCor,'25%')
   +'</tr></table>'
 
   // Postes
