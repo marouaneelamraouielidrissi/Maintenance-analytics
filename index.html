@@ -6023,10 +6023,10 @@ function renderCalArretsPage() {
   const today = new Date(); today.setHours(0,0,0,0);
   const isAdmin = (() => { try { const p = JSON.parse(localStorage.getItem(PROFILE_LS_KEY)||'{}').profile; return p === 'admin' || p === 'exploitation'; } catch(e){ return false; }})();
 
-  // Filtrer par mois + section
+  // Filtrer : tout l'historique jusqu'au mois sélectionné inclus
   let rows = _caData.filter(r => {
     const [y, m] = r.date.split('-').map(Number);
-    return y === _caYear && m === _caMonth + 1;
+    return (y < _caYear) || (y === _caYear && m <= _caMonth + 1);
   });
   if (sectionFilter) rows = rows.filter(r => (r.section||'').toUpperCase() === sectionFilter);
 
