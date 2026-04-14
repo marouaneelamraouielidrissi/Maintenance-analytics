@@ -350,13 +350,15 @@ function rhMakePieImg(labels, values, title, w, h) {
       .addColumn(Charts.ColumnType.NUMBER,'Val');
     for(var i=0;i<labels.length;i++) dt.addRow([labels[i],values[i]]);
     dt.build();
-    var c=Charts.newPieChart().setDataTable(dt).setDimensions(w||880,h||420)
+    var c=Charts.newColumnChart().setDataTable(dt).setDimensions(w||880,h||420)
       .setOption('title','')
       .setOption('backgroundColor','#ffffff')
-      .setOption('chartArea',{left:10,top:10,width:'92%',height:'92%'})
-      .setOption('legend',{position:'right',textStyle:{fontSize:12,color:'#334155'}})
-      .setOption('pieSliceText','value-and-percentage')
-      .setOption('pieSliceTextStyle',{fontSize:11,bold:true,color:'#ffffff'})
+      .setOption('chartArea',{left:50,top:10,width:'82%',height:'75%'})
+      .setOption('legend',{position:'none'})
+      .setOption('hAxis',{textStyle:{fontSize:11,color:'#334155'},slantedText:true,slantedTextAngle:30})
+      .setOption('vAxis',{textStyle:{fontSize:11,color:'#94a3b8'},gridlines:{color:'#f1f5f9'},minValue:0})
+      .setOption('colors',['#6366f1'])
+      .setOption('bar',{groupWidth:'55%'})
       .build();
     return 'data:image/png;base64,'+Utilities.base64Encode(c.getAs('image/png').getBytes());
   } catch(e){ Logger.log('rhMakePieImg: '+e.message); return ''; }
