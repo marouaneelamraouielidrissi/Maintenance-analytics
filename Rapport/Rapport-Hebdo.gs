@@ -133,15 +133,20 @@ function rhMondayOf(year, week) {
   return m;
 }
 
-// ── Lecture des arrêts (semaine précédente) ───────────────────
+// ── Lecture des arrêts (toutes les semaines du mois courant) ──
 function rhGetArrets() {
   var today = new Date();
   var dow   = today.getDay() || 7;
   var mon   = new Date(today); mon.setDate(today.getDate() - (dow - 1));
   var monP  = new Date(mon);   monP.setDate(mon.getDate() - 7);
   var sunP  = new Date(monP);  sunP.setDate(monP.getDate() + 6);
-  var s0    = rhDateStr(monP), s1 = rhDateStr(sunP);
+  var s1    = rhDateStr(sunP);
   var sem   = rhWeekNum(monP);
+  // s0 = lundi de la 1re semaine qui contient le 1er du mois courant
+  var firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  var dowFirst = firstOfMonth.getDay() || 7;
+  var monFirst = new Date(firstOfMonth); monFirst.setDate(firstOfMonth.getDate() - (dowFirst - 1));
+  var s0 = rhDateStr(monFirst);
 
   var ss    = SpreadsheetApp.openById(RH_ARRETS_FILE_ID);
   var sheet = ss.getSheetByName(RH_ARRETS_SHEET);
@@ -549,7 +554,7 @@ function rhBuildHtml(arrets, kpi, avis) {
   +'<tr><td style="background:#ffffff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px;padding:20px 18px 32px;">'
 
   // Calendrier
-  +secLabel('Calendrier des arr&#234;ts pr&#233;ventifs &#8212; Semaine S'+s)
+  +secLabel('Calendrier des arr&#234;ts pr&#233;ventifs &#8212; Semaines du mois (jusqu\'&#224; S'+s+')')
   +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #dde2ea;border-radius:12px;margin-bottom:12px;">'
   +'<tr><td style="padding:18px 20px;">'
   +'<div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:6px;">Arr&#234;ts S'+s+' &middot; '+arrets.rows.length+' enregistr&#233;(s)</div>'
