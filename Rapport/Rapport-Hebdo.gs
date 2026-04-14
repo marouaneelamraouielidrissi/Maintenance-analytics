@@ -246,6 +246,7 @@ function rhGetKpi(mo, yr) {
     tauxCaract:p(caract,caract+nonCaract), tauxCaractStr:ps(caract,caract+nonCaract),
     pdrTotal:0, pdrConf:0,
     tauxPdrConf:0, tauxPdrConfStr:'—',
+    otAttente:0, tempsMoyen:null, tempsMoyenStr:'—',
     typeData:Object.keys(typeMap).map(function(k){return{type:k,count:typeMap[k]};}).sort(function(a,b){return b.count-a.count;})
   };
 }
@@ -260,38 +261,74 @@ function rhGetPreparation(mo, yr) {
     if (data.length < 2) return null;
 
     var hdr = data[0];
-    function ci(names) {
+    function ci(names, fallback) {
       for (var i=0;i<names.length;i++)
         for (var j=0;j<hdr.length;j++)
           if (hdr[j].toString().trim().toLowerCase()===names[i].toLowerCase()) return j;
-      return -1;
+      return fallback !== undefined ? fallback : -1;
     }
-    var cDate = ci(['début au plus tôt','debut au plus tot','date début','date debut','date','début','debut']);
-    var cUtil = ci(['statut utilis.','statut util','statut utilis']);
-    var cPdr  = 18; // colonne S (0-indexed)
+    function ciContains(names, fallback) {
+      for (var i=0;i<names.length;i++)
+        for (var j=0;j<hdr.length;j++)
+          if (hdr[j].toString().trim().toLowerCase().indexOf(names[i].toLowerCase())>=0) return j;
+      return fallback !== undefined ? fallback : -1;
+    }
+    var cDate  = ciContains(['début au plus tôt','debut au plus tot','date début','date debut']);
+    var cUtil  = ciContains(['statut utilis'], 10);   // col K
+    var cPdr   = 18;                                  // col S
+    var cCreat = ciContains(['créé le','cree le','date création','date creation'], 12); // col M
+    var cSys   = ciContains(['statut système','statut systeme','statut sys'], 21);      // col V
 
-    var pdrTotal=0, pdrConf=0;
+    var pdrTotal=0, pdrConf=0, otAttente=0, tempsSomme=0, tempsCount=0;
+    var today = new Date();
     for (var i=1;i<data.length;i++) {
       var r=data[i];
-      // Filtre mois/année
+      var su=(r[cUtil]||'').toString().trim();
+      var sysStat=(r[cSys]||'').toString().trim().toLowerCase();
+
+      // ── Filtre mois/année : pdrTotal / pdrConf ──
+      var inMonth = false;
       if (cDate>=0) {
         var rawD=r[cDate], d;
         if (rawD instanceof Date) d=rawD;
         else if (typeof rawD==='number') d=new Date(Math.round((rawD-25569)*86400000));
         else if (rawD) d=new Date(rawD);
-        else continue;
-        if (isNaN(d)||d.getFullYear()!==yr||d.getMonth()!==mo) continue;
+        else d=null;
+        if (d && !isNaN(d) && d.getFullYear()===yr && d.getMonth()===mo) inMonth=true;
       }
-      var su=(cUtil>=0?r[cUtil]:'').toString().trim();
-      var pdrVal=r.length>cPdr?r[cPdr].toString().trim():'';
-      if (pdrVal!=='') pdrTotal++;
-      if (su==='CRPR ATPD'||su==='CRPR AVPD') pdrConf++;
+      if (inMonth) {
+        var pdrVal=r.length>cPdr?r[cPdr].toString().trim():'';
+        if (pdrVal!=='') pdrTotal++;
+        if (su==='CRPR ATPD'||su==='CRPR AVPD') pdrConf++;
+      }
+
+      // ── Sans filtre date : OT en attente ──
+      if (su==='CRPR ATPD'||su==='CRPR AVPD') {
+        otAttente++;
+        // ── Temps moyen : filtre statut système = 'créé' ──
+        if (sysStat==='créé') {
+          var rawC=r[cCreat], dc;
+          if (rawC instanceof Date) dc=rawC;
+          else if (typeof rawC==='number') dc=new Date(Math.round((rawC-25569)*86400000));
+          else if (rawC) dc=new Date(rawC);
+          else dc=null;
+          if (dc && !isNaN(dc)) {
+            var jours=Math.round((today-dc)/(1000*60*60*24));
+            if (jours>=0) { tempsSomme+=jours; tempsCount++; }
+          }
+        }
+      }
     }
 
     function p(n,t){return t?parseFloat(((n/t)*100).toFixed(1)):0;}
     function ps(n,t){return t?p(n,t).toFixed(1)+'%':'—';}
-    Logger.log('rhGetPreparation: pdrTotal='+pdrTotal+' pdrConf='+pdrConf);
-    return { pdrTotal:pdrTotal, pdrConf:pdrConf, tauxPdrConf:p(pdrConf,pdrTotal), tauxPdrConfStr:ps(pdrConf,pdrTotal) };
+    var tempsMoyen = tempsCount>0 ? Math.round(tempsSomme/tempsCount) : null;
+    var tempsMoyenStr = tempsMoyen!==null ? tempsMoyen+' j' : '—';
+    Logger.log('rhGetPreparation: pdrTotal='+pdrTotal+' pdrConf='+pdrConf+' otAttente='+otAttente+' tempsMoyen='+tempsMoyenStr+' ('+tempsCount+' OTs)');
+    return {
+      pdrTotal:pdrTotal, pdrConf:pdrConf, tauxPdrConf:p(pdrConf,pdrTotal), tauxPdrConfStr:ps(pdrConf,pdrTotal),
+      otAttente:otAttente, tempsMoyen:tempsMoyen, tempsMoyenStr:tempsMoyenStr, tempsCount:tempsCount
+    };
   } catch(e) { Logger.log('rhGetPreparation error: '+e.message); return null; }
 }
 
@@ -719,16 +756,15 @@ function rhBuildHtml(arrets, kpi, avis) {
   // KPIs détaillés
   +secLabel('Indicateurs cl&#233;s du mois &#8212; '+kpi.mois)
 
-  // Global – 7 KPIs en une seule ligne
+  // Global – 6 KPIs en une seule ligne
   +subSection('#eff6ff','#bfdbfe','#1d4ed8','&#9632; Global')
   +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-  +kpiCard('#eff6ff','#1d4ed8',kpi.total.toLocaleString('fr-FR'),'Total OT planifi&#233;s','Ordres de travail du mois',null,'14%')
-  +kpiCard('#ecfdf5','#059669',kpi.real.toLocaleString('fr-FR'),'OT R&#233;alis&#233;s','Taux : <b>'+kpi.tauxRealStr+'</b>',kpi.tauxReal,'14%')
-  +kpiCard('#fffbeb','#d97706',kpi.lanc.toLocaleString('fr-FR'),'OT Lanc&#233;s','En cours : <b>'+kpi.lancPct+'</b>',null,'14%')
-  +kpiCard('#fef2f2','#dc2626',kpi.crpr.toLocaleString('fr-FR'),'Non lanc&#233;s (CRPR)','En attente de planification',null,'14%')
-  +kpiCard('#f1f5f9','#475569',kpi.backlog.toLocaleString('fr-FR'),'Backlog','En attente de planification',null,'14%')
-  +kpiCard('#fffbeb','#d97706',kpi.sys+'/'+kpi.cur,'Pr&#233;ventif / Correctif',kpi.sysPct+' / '+kpi.curPct,null,'15%')
-  +kpiCard('#f0fdf4','#15803d',kpi.tauxCaractStr,'Taux caract&#233;risation','<b>'+kpi.caract.toLocaleString('fr-FR')+'</b> / <b>'+(kpi.caract+kpi.nonCaract).toLocaleString('fr-FR')+'</b> &middot; excl. SOPL',kpi.tauxCaract,'15%')
+  +kpiCard('#eff6ff','#1d4ed8',kpi.total.toLocaleString('fr-FR'),'Total OT planifi&#233;s','Ordres de travail du mois',null,'16%')
+  +kpiCard('#ecfdf5','#059669',kpi.real.toLocaleString('fr-FR'),'OT R&#233;alis&#233;s','Taux : <b>'+kpi.tauxRealStr+'</b>',kpi.tauxReal,'16%')
+  +kpiCard('#fffbeb','#d97706',kpi.lanc.toLocaleString('fr-FR'),'OT Lanc&#233;s','En cours : <b>'+kpi.lancPct+'</b>',null,'16%')
+  +kpiCard('#fef2f2','#dc2626',kpi.crpr.toLocaleString('fr-FR'),'Non lanc&#233;s (CRPR)','En attente de planification',null,'16%')
+  +kpiCard('#f1f5f9','#475569',kpi.backlog.toLocaleString('fr-FR'),'Backlog','En attente de planification',null,'16%')
+  +kpiCard('#fffbeb','#d97706',kpi.sys+'/'+kpi.cur,'Pr&#233;ventif / Correctif',kpi.sysPct+' / '+kpi.curPct,null,'20%')
   +'</tr></table>'
 
   // Préventif + Correctif – 4 KPIs en une seule ligne
@@ -743,7 +779,10 @@ function rhBuildHtml(arrets, kpi, avis) {
   // Préparation
   +subSection('#fff7ed','#fdba74','#c2410c','&#9632; Pr&#233;paration')
   +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-  +kpiCard('#fff7ed','#c2410c',kpi.tauxPdrConfStr,'Taux confirmation PDR','<b>'+kpi.pdrConf.toLocaleString('fr-FR')+'</b> confirm&#233;s (CRPR ATPD / CRPR AVPD) sur <b>'+kpi.pdrTotal.toLocaleString('fr-FR')+'</b> OTs avec PDR',kpi.tauxPdrConf,'50%')
+  +kpiCard('#f0fdf4','#15803d',kpi.tauxCaractStr,'Taux caract&#233;risation','<b>'+kpi.caract.toLocaleString('fr-FR')+'</b> / <b>'+(kpi.caract+kpi.nonCaract).toLocaleString('fr-FR')+'</b> &middot; excl. SOPL',kpi.tauxCaract,'25%')
+  +kpiCard('#fff7ed','#c2410c',kpi.tauxPdrConfStr,'Taux confirmation PDR','<b>'+kpi.pdrConf.toLocaleString('fr-FR')+'</b> confirm&#233;s sur <b>'+kpi.pdrTotal.toLocaleString('fr-FR')+'</b> OTs avec PDR',kpi.tauxPdrConf,'25%')
+  +kpiCard('#eff6ff','#1d4ed8',kpi.otAttente.toLocaleString('fr-FR'),'OT en attente confirmation PDR','Statut utilis. CRPR ATPD / CRPR AVPD',null,'25%')
+  +kpiCard('#fdf4ff','#7c3aed',kpi.tempsMoyenStr,'Temps moyen de pr&#233;paration','Moy. (aujourd\'hui &minus; date cr&#233;ation) &middot; statut syst. <b>cr&#233;&#233;</b>',null,'25%')
   +'</tr></table>'
 
   // Postes
@@ -822,7 +861,7 @@ function envoyerRapportDepuisInterface(p) {
     var arrets = rhGetArrets();
     var kpi    = rhGetKpi(mo, yr);
     var prep   = rhGetPreparation(mo, yr);
-    if (prep) { kpi.pdrTotal=prep.pdrTotal; kpi.pdrConf=prep.pdrConf; kpi.tauxPdrConf=prep.tauxPdrConf; kpi.tauxPdrConfStr=prep.tauxPdrConfStr; }
+    if (prep) { kpi.pdrTotal=prep.pdrTotal; kpi.pdrConf=prep.pdrConf; kpi.tauxPdrConf=prep.tauxPdrConf; kpi.tauxPdrConfStr=prep.tauxPdrConfStr; kpi.otAttente=prep.otAttente; kpi.tempsMoyenStr=prep.tempsMoyenStr; }
     var avis   = rhGetAvis(mo, yr);
     var html   = rhBuildHtml(arrets, kpi, avis);
     var MOIS   = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
