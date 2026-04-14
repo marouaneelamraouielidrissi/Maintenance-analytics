@@ -383,6 +383,15 @@ function rhGetAvis(mo, yr) {
 
     var total=0, avecOT=0, ouverts=0;
     var bySecteur={}, byPoste={}, openByPoste={}, byInstall={};
+    var allInstallSet = {};
+
+    // Premier passage : collecter toutes les installations (sans filtre date)
+    for (var j = 1; j < data.length; j++) {
+      var rj = data[j];
+      if (!rj.some(function(v){ return v !== null && v !== undefined && v !== ''; })) continue;
+      var instAll = cInst >= 0 ? rj[cInst].toString().trim() : '';
+      if (instAll) allInstallSet[instAll] = true;
+    }
 
     for (var i = 1; i < data.length; i++) {
       var r = data[i];
@@ -418,17 +427,26 @@ function rhGetAvis(mo, yr) {
       if (inst)  byInstall[inst]  = (byInstall[inst]  || 0) + 1;
     }
 
-    Logger.log('rhGetAvis résultat: total='+total+' avecOT='+avecOT+' ouverts='+ouverts);
+    // Ajouter les installations avec 0 avis dans la période
+    Object.keys(allInstallSet).forEach(function(k) {
+      if (!byInstall[k]) byInstall[k] = 0;
+    });
+
+    Logger.log('rhGetAvis résultat: total='+total+' avecOT='+avecOT+' ouverts='+ouverts+' allInstalls='+Object.keys(allInstallSet).length);
 
     function toArr(map, lim) {
       return Object.keys(map).map(function(k){ return {label:k, count:map[k]}; })
         .sort(function(a,b){ return b.count - a.count; }).slice(0, lim || 10);
     }
+    function toArrAll(map) {
+      return Object.keys(map).map(function(k){ return {label:k, count:map[k]}; })
+        .sort(function(a,b){ return b.count - a.count; });
+    }
     return {
       total:total, avecOT:avecOT, ouverts:ouverts,
       txConv: total ? parseFloat(((avecOT/total)*100).toFixed(1)) : 0,
       bySecteur:toArr(bySecteur,8), byPoste:toArr(byPoste,6),
-      openByPoste:toArr(openByPoste,6), byInstall:toArr(byInstall,8)
+      openByPoste:toArr(openByPoste,6), byInstall:toArrAll(byInstall)
     };
   } catch(e) { Logger.log('rhGetAvis error: '+e.message); return null; }
 }
@@ -503,6 +521,32 @@ function rhMakeBarImg(labels, values, color, title, w, h) {
     + '}';
     return rhChartFetch_(chart, w || 780, h || 370);
   } catch(e) { Logger.log('rhMakeBarImg: ' + e.message); return ''; }
+}
+
+function rhMakeBarImgV(labels, values, color, title, w, h) {
+  try {
+    var chart = '{'
+      + 'type:"bar",'
+      + 'data:{labels:' + JSON.stringify(labels)
+        + ',datasets:[{data:' + JSON.stringify(values)
+          + ',backgroundColor:' + JSON.stringify(color || '#0891b2')
+          + ',borderWidth:0}]},'
+      + 'options:{'
+        + 'title:{display:' + (title ? 'true' : 'false') + ',text:' + JSON.stringify(title || '') + ',fontStyle:"bold",fontSize:15,fontColor:"#0f172a",padding:16},'
+        + 'legend:{display:false},'
+        + 'scales:{'
+          + 'xAxes:[{ticks:{fontColor:"#1e293b",fontSize:11,maxRotation:45,minRotation:30},gridLines:{display:false}}],'
+          + 'yAxes:[{ticks:{beginAtZero:true,fontColor:"#64748b",fontSize:12},gridLines:{color:"#f1f5f9",zeroLineColor:"#e2e8f0"}}]'
+        + '},'
+        + 'plugins:{datalabels:{'
+          + 'anchor:"end",align:"top",'
+          + 'formatter:function(v){return v||"";},'
+          + 'color:"#0f172a",font:{size:11,weight:"bold"}'
+        + '}}'
+      + '}'
+    + '}';
+    return rhChartFetch_(chart, w || 780, h || 370);
+  } catch(e) { Logger.log('rhMakeBarImgV: ' + e.message); return ''; }
 }
 
 // ── Graphique colonnes verticales HTML pur — compatible Outlook ──
@@ -829,9 +873,9 @@ function rhBuildHtml(arrets, kpi, avis) {
         avis.openByPoste.map(function(x){return x.label;}),
         avis.openByPoste.map(function(x){return x.count;}),
         '#dc2626','Avis non cl\u00f4tur\u00e9s par corps de m\u00e9tier'):'';
-      var imgInst=avis.byInstall.length?rhMakeBarImg(
-        avis.byInstall.slice(0,8).map(function(x){return x.label;}),
-        avis.byInstall.slice(0,8).map(function(x){return x.count;}),
+      var imgInst=avis.byInstall.length?rhMakeBarImgV(
+        avis.byInstall.map(function(x){return x.label;}),
+        avis.byInstall.map(function(x){return x.count;}),
         '#0891b2','Avis par installation'):'';
       return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
         +chartCard(imgOpen,'Avis non cl&#244;tur&#233;s par corps de m&#233;tier')
