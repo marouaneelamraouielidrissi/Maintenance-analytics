@@ -464,25 +464,25 @@ function rhBuildHtml(arrets, kpi, avis) {
       +'</td>';
   }
 
-  // ── Chart card image (pie) ──
+  // ── Chart card image (pie) — hauteur fixe 260px ──
   function chartCard(imgSrc,title,w) {
     w=w||'50%';
     if(!imgSrc) return '<td width="'+w+'" valign="top" style="padding:6px;"></td>';
     return '<td width="'+w+'" valign="top" style="padding:6px;">'
-      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
-      +'<tr><td style="padding:12px 16px;">'
+      +'<table cellpadding="0" cellspacing="0" width="100%" height="260" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
+      +'<tr><td height="260" valign="middle" style="padding:12px 16px;">'
       +'<div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">'+title+'</div>'
-      +'<img src="'+imgSrc+'" width="520" style="display:block;border:0;height:auto;" alt="'+title+'">'
+      +'<img src="'+imgSrc+'" width="480" style="display:block;border:0;height:auto;" alt="'+title+'">'
       +'</td></tr></table></td>';
   }
 
-  // ── Chart card barres HTML ──
+  // ── Chart card barres HTML — même hauteur fixe 260px ──
   function barChartCard(barHtml,title,w) {
     w=w||'50%';
     if(!barHtml) return '<td width="'+w+'" valign="top" style="padding:6px;"></td>';
     return '<td width="'+w+'" valign="top" style="padding:6px;">'
-      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
-      +'<tr><td style="padding:12px 16px;">'
+      +'<table cellpadding="0" cellspacing="0" width="100%" height="260" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
+      +'<tr><td height="260" valign="middle" style="padding:12px 16px;">'
       +'<div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;">'+title+'</div>'
       +barHtml
       +'</td></tr></table></td>';
@@ -632,19 +632,18 @@ function rhBuildHtml(arrets, kpi, avis) {
     +kpiCard('#ecfdf5','#059669',avis.avecOT.toLocaleString('fr-FR'),'Convertis en OT','Taux : <b>'+avis.txConv.toFixed(1)+'%</b>',avis.txConv,'33%')
     +kpiCard('#fef2f2','#dc2626',avis.ouverts.toLocaleString('fr-FR'),'Avis Ouverts','AOUV + AENC',null,'33%')
     +'</tr></table>'
-    // Graphiques Avis ligne 1 : Type d'ordre + Corps de Métier
+    // Graphiques Avis ligne 1 : Répartition par secteur + Corps de Métier
     +(function(){
-      var typeD=kpi.typeData.slice(0,6);
-      var imgType=typeD.length?rhMakePieImg(
-        typeD.map(function(x){return x.type;}),
-        typeD.map(function(x){return x.count;}),
+      var imgSect=avis.bySecteur.length?rhMakePieImg(
+        avis.bySecteur.map(function(x){return x.label;}),
+        avis.bySecteur.map(function(x){return x.count;}),
         ''):'';
       var barPoste=avis.byPoste.length?rhMakeBarHtml(
         avis.byPoste.map(function(x){return x.label;}),
         avis.byPoste.map(function(x){return x.count;}),
         '#7c3aed'):'';
       return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-        +chartCard(imgType,'R&#233;partition par type d\'ordre')
+        +chartCard(imgSect,'R&#233;partition par secteur')
         +barChartCard(barPoste,'Corps de M&#233;tier (Poste trav.)')
         +'</tr></table>';
     })()
