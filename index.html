@@ -4024,8 +4024,8 @@ function generateReport() {
   const caractBase = caractNb + nonCaractNb;
   const tauxCaract = caractBase > 0 ? (caractNb / caractBase * 100).toFixed(1) + '%' : '—';
   // Taux confirmation PDR : CRPR ATPD ou CRPR AVPD / total OTs avec colonne PDR non vide
-  const pdrBase = filtered.filter(r => r.pdrCol !== '').length;
-  const pdrConf = filtered.filter(r => r.statutUtil === 'CRPR ATPD' || r.statutUtil === 'CRPR AVPD').length;
+  const pdrBase = filtered.filter(r => r.pdrCol.trim() !== '').length;
+  const pdrConf = filtered.filter(r => { const su = r.statutUtil.trim(); return su === 'CRPR ATPD' || su === 'CRPR AVPD'; }).length;
   const tauxPdrConf = pdrBase > 0 ? (pdrConf / pdrBase * 100).toFixed(1) + '%' : '—';
 
   set('kpi-total',       total.toLocaleString('fr-FR'));
@@ -4196,8 +4196,8 @@ function generateAnnualReport() {
   const caractBase = caractNb + nonCaractNb;
   const tauxCaract = caractBase > 0 ? (caractNb / caractBase * 100).toFixed(1) + '%' : '—';
   // Taux confirmation PDR annuel
-  const pdrBase = filtered.filter(r => r.pdrCol !== '').length;
-  const pdrConf = filtered.filter(r => r.statutUtil === 'CRPR ATPD' || r.statutUtil === 'CRPR AVPD').length;
+  const pdrBase = filtered.filter(r => r.pdrCol.trim() !== '').length;
+  const pdrConf = filtered.filter(r => { const su = r.statutUtil.trim(); return su === 'CRPR ATPD' || su === 'CRPR AVPD'; }).length;
   const tauxPdrConf = pdrBase > 0 ? (pdrConf / pdrBase * 100).toFixed(1) + '%' : '—';
 
   // Banner
