@@ -354,8 +354,9 @@ function rhMakePieImg(labels, values, title, w, h) {
       .setOption('backgroundColor','#ffffff')
       .setOption('chartArea',{left:10,top:10,width:'92%',height:'92%'})
       .setOption('legend',{position:'right',textStyle:{fontSize:12,color:'#334155'}})
-      .setOption('pieSliceText','value')
-      .setOption('pieSliceTextStyle',{fontSize:12,bold:true,color:'#ffffff'})
+      .setOption('pieHole',0.4)
+      .setOption('pieSliceText','value-and-percentage')
+      .setOption('pieSliceTextStyle',{fontSize:11,bold:true,color:'#ffffff'})
       .build();
     return 'data:image/png;base64,'+Utilities.base64Encode(c.getAs('image/png').getBytes());
   } catch(e){ Logger.log('rhMakePieImg: '+e.message); return ''; }
