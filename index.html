@@ -2936,12 +2936,6 @@ td { padding: 9px 14px; vertical-align: middle; }
           <div class="kpi-label">Backlog</div>
           <div class="kpi-sub">En attente de planification</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-card-top"><div class="kpi-icon-box green"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div></div>
-          <div class="kpi-value" id="kpi-caract">—</div>
-          <div class="kpi-label">Taux caractérisation</div>
-          <div class="kpi-sub"><b id="kpi-caract-nb">—</b> caractérisés · excl. SOPL</div>
-        </div>
       </div>
     </div>
 
@@ -3003,10 +2997,28 @@ td { padding: 9px 14px; vertical-align: middle; }
       </div>
       <div class="kpi-grid">
         <div class="kpi-card">
+          <div class="kpi-card-top"><div class="kpi-icon-box green"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div></div>
+          <div class="kpi-value" id="kpi-caract">—</div>
+          <div class="kpi-label">Taux caractérisation</div>
+          <div class="kpi-sub"><b id="kpi-caract-nb">—</b> caractérisés · excl. SOPL</div>
+        </div>
+        <div class="kpi-card">
           <div class="kpi-card-top"><div class="kpi-icon-box amber"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div></div>
           <div class="kpi-value" id="kpi-pdr-conf">—</div>
           <div class="kpi-label">Taux confirmation PDR</div>
           <div class="kpi-sub"><b id="kpi-pdr-conf-nb">—</b> confirmés · CRPR ATPD / CRPR AVPD</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card-top"><div class="kpi-icon-box blue"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div></div>
+          <div class="kpi-value" id="kpi-ot-attente">—</div>
+          <div class="kpi-label">OT en attente confirmation PDR</div>
+          <div class="kpi-sub">Statut utilis. CRPR ATPD / CRPR AVPD</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card-top"><div class="kpi-icon-box purple"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div></div>
+          <div class="kpi-value" id="kpi-temps-moyen">—</div>
+          <div class="kpi-label">Temps moyen de préparation</div>
+          <div class="kpi-sub">Moy. créé→aujourd'hui · statut syst. <b>créé</b></div>
         </div>
       </div>
     </div>
@@ -3149,12 +3161,6 @@ td { padding: 9px 14px; vertical-align: middle; }
           <div class="kpi-sub">En attente de planification</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-card-top"><div class="kpi-icon-box green"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div></div>
-          <div class="kpi-value" id="ann-caract">—</div>
-          <div class="kpi-label">Taux caractérisation</div>
-          <div class="kpi-sub"><b id="ann-caract-nb">—</b> caractérisés · excl. SOPL</div>
-        </div>
-        <div class="kpi-card">
           <div class="kpi-card-top">
             <div class="kpi-icon-box green"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
             <span class="kpi-tag neu" id="ann-arrets-tag">—</span>
@@ -3224,10 +3230,28 @@ td { padding: 9px 14px; vertical-align: middle; }
       </div>
       <div class="kpi-grid">
         <div class="kpi-card">
+          <div class="kpi-card-top"><div class="kpi-icon-box green"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div></div>
+          <div class="kpi-value" id="ann-caract">—</div>
+          <div class="kpi-label">Taux caractérisation</div>
+          <div class="kpi-sub"><b id="ann-caract-nb">—</b> caractérisés · excl. SOPL</div>
+        </div>
+        <div class="kpi-card">
           <div class="kpi-card-top"><div class="kpi-icon-box amber"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div></div>
           <div class="kpi-value" id="ann-pdr-conf">—</div>
           <div class="kpi-label">Taux confirmation PDR</div>
           <div class="kpi-sub"><b id="ann-pdr-conf-nb">—</b> confirmés · CRPR ATPD / CRPR AVPD</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card-top"><div class="kpi-icon-box blue"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div></div>
+          <div class="kpi-value" id="ann-ot-attente">—</div>
+          <div class="kpi-label">OT en attente confirmation PDR</div>
+          <div class="kpi-sub">Statut utilis. CRPR ATPD / CRPR AVPD</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card-top"><div class="kpi-icon-box purple"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div></div>
+          <div class="kpi-value" id="ann-temps-moyen">—</div>
+          <div class="kpi-label">Temps moyen de préparation</div>
+          <div class="kpi-sub">Moy. créé→aujourd'hui · statut syst. <b>créé</b></div>
         </div>
       </div>
     </div>
@@ -7715,13 +7739,15 @@ async function updatePdrKpiFromTravHebdo(mo, yr, isAnnual) {
     }
     const iDateFinal = ci(['debut', 'date', 'start'], 7);
     const iPdrFinal  = ci(['pdr'], 18);
-    const iUtil      = ci(['statut util', 'statut utilis', 'util'], 10); // col K fallback
+    const iUtil      = ci(['statut util', 'statut utilis', 'util'], 10); // col K
+    const iCreat     = ci(['cree le', 'date creation', 'cree'], 12);     // col M
+    const iSys       = ci(['statut systeme', 'statut sys'], 21);         // col V
 
     // Parse gviz date format "Date(YYYY,M,D)" (months 0-indexed) or ISO/FR
     function parseTravDate(s) {
       if (!s) return null;
       const gviz = s.match(/^Date\((\d{4}),(\d{1,2}),(\d{1,2})\)$/);
-      if (gviz) return new Date(+gviz[1], +gviz[2], +gviz[3]);  // months already 0-indexed in gviz
+      if (gviz) return new Date(+gviz[1], +gviz[2], +gviz[3]);
       const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
       if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
       const fr = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
@@ -7729,26 +7755,49 @@ async function updatePdrKpiFromTravHebdo(mo, yr, isAnnual) {
       const d = new Date(s); return isNaN(d) ? null : d;
     }
 
+    const today = new Date();
     let pdrTotal = 0, pdrConf = 0;
+    let otAttente = 0, tempsSomme = 0, tempsCount = 0;
     for (let i = 1; i < csvRows.length; i++) {
       const r = csvRows[i];
       if (!r || !r.length) continue;
-      // Filtre date
+      const su  = (r[iUtil]  || '').trim().toUpperCase();
+      const sys = (r[iSys]   || '').toString().trim().toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+      // ── Filtre date : pdrTotal / pdrConf ──
       const d = parseTravDate((r[iDateFinal] || '').trim());
-      if (!d || isNaN(d)) continue;
-      if (isAnnual ? d.getFullYear() !== yr : (d.getFullYear() !== yr || d.getMonth() !== mo)) continue;
-      // pdrTotal : colonne PDR non vide (indépendant du statut utilis.)
-      const pdrVal = (r[iPdrFinal] || '').trim();
-      if (pdrVal) pdrTotal++;
-      // pdrConf : statut utilis. confirmé (indépendant de pdrVal — même logique que GAS)
-      const su = (r[iUtil] || '').trim().toUpperCase();
-      if (su === 'CRPR ATPD' || su === 'CRPR AVPD') pdrConf++;
+      if (d && !isNaN(d)) {
+        if (isAnnual ? d.getFullYear() === yr : (d.getFullYear() === yr && d.getMonth() === mo)) {
+          const pdrVal = (r[iPdrFinal] || '').trim();
+          if (pdrVal) pdrTotal++;
+          if (su === 'CRPR ATPD' || su === 'CRPR AVPD') pdrConf++;
+        }
+      }
+
+      // ── Sans filtre date : OT en attente + temps moyen ──
+      if (su === 'CRPR ATPD' || su === 'CRPR AVPD') {
+        otAttente++;
+        if (sys === 'cree' || sys === 'créé' || sys === 'cree') {
+          const dc = parseTravDate((r[iCreat] || '').trim());
+          if (dc && !isNaN(dc)) {
+            const jours = Math.round((today - dc) / (1000 * 60 * 60 * 24));
+            if (jours >= 0) { tempsSomme += jours; tempsCount++; }
+          }
+        }
+      }
     }
     const taux = pdrTotal > 0 ? (pdrConf / pdrTotal * 100).toFixed(1) + '%' : '—';
     const nb   = pdrConf.toLocaleString('fr-FR') + ' / ' + pdrTotal.toLocaleString('fr-FR');
+    const tempsMoyen = tempsCount > 0 ? Math.round(tempsSomme / tempsCount) + ' j' : '—';
     const pfx  = isAnnual ? 'ann' : 'kpi';
     set(pfx + '-pdr-conf',    taux);
     set(pfx + '-pdr-conf-nb', nb);
+    // Ces KPIs sont des snapshots (sans filtre date) — identiques mensuel/annuel
+    set('kpi-ot-attente',  otAttente.toLocaleString('fr-FR'));
+    set('ann-ot-attente',  otAttente.toLocaleString('fr-FR'));
+    set('kpi-temps-moyen', tempsMoyen);
+    set('ann-temps-moyen', tempsMoyen);
   } catch(e) { console.warn('updatePdrKpiFromTravHebdo:', e.message); }
 }
 
