@@ -505,6 +505,34 @@ function rhMakeBarImg(labels, values, color, title, w, h) {
   } catch(e) { Logger.log('rhMakeBarImg: ' + e.message); return ''; }
 }
 
+// ── Graphique barres verticales QuickChart (Avis par installation) ──
+function rhMakeVertBarImg(labels, values, color, title, w, h) {
+  try {
+    var chart = '{'
+      + 'type:"bar",'
+      + 'data:{labels:' + JSON.stringify(labels)
+        + ',datasets:[{data:' + JSON.stringify(values)
+          + ',backgroundColor:' + JSON.stringify(color || '#0891b2')
+          + ',borderWidth:0,borderRadius:4}]},'
+      + 'options:{'
+        + 'title:{display:' + (title ? 'true' : 'false') + ',text:' + JSON.stringify(title || '') + ',fontStyle:"bold",fontSize:15,fontColor:"#0f172a",padding:16},'
+        + 'legend:{display:false},'
+        + 'layout:{padding:{top:20}},'
+        + 'scales:{'
+          + 'xAxes:[{ticks:{fontColor:"#1e293b",fontSize:11,maxRotation:45,minRotation:30},gridLines:{display:false}}],'
+          + 'yAxes:[{ticks:{beginAtZero:true,fontColor:"#64748b",fontSize:11},gridLines:{color:"#f1f5f9"}}]'
+        + '},'
+        + 'plugins:{datalabels:{'
+          + 'anchor:"end",align:"top",'
+          + 'formatter:function(v){return v>0?v:"";},'
+          + 'color:"#0f172a",font:{size:11,weight:"bold"}'
+        + '}}'
+      + '}'
+    + '}';
+    return rhChartFetch_(chart, w || 900, h || 380);
+  } catch(e) { Logger.log('rhMakeVertBarImg: ' + e.message); return ''; }
+}
+
 // ── Graphique colonnes verticales HTML pur — compatible Outlook ──
 function rhMakeColHtml(labels, values, color) {
   if (!labels.length) return '';
@@ -829,13 +857,15 @@ function rhBuildHtml(arrets, kpi, avis) {
         avis.openByPoste.map(function(x){return x.label;}),
         avis.openByPoste.map(function(x){return x.count;}),
         '#dc2626','Avis non cl\u00f4tur\u00e9s par corps de m\u00e9tier'):'';
-      var imgInst=avis.byInstall.length?rhMakeBarImg(
-        avis.byInstall.slice(0,8).map(function(x){return x.label;}),
-        avis.byInstall.slice(0,8).map(function(x){return x.count;}),
+      var imgInst=avis.byInstall.length?rhMakeVertBarImg(
+        avis.byInstall.map(function(x){return x.label;}),
+        avis.byInstall.map(function(x){return x.count;}),
         '#0891b2','Avis par installation'):'';
       return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
         +chartCard(imgOpen,'Avis non cl&#244;tur&#233;s par corps de m&#233;tier')
-        +chartCard(imgInst,'Avis par installation')
+        +'</tr></table>'
+        +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
+        +chartCard(imgInst,'Avis par installation','100%')
         +'</tr></table>';
     })()
   ) : '')
