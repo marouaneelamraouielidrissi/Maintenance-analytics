@@ -361,25 +361,28 @@ function rhMakePieImg(labels, values, title, w, h) {
   } catch(e){ Logger.log('rhMakePieImg: '+e.message); return ''; }
 }
 
-function rhMakeBarImg(labels, values, color, title, w, h) {
-  try {
-    var dt=Charts.newDataTable()
-      .addColumn(Charts.ColumnType.STRING,'Item')
-      .addColumn(Charts.ColumnType.NUMBER,'Count');
-    for(var i=0;i<labels.length;i++) dt.addRow([labels[i],values[i]]);
-    dt.build();
-    var c=Charts.newBarChart().setDataTable(dt).setDimensions(w||880,h||420)
-      .setOption('title','')
-      .setOption('backgroundColor','#ffffff')
-      .setOption('colors',[color||'#3b82f6'])
-      .setOption('legend',{position:'none'})
-      .setOption('chartArea',{left:100,top:10,width:'76%',height:'88%'})
-      .setOption('hAxis',{textStyle:{fontSize:11,color:'#475569'},gridlines:{color:'#e2e8f0'},format:'#'})
-      .setOption('vAxis',{textStyle:{fontSize:11,color:'#475569'}})
-      .setOption('bar',{groupWidth:'60%'})
-      .build();
-    return 'data:image/png;base64,'+Utilities.base64Encode(c.getAs('image/png').getBytes());
-  } catch(e){ Logger.log('rhMakeBarImg: '+e.message); return ''; }
+// Graphique barres en HTML pur — compatible Outlook, valeurs affichées
+function rhMakeBarHtml(labels, values, color) {
+  if (!labels.length) return '';
+  var maxVal = Math.max.apply(null, values) || 1;
+  var col = color || '#3b82f6';
+  var html = '<table cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;">';
+  for (var i = 0; i < labels.length; i++) {
+    var pct = Math.round((values[i] / maxVal) * 100);
+    var remain = 100 - pct;
+    html += '<tr>'
+      + '<td width="110" style="font-size:11px;font-weight:600;color:#374151;padding:5px 8px 5px 0;white-space:nowrap;vertical-align:middle;">' + labels[i] + '</td>'
+      + '<td style="padding:5px 6px 5px 0;vertical-align:middle;">'
+      +   '<table cellpadding="0" cellspacing="0" width="100%"><tr>'
+      +     '<td width="' + pct + '%" style="height:18px;background:' + col + ';font-size:1px;">&nbsp;</td>'
+      +     (remain > 0 ? '<td style="height:18px;background:#f1f5f9;font-size:1px;">&nbsp;</td>' : '')
+      +   '</tr></table>'
+      + '</td>'
+      + '<td width="32" align="right" style="font-size:11px;font-weight:700;color:' + col + ';padding:5px 0;white-space:nowrap;vertical-align:middle;">' + values[i] + '</td>'
+      + '</tr>';
+  }
+  html += '</table>';
+  return html;
 }
 
 // ── Construction HTML du rapport (compatible Outlook desktop) ─
@@ -460,7 +463,7 @@ function rhBuildHtml(arrets, kpi, avis) {
       +'</td>';
   }
 
-  // ── Chart card (Outlook-safe : img base64) ──
+  // ── Chart card image (pie) ──
   function chartCard(imgSrc,title,w) {
     w=w||'50%';
     if(!imgSrc) return '<td width="'+w+'" valign="top" style="padding:6px;"></td>';
@@ -468,7 +471,19 @@ function rhBuildHtml(arrets, kpi, avis) {
       +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
       +'<tr><td style="padding:12px 16px;">'
       +'<div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">'+title+'</div>'
-      +'<img src="'+imgSrc+'" width="580" style="display:block;border:0;height:auto;" alt="'+title+'">'
+      +'<img src="'+imgSrc+'" width="520" style="display:block;border:0;height:auto;" alt="'+title+'">'
+      +'</td></tr></table></td>';
+  }
+
+  // ── Chart card barres HTML ──
+  function barChartCard(barHtml,title,w) {
+    w=w||'50%';
+    if(!barHtml) return '<td width="'+w+'" valign="top" style="padding:6px;"></td>';
+    return '<td width="'+w+'" valign="top" style="padding:6px;">'
+      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
+      +'<tr><td style="padding:12px 16px;">'
+      +'<div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;">'+title+'</div>'
+      +barHtml
       +'</td></tr></table></td>';
   }
 
@@ -565,13 +580,13 @@ function rhBuildHtml(arrets, kpi, avis) {
       typeD.map(function(x){return x.type;}),
       typeD.map(function(x){return x.count;}),
       'R&#233;partition par type d\'ordre'):'';
-    var imgPoste=postesD.length?rhMakeBarImg(
+    var barPoste=postesD.length?rhMakeBarHtml(
       postesD.map(function(x){return x.nom;}),
       postesD.map(function(x){return x.total;}),
-      '#3b82f6','Volume OT par corps de m&#233;tier'):'';
+      '#3b82f6'):'';
     return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
       +chartCard(imgType,'R&#233;partition par type d\'ordre')
-      +chartCard(imgPoste,'Volume OT par corps de m&#233;tier')
+      +barChartCard(barPoste,'Volume OT par corps de m&#233;tier')
       +'</tr></table>';
   })()
 
@@ -622,28 +637,28 @@ function rhBuildHtml(arrets, kpi, avis) {
         avis.bySecteur.map(function(x){return x.label;}),
         avis.bySecteur.map(function(x){return x.count;}),
         'R&#233;partition par secteur'):'';
-      var imgPoste=avis.byPoste.length?rhMakeBarImg(
+      var barPoste=avis.byPoste.length?rhMakeBarHtml(
         avis.byPoste.map(function(x){return x.label;}),
         avis.byPoste.map(function(x){return x.count;}),
-        '#7c3aed','Corps de M&#233;tier (Poste trav.)'):'';
+        '#7c3aed'):'';
       return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
         +chartCard(imgSect,'R&#233;partition par secteur')
-        +chartCard(imgPoste,'Corps de M&#233;tier (Poste trav.)')
+        +barChartCard(barPoste,'Corps de M&#233;tier (Poste trav.)')
         +'</tr></table>';
     })()
     // Graphiques Avis ligne 2 : Non Clôturés + Par installation
     +(function(){
-      var imgOpen=avis.openByPoste.length?rhMakeBarImg(
+      var barOpen=avis.openByPoste.length?rhMakeBarHtml(
         avis.openByPoste.map(function(x){return x.label;}),
         avis.openByPoste.map(function(x){return x.count;}),
-        '#dc2626','Avis non cl&#244;tur&#233;s par corps de m&#233;tier'):'';
-      var imgInst=avis.byInstall.length?rhMakeBarImg(
+        '#dc2626'):'';
+      var barInst=avis.byInstall.length?rhMakeBarHtml(
         avis.byInstall.slice(0,8).map(function(x){return x.label;}),
         avis.byInstall.slice(0,8).map(function(x){return x.count;}),
-        '#0891b2','Avis par installation'):'';
+        '#0891b2'):'';
       return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
-        +chartCard(imgOpen,'Avis non cl&#244;tur&#233;s par corps de m&#233;tier')
-        +chartCard(imgInst,'Avis par installation')
+        +barChartCard(barOpen,'Avis non cl&#244;tur&#233;s par corps de m&#233;tier')
+        +barChartCard(barInst,'Avis par installation')
         +'</tr></table>';
     })()
   ) : '')
