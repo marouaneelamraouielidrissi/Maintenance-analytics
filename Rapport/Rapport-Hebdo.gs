@@ -932,7 +932,7 @@ function executerRapportPlanifie(e) {
   var arrets = rhGetArrets();
   var kpi    = rhGetKpi(mo, yr);
   var prep   = rhGetPreparation(mo, yr);
-  if (prep) { kpi.pdrTotal=prep.pdrTotal; kpi.pdrConf=prep.pdrConf; kpi.tauxPdrConf=prep.tauxPdrConf; kpi.tauxPdrConfStr=prep.tauxPdrConfStr; }
+  if (prep) { kpi.pdrTotal=prep.pdrTotal; kpi.pdrConf=prep.pdrConf; kpi.tauxPdrConf=prep.tauxPdrConf; kpi.tauxPdrConfStr=prep.tauxPdrConfStr; kpi.otAttente=prep.otAttente; kpi.tempsMoyenStr=prep.tempsMoyenStr; }
   var avis   = rhGetAvis(mo, yr);
   var html   = rhBuildHtml(arrets, kpi, avis);
   var MOIS   = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
@@ -988,7 +988,7 @@ function testerRapportHebdo() {
   var arrets = rhGetArrets();
   var kpi    = rhGetKpi(mo, yr);
   var prep   = rhGetPreparation(mo, yr);
-  if (prep) { kpi.pdrTotal=prep.pdrTotal; kpi.pdrConf=prep.pdrConf; kpi.tauxPdrConf=prep.tauxPdrConf; kpi.tauxPdrConfStr=prep.tauxPdrConfStr; }
+  if (prep) { kpi.pdrTotal=prep.pdrTotal; kpi.pdrConf=prep.pdrConf; kpi.tauxPdrConf=prep.tauxPdrConf; kpi.tauxPdrConfStr=prep.tauxPdrConfStr; kpi.otAttente=prep.otAttente; kpi.tempsMoyenStr=prep.tempsMoyenStr; }
   var avis   = rhGetAvis(mo, yr);
 
   Logger.log('Semaine : S' + arrets.sem + ' (' + arrets.s0 + ' → ' + arrets.s1 + ')');
