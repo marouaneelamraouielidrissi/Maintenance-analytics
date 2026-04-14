@@ -9,7 +9,8 @@
       "Bash(rm -f /Users/mounaim/Desktop/mainAna/.git/index.lock)",
       "Bash(git -C /Users/mounaim/Desktop/mainAna add index.html)",
       "Bash(git -C /Users/mounaim/Desktop/mainAna commit -m ':*)",
-      "Bash(git -C /Users/mounaim/Desktop/mainAna push origin main)"
+      "Bash(git -C /Users/mounaim/Desktop/mainAna push origin main)",
+      "Bash(git commit -m 'Fix GAS rhGetPreparation: correct column index fallbacks:*)"
     ]
   },
   "hooks": {
