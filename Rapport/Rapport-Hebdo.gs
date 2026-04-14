@@ -437,7 +437,7 @@ function rhGetAvis(mo, yr) {
 function rhChartFetch_(chartStr, w, h) {
   var payload = JSON.stringify({
     chart: chartStr, width: w, height: h,
-    backgroundColor: 'white', format: 'png', devicePixelRatio: 1
+    backgroundColor: 'white', format: 'png', devicePixelRatio: 2
   });
   // /chart/create retourne une URL permanente au lieu de base64 (meilleure compatibilité email)
   var resp = UrlFetchApp.fetch('https://quickchart.io/chart/create', {
@@ -472,7 +472,7 @@ function rhMakePieImg(labels, values, title, w, h) {
         + '}}'
       + '}'
     + '}';
-    return rhChartFetch_(chart, w || 500, h || 260);
+    return rhChartFetch_(chart, w || 700, h || 340);
   } catch(e) { Logger.log('rhMakePieImg: ' + e.message); return ''; }
 }
 
