@@ -373,7 +373,7 @@ function rhBuildHtml(arrets, kpi, avis) {
       tagHtml='<div style="text-align:right;"><span style="font-size:11px;font-weight:700;padding:2px 8px;background:'+tc.bg+';color:'+tc.fg+';">'+taux.toFixed(1)+'%</span></div>';
     }
     return '<td width="'+w+'" valign="top" style="padding:6px;">'
-      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;">'
+      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
       +'<tr><td style="padding:14px 16px;">'
       +'<table cellpadding="0" cellspacing="0" width="100%"><tr>'
       +'<td><div style="width:32px;height:32px;background:'+iconBg+';text-align:center;padding-top:8px;font-size:14px;font-weight:700;color:'+iconFg+';">&#9632;</div></td>'
@@ -391,8 +391,8 @@ function rhBuildHtml(arrets, kpi, avis) {
     w=w||'50%';
     if(!imgSrc) return '<td width="'+w+'" valign="top" style="padding:6px;"></td>';
     return '<td width="'+w+'" valign="top" style="padding:6px;">'
-      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;">'
-      +'<tr><td style="padding:10px 14px;">'
+      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
+      +'<tr><td style="padding:12px 16px;">'
       +'<div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">'+title+'</div>'
       +'<img src="'+imgSrc+'" width="100%" style="display:block;border:0;" alt="'+title+'">'
       +'</td></tr></table></td>';
@@ -401,7 +401,7 @@ function rhBuildHtml(arrets, kpi, avis) {
   // ── Sous-section label ──
   function subSection(bg,border,color,label) {
     return '<table cellpadding="0" cellspacing="0" style="margin:16px 0 10px;">'
-      +'<tr><td style="padding:4px 12px;background:'+bg+';border:1px solid '+border+';font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:'+color+';">'+label+'</td></tr>'
+      +'<tr><td style="padding:5px 14px;background:'+bg+';border:1px solid '+border+';border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:'+color+';">'+label+'</td></tr>'
       +'</table>';
   }
 
@@ -451,13 +451,11 @@ function rhBuildHtml(arrets, kpi, avis) {
   +'</td></tr>'
 
   // ── Contenu ──
-  +'<tr><td style="background:#ffffff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 10px 10px;padding:28px 32px 40px;">'
-  +'<h2 style="font-size:18px;font-weight:700;margin:0 0 4px;color:#0f172a;">Rapport Hebdomadaire de Planification</h2>'
-  +'<p style="font-size:13px;color:#64748b;margin:0 0 20px;">Semaine <strong>S'+s+'</strong> &middot; '+d0+' au '+d1+' &middot; G&#233;n&#233;r&#233; le '+new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})+'</p>'
+  +'<tr><td style="background:#ffffff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px;padding:28px 32px 40px;">'
 
   // Calendrier
   +secLabel('Calendrier des arr&#234;ts pr&#233;ventifs &#8212; Semaine S'+s)
-  +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #dde2ea;margin-bottom:12px;">'
+  +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #dde2ea;border-radius:12px;margin-bottom:12px;">'
   +'<tr><td style="padding:18px 20px;">'
   +'<div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:6px;">Arr&#234;ts S'+s+' &middot; '+arrets.rows.length+' enregistr&#233;(s)</div>'
   +'<div style="font-size:11px;margin-bottom:12px;">'
@@ -529,7 +527,7 @@ function rhBuildHtml(arrets, kpi, avis) {
 
   // Postes
   +secLabel('Taux de r&#233;alisation par corps de m&#233;tier')
-  +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #dde2ea;margin-bottom:14px;">'
+  +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #dde2ea;border-radius:12px;margin-bottom:14px;">'
   +'<tr><td style="padding:18px 20px;">'
   +'<div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:12px;">'+kpi.mois+'</div>'
   +buildPostes()
