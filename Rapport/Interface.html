@@ -188,7 +188,15 @@
 
   <!-- ═══════════ DESTINATAIRES ════════════════════════════════════════════ -->
   <div class="card">
-    <div class="card-title">Destinataires</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div class="card-title" style="margin-bottom:0;border-bottom:none;padding-bottom:0;">Destinataires</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="dest-saved-lbl" style="font-size:11px;color:#059669;display:none;">✓ Sauvegardé</span>
+        <button id="btn-sauvegarder-dest" class="btn btn-ghost" style="font-size:11px;padding:6px 14px;">
+          💾 Sauvegarder la liste
+        </button>
+      </div>
+    </div>
     <div class="form-row">
       <div class="fg full">
         <label>À — Destinataires principaux <span style="color:#DC2626;">*</span></label>
@@ -567,6 +575,38 @@ function supprimerPlanif(triggerId) {
     .withFailureHandler(function(e) { toast('Erreur : ' + e.message, 'error'); })
     .supprimerPlanificationInterface(triggerId);
 }
+
+// ── Sauvegarde des destinataires ─────────────────────────────────────────
+document.getElementById('btn-sauvegarder-dest').addEventListener('click', function() {
+  var emails   = document.getElementById('inp-emails').value.trim();
+  var emailsCC = document.getElementById('inp-emails-cc').value.trim();
+  if (!emails) { toast('Veuillez saisir au moins un destinataire principal.', 'error'); return; }
+
+  var btn = this;
+  btn.disabled = true;
+  btn.textContent = '…';
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      btn.disabled = false;
+      btn.textContent = '💾 Sauvegarder la liste';
+      if (res.ok) {
+        toast('Liste sauvegardée.', 'success');
+        var lbl = document.getElementById('dest-saved-lbl');
+        lbl.style.display = 'inline';
+        clearTimeout(lbl._t);
+        lbl._t = setTimeout(function(){ lbl.style.display = 'none'; }, 4000);
+      } else {
+        toast('Erreur : ' + res.msg, 'error');
+      }
+    })
+    .withFailureHandler(function(e) {
+      btn.disabled = false;
+      btn.textContent = '💾 Sauvegarder la liste';
+      toast('Erreur : ' + e.message, 'error');
+    })
+    .sauvegarderDestinataires({ emails: emails, emailsCC: emailsCC });
+});
 
 // Chargement initial de la liste
 chargerPlanifications();

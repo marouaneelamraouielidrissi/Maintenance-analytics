@@ -914,6 +914,17 @@ function rhBuildHtml(arrets, kpi, avis) {
   +'</body></html>';
 }
 
+// ── Sauvegarde des destinataires ─────────────────────────────
+function sauvegarderDestinataires(p) {
+  try {
+    if (!p.emails) return { ok: false, msg: 'Aucun destinataire principal.' };
+    var props = PropertiesService.getScriptProperties();
+    props.setProperty('RH_EMAILS', p.emails);
+    props.setProperty('RH_EMAILS_CC', p.emailsCC || '');
+    return { ok: true };
+  } catch(e) { return { ok: false, msg: e.message }; }
+}
+
 // ── Envoi depuis l'interface ──────────────────────────────────
 function envoyerRapportDepuisInterface(p) {
   try {
