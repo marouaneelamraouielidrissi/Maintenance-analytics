@@ -4023,10 +4023,8 @@ function generateReport() {
   const nonCaractNb = caractOTs.filter(r => r.statutUtil.length === 4).length;
   const caractBase = caractNb + nonCaractNb;
   const tauxCaract = caractBase > 0 ? (caractNb / caractBase * 100).toFixed(1) + '%' : '—';
-  // Taux confirmation PDR : CRPR ATPD ou CRPR AVPD / total OTs avec colonne PDR non vide
-  const pdrBase = filtered.filter(r => r.pdrCol.trim() !== '').length;
-  const pdrConf = filtered.filter(r => { const su = r.statutUtil.trim(); return su === 'CRPR ATPD' || su === 'CRPR AVPD'; }).length;
-  const tauxPdrConf = pdrBase > 0 ? (pdrConf / pdrBase * 100).toFixed(1) + '%' : '—';
+  // Taux confirmation PDR — calculé depuis Travaux hebdomadaire (async)
+  updatePdrKpiFromTravHebdo(mo, yr, false);
 
   set('kpi-total',       total.toLocaleString('fr-FR'));
   set('kpi-realise',     realise.toLocaleString('fr-FR'));
@@ -4047,8 +4045,7 @@ function generateReport() {
   set('kpi-backlog',     backlog);
   set('kpi-caract',      tauxCaract);
   set('kpi-caract-nb',   caractNb.toLocaleString('fr-FR') + ' / ' + caractBase.toLocaleString('fr-FR'));
-  set('kpi-pdr-conf',    tauxPdrConf);
-  set('kpi-pdr-conf-nb', pdrConf.toLocaleString('fr-FR') + ' / ' + pdrBase.toLocaleString('fr-FR'));
+  // kpi-pdr-conf mis à jour par updatePdrKpiFromTravHebdo (async ci-dessus)
   // Tags colorés préventif / correctif
   const tPrevTag = document.getElementById('kpi-taux-prev-tag');
   if(tPrevTag){ tPrevTag.textContent=tauxPrev.toFixed(1)+'%'; tPrevTag.className='kpi-tag '+(tauxPrev>=80?'up':tauxPrev>=50?'neu':'down'); }
@@ -4195,10 +4192,8 @@ function generateAnnualReport() {
   const nonCaractNb = caractOTs.filter(r => r.statutUtil.length === 4).length;
   const caractBase = caractNb + nonCaractNb;
   const tauxCaract = caractBase > 0 ? (caractNb / caractBase * 100).toFixed(1) + '%' : '—';
-  // Taux confirmation PDR annuel
-  const pdrBase = filtered.filter(r => r.pdrCol.trim() !== '').length;
-  const pdrConf = filtered.filter(r => { const su = r.statutUtil.trim(); return su === 'CRPR ATPD' || su === 'CRPR AVPD'; }).length;
-  const tauxPdrConf = pdrBase > 0 ? (pdrConf / pdrBase * 100).toFixed(1) + '%' : '—';
+  // Taux confirmation PDR annuel — calculé depuis Travaux hebdomadaire (async)
+  updatePdrKpiFromTravHebdo(null, yr, true);
 
   // Banner
   set('rpt-badge',   yr.toString());
@@ -4234,8 +4229,7 @@ function generateAnnualReport() {
   set('ann-backlog',     backlog);
   set('ann-caract',      tauxCaract);
   set('ann-caract-nb',   caractNb.toLocaleString('fr-FR') + ' / ' + caractBase.toLocaleString('fr-FR'));
-  set('ann-pdr-conf',    tauxPdrConf);
-  set('ann-pdr-conf-nb', pdrConf.toLocaleString('fr-FR') + ' / ' + pdrBase.toLocaleString('fr-FR'));
+  // ann-pdr-conf mis à jour par updatePdrKpiFromTravHebdo (async ci-dessus)
   const tPrevTagA = document.getElementById('ann-taux-prev-tag');
   if(tPrevTagA){ tPrevTagA.textContent=tauxPrev.toFixed(1)+'%'; tPrevTagA.className='kpi-tag '+(tauxPrev>=80?'up':tauxPrev>=50?'neu':'down'); }
   const tCorTagA = document.getElementById('ann-taux-cor-tag');
@@ -7705,6 +7699,54 @@ function buildPDRConf(r) {
 }
 
 /* ── Parser CSV minimal (gère les guillemets) ── */
+// ── KPI PDR depuis Travaux hebdomadaire (source correcte) ───────────────
+async function updatePdrKpiFromTravHebdo(mo, yr, isAnnual) {
+  try {
+    const csvRows = await fetchTravHebdoCSV();
+    const hdr = csvRows[0].map(h => (h||'').toString().trim().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,''));
+
+    function ci(names) {
+      for (const n of names) {
+        const i = hdr.findIndex(h => h.includes(n));
+        if (i >= 0) return i;
+      }
+      return -1;
+    }
+    const iDate = ci(['debut', 'date', 'start']);    // colonne date début
+    const iPdr  = ci(['pdr']);                        // colonne PDR (fallback 18)
+    const iUtil = ci(['statut util', 'statut utilis', 'util.']); // statut utilis.
+    const iDateFinal = iDate >= 0 ? iDate : 7;
+    const iPdrFinal  = iPdr  >= 0 ? iPdr  : 18;
+
+    let pdrTotal = 0, pdrConf = 0;
+    for (let i = 1; i < csvRows.length; i++) {
+      const r = csvRows[i];
+      if (!r || !r.length) continue;
+      // Filtre date
+      const rawD = (r[iDateFinal] || '').trim();
+      if (!rawD) continue;
+      const d = new Date(rawD);
+      if (isNaN(d)) continue;
+      if (isAnnual ? d.getFullYear() !== yr : (d.getFullYear() !== yr || d.getMonth() !== mo)) continue;
+      // PDR non vide
+      const pdrVal = (r[iPdrFinal] || '').trim();
+      if (!pdrVal) continue;
+      pdrTotal++;
+      // Statut utilis. confirmé
+      if (iUtil >= 0) {
+        const su = (r[iUtil] || '').trim().toUpperCase();
+        if (su === 'CRPR ATPD' || su === 'CRPR AVPD') pdrConf++;
+      }
+    }
+    const taux = pdrTotal > 0 ? (pdrConf / pdrTotal * 100).toFixed(1) + '%' : '—';
+    const nb   = pdrConf.toLocaleString('fr-FR') + ' / ' + pdrTotal.toLocaleString('fr-FR');
+    const pfx  = isAnnual ? 'ann' : 'kpi';
+    set(pfx + '-pdr-conf',    taux);
+    set(pfx + '-pdr-conf-nb', nb);
+  } catch(e) { console.warn('updatePdrKpiFromTravHebdo:', e.message); }
+}
+
 function parsePDRCSV(text) {
   const rows = [];
   const lines = text.split('\n');
