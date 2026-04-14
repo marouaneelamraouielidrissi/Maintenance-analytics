@@ -350,10 +350,9 @@ function rhMakePieImg(labels, values, title, w, h) {
     for(var i=0;i<labels.length;i++) dt.addRow([labels[i],values[i]]);
     dt.build();
     var c=Charts.newPieChart().setDataTable(dt).setDimensions(w||880,h||420)
-      .setOption('title',title||'')
-      .setOption('titleTextStyle',{fontSize:13,bold:true,color:'#1e293b'})
+      .setOption('title','')
       .setOption('backgroundColor','#ffffff')
-      .setOption('chartArea',{left:10,top:48,width:'92%',height:'82%'})
+      .setOption('chartArea',{left:10,top:10,width:'92%',height:'92%'})
       .setOption('legend',{position:'right',textStyle:{fontSize:12,color:'#334155'}})
       .setOption('pieSliceText','value')
       .setOption('pieSliceTextStyle',{fontSize:12,bold:true,color:'#ffffff'})
@@ -369,13 +368,19 @@ function rhMakeBarImg(labels, values, color, title, w, h) {
       .addColumn(Charts.ColumnType.NUMBER,'Count');
     for(var i=0;i<labels.length;i++) dt.addRow([labels[i],values[i]]);
     dt.build();
-    var c=Charts.newBarChart().setDataTable(dt).setDimensions(w||880,h||420)
-      .setOption('title',title||'')
-      .setOption('titleTextStyle',{fontSize:13,bold:true,color:'#1e293b'})
+    // Ajouter les valeurs comme annotations dans les données
+    var dtA=Charts.newDataTable()
+      .addColumn(Charts.ColumnType.STRING,'Item')
+      .addColumn(Charts.ColumnType.NUMBER,'Count')
+      .addColumn(Charts.ColumnType.STRING,'Annotation');
+    for(var i=0;i<labels.length;i++) dtA.addRow([labels[i],values[i],String(values[i])]);
+    dtA.build();
+    var c=Charts.newBarChart().setDataTable(dtA).setDimensions(w||880,h||420)
+      .setOption('title','')
       .setOption('backgroundColor','#ffffff')
       .setOption('colors',[color||'#3b82f6'])
       .setOption('legend',{position:'none'})
-      .setOption('chartArea',{left:100,top:48,width:'82%',height:'78%'})
+      .setOption('chartArea',{left:100,top:10,width:'82%',height:'88%'})
       .setOption('hAxis',{textStyle:{fontSize:11,color:'#475569'},gridlines:{color:'#e2e8f0'}})
       .setOption('vAxis',{textStyle:{fontSize:11,color:'#475569'}})
       .setOption('annotations',{alwaysOutside:true,textStyle:{fontSize:11,bold:true,color:'#1e293b'}})
