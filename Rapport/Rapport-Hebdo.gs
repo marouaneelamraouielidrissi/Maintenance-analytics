@@ -587,7 +587,7 @@ function rhBuildHtml(arrets, kpi, avis) {
   +(function(){
     var typeD=kpi.typeData.slice(0,6);
     var postesD=kpi.postes.slice(0,7);
-    var TYPE_LBL={'ZEST':'Systématique','ZCOR':'Curatif','ZCON':'Conditionnel','ZETL':'Étude'};
+    var TYPE_LBL={'ZEST':'Systématique','ZCOR':'Curatif','ZCON':'Conditionnel','ZETL':'Etalonnage'};
     var colType=typeD.length?rhMakeColHtml(
       typeD.map(function(x){return TYPE_LBL[x.type]||x.type;}),
       typeD.map(function(x){return x.count;}),
