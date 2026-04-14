@@ -4787,29 +4787,31 @@ function buildAvisCharts() {
     }
   });
 
-  // 5. Top installations (barre horizontale)
-  const installCounts = {};
-  filtered.forEach(r=>{ if(r.installation) installCounts[r.installation]=(installCounts[r.installation]||0)+1; });
-  const installSorted = Object.entries(installCounts).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  // 5. Avis par installation (barres verticales, toutes installations)
+  const allInstalls = [...new Set(avisData.filter(r=>r.installation).map(r=>r.installation))].sort();
+  const installCountsPeriod = {};
+  filtered.forEach(r=>{ if(r.installation) installCountsPeriod[r.installation]=(installCountsPeriod[r.installation]||0)+1; });
+  const installSorted = allInstalls.map(inst=>([inst, installCountsPeriod[inst]||0])).sort((a,b)=>b[1]-a[1]);
   const subInstEl = document.getElementById('avis-sub-install');
-  if(subInstEl) subInstEl.textContent = `Top ${installSorted.length} installations — ${periodLabel}`;
+  if(subInstEl) subInstEl.textContent = `${installSorted.length} installations — ${periodLabel}`;
   charts['chart-avis-install'] = new Chart(document.getElementById('chart-avis-install').getContext('2d'),{
     type:'bar',
     data:{labels:installSorted.map(e=>e[0]), datasets:[{data:installSorted.map(e=>e[1]), backgroundColor:'rgba(124,58,237,0.72)', borderRadius:3, borderSkipped:false}]},
     options:{
-      ...CD, indexAxis:'y',
+      ...CD,
       scales:{
-        x:{ticks:{color:'#8a97ab',font:{family:'IBM Plex Mono',size:10}},grid:{color:'rgba(221,226,234,0.8)'},border:{color:'transparent'}},
-        y:{ticks:{color:'#4a5568',font:{family:'Inter',size:11}},grid:{display:false},border:{color:'transparent'}}
+        x:{ticks:{color:'#4a5568',font:{family:'Inter',size:10},maxRotation:45,minRotation:30},grid:{display:false},border:{color:'transparent'}},
+        y:{ticks:{color:'#8a97ab',font:{family:'IBM Plex Mono',size:10}},grid:{color:'rgba(221,226,234,0.8)'},border:{color:'transparent'}}
       },
       plugins:{...CD.plugins,legend:{display:false}},
       animation:{onComplete:function(){
         const chart=this,ctx=chart.ctx;
-        ctx.save();ctx.font='bold 11px IBM Plex Mono,monospace';ctx.fillStyle='#1a2035';ctx.textBaseline='middle';
+        ctx.save();ctx.font='bold 11px IBM Plex Mono,monospace';ctx.fillStyle='#1a2035';ctx.textBaseline='bottom';
         chart.data.datasets.forEach((ds,di)=>{
           chart.getDatasetMeta(di).data.forEach((bar,i)=>{
             const v=ds.data[i]; if(!v) return;
-            ctx.fillText(v, bar.x+6, bar.y);
+            ctx.textAlign='center';
+            ctx.fillText(v, bar.x, bar.y-4);
           });
         });
         ctx.restore();
