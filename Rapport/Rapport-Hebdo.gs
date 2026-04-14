@@ -244,46 +244,101 @@ function rhGetKpi(mo, yr) {
 function rhGetAvis(mo, yr) {
   try {
     var ss = SpreadsheetApp.openById(RH_AVIS_FILE_ID);
-    var sheet = null;
-    ss.getSheets().forEach(function(s){
-      if(s.getName().toLowerCase().indexOf('avis')>=0) sheet=s;
-    });
-    if(!sheet) return null;
-    var data=sheet.getDataRange().getValues(), hdr=data[0].map(function(h){return h.toString().trim();});
-    function ci(n){for(var i=0;i<n.length;i++){var x=hdr.indexOf(n[i]);if(x>=0)return x;}return -1;}
-    var cCree =ci(['Créé le','Crée le','Date création']);
-    var cOrdre=ci(['Ordre','N° ordre']);
-    var cStatA=ci(['Statut ABR','Statut Abr']);
-    var cPoste=ci(['Poste trav.','Poste trav','Poste travail']);
-    var cInst =ci(['Installation']);
-    var cSect =ci(['Secteur']);
-    var total=0,avecOT=0,ouverts=0;
-    var bySecteur={},byPoste={},openByPoste={},byInstall={};
-    for(var i=1;i<data.length;i++){
-      var r=data[i], rawD=cCree>=0?r[cCree]:null, d;
-      if(rawD instanceof Date) d=rawD;
-      else if(typeof rawD==='number') d=new Date(Math.round((rawD-25569)*86400000));
-      else if(rawD) d=new Date(rawD); else continue;
-      if(isNaN(d)||d.getFullYear()!==yr||d.getMonth()!==mo) continue;
-      total++;
-      var ordre=cOrdre>=0?r[cOrdre].toString().trim():'';
-      var statA=cStatA>=0?r[cStatA].toString().trim():'';
-      var poste=cPoste>=0?r[cPoste].toString().trim():'';
-      var inst =cInst >=0?r[cInst ].toString().trim():'';
-      var sect =cSect >=0?r[cSect ].toString().trim():'';
-      if(ordre) avecOT++;
-      var isOpen=statA==='AOUV'||statA==='AENC';
-      if(isOpen) ouverts++;
-      if(sect) bySecteur[sect]=(bySecteur[sect]||0)+1;
-      if(poste){byPoste[poste]=(byPoste[poste]||0)+1; if(isOpen) openByPoste[poste]=(openByPoste[poste]||0)+1;}
-      if(inst) byInstall[inst]=(byInstall[inst]||0)+1;
+    // Recherche exacte d'abord, puis fuzzy
+    var sheet = ss.getSheetByName('Avis') || ss.getSheetByName('avis') || ss.getSheetByName('AVIS');
+    if (!sheet) {
+      ss.getSheets().forEach(function(s){
+        if (s.getName().toLowerCase().indexOf('avis') >= 0) sheet = s;
+      });
     }
-    function toArr(map,lim){return Object.keys(map).map(function(k){return{label:k,count:map[k]};}).sort(function(a,b){return b.count-a.count;}).slice(0,lim||10);}
-    return {total:total,avecOT:avecOT,ouverts:ouverts,
-      txConv:total?parseFloat(((avecOT/total)*100).toFixed(1)):0,
+    if (!sheet) { Logger.log('rhGetAvis: feuille Avis introuvable'); return null; }
+
+    var data = sheet.getDataRange().getValues();
+    if (data.length < 2) { Logger.log('rhGetAvis: feuille vide'); return null; }
+
+    // Normalisation : minuscule + suppression des accents + trim
+    function norm(s) {
+      return (s||'').toString().toLowerCase()
+        .replace(/[éèêë]/g,'e').replace(/[àâä]/g,'a').replace(/[ùûü]/g,'u')
+        .replace(/[îï]/g,'i').replace(/[ôö]/g,'o').replace(/ç/g,'c')
+        .replace(/°/g,'').replace(/\./g,'').replace(/\s+/g,' ').trim();
+    }
+
+    var hdr  = data[0].map(function(h){ return h ? h.toString().trim() : ''; });
+    var hdrN = hdr.map(norm);
+    Logger.log('rhGetAvis headers: ' + JSON.stringify(hdr));
+
+    // Cherche la meilleure colonne : exact normalisé, puis contient
+    function ci(names) {
+      var nn = names.map(norm);
+      for (var j = 0; j < hdrN.length; j++)
+        for (var i = 0; i < nn.length; i++)
+          if (hdrN[j] === nn[i]) return j;
+      for (var j = 0; j < hdrN.length; j++)
+        for (var i = 0; i < nn.length; i++)
+          if (hdrN[j].indexOf(nn[i]) >= 0 || nn[i].indexOf(hdrN[j]) >= 0) return j;
+      return -1;
+    }
+
+    var cCree  = ci(['cree le','cre le','date creation','date de creation','creee le','date creat','date']);
+    var cOrdre = ci(['ordre de travail','n ordre','no ordre','numero ordre','order','ordre']);
+    var cStatA = ci(['statut abr','stat abr','statut']);
+    var cPoste = ci(['poste trav','poste de travail','corps de metier','poste']);
+    var cInst  = ci(['installation']);
+    var cSect  = ci(['secteur']);
+
+    Logger.log('rhGetAvis cols → cree='+cCree+' ordre='+cOrdre+' statut='+cStatA+' poste='+cPoste+' install='+cInst+' sect='+cSect);
+
+    var total=0, avecOT=0, ouverts=0;
+    var bySecteur={}, byPoste={}, openByPoste={}, byInstall={};
+
+    for (var i = 1; i < data.length; i++) {
+      var r = data[i];
+
+      // Filtre par date (si colonne trouvée)
+      if (cCree >= 0) {
+        var rawD = r[cCree], d;
+        if (rawD instanceof Date)                     d = rawD;
+        else if (typeof rawD === 'number' && rawD > 1000)
+                                                      d = new Date(Math.round((rawD - 25569) * 86400000));
+        else if (rawD && typeof rawD === 'string' && rawD.trim())
+                                                      d = new Date(rawD);
+        else continue;
+        if (!d || isNaN(d.getTime())) continue;
+        if (d.getFullYear() !== parseInt(yr) || d.getMonth() !== parseInt(mo)) continue;
+      }
+
+      // Ignorer les lignes vides
+      if (!r.some(function(v){ return v !== null && v !== undefined && v !== ''; })) continue;
+
+      total++;
+      var ordre = cOrdre >= 0 ? r[cOrdre].toString().trim() : '';
+      var statA = cStatA >= 0 ? r[cStatA].toString().trim().toUpperCase() : '';
+      var poste = cPoste >= 0 ? r[cPoste].toString().trim() : '';
+      var inst  = cInst  >= 0 ? r[cInst ].toString().trim() : '';
+      var sect  = cSect  >= 0 ? r[cSect ].toString().trim() : '';
+
+      if (ordre) avecOT++;
+      var isOpen = statA === 'AOUV' || statA === 'AENC';
+      if (isOpen) ouverts++;
+      if (sect)  bySecteur[sect] = (bySecteur[sect] || 0) + 1;
+      if (poste) { byPoste[poste] = (byPoste[poste] || 0) + 1; if (isOpen) openByPoste[poste] = (openByPoste[poste] || 0) + 1; }
+      if (inst)  byInstall[inst]  = (byInstall[inst]  || 0) + 1;
+    }
+
+    Logger.log('rhGetAvis résultat: total='+total+' avecOT='+avecOT+' ouverts='+ouverts);
+
+    function toArr(map, lim) {
+      return Object.keys(map).map(function(k){ return {label:k, count:map[k]}; })
+        .sort(function(a,b){ return b.count - a.count; }).slice(0, lim || 10);
+    }
+    return {
+      total:total, avecOT:avecOT, ouverts:ouverts,
+      txConv: total ? parseFloat(((avecOT/total)*100).toFixed(1)) : 0,
       bySecteur:toArr(bySecteur,8), byPoste:toArr(byPoste,6),
-      openByPoste:toArr(openByPoste,6), byInstall:toArr(byInstall,8)};
-  } catch(e){ Logger.log('rhGetAvis: '+e.message); return null; }
+      openByPoste:toArr(openByPoste,6), byInstall:toArr(byInstall,8)
+    };
+  } catch(e) { Logger.log('rhGetAvis error: '+e.message); return null; }
 }
 
 // ── Générateurs de graphiques (GAS Charts → base64 PNG) ──────
@@ -323,178 +378,6 @@ function rhMakeBarImg(labels, values, color, title, w, h) {
       .build();
     return 'data:image/png;base64,'+Utilities.base64Encode(c.getAs('image/png').getBytes());
   } catch(e){ Logger.log('rhMakeBarImg: '+e.message); return ''; }
-}
-
-// ── Génération PDF via Google Doc temporaire ─────────────────
-function rhGeneratePdf(arrets, kpi, avis) {
-  var d0=rhFmtDate(arrets.s0), d1=rhFmtDate(arrets.s1);
-  var doc = DocumentApp.create('RH_Rapport_Temp_'+Date.now());
-  var body = doc.getBody();
-  body.setMarginTop(40).setMarginBottom(40).setMarginLeft(50).setMarginRight(50);
-
-  function styled(el, size, bold, color) {
-    el.editAsText().setFontSize(size||11).setBold(bold||false).setForegroundColor(color||'#0f172a'); return el;
-  }
-  function h(txt, color) {
-    return styled(body.appendParagraph(txt).setHeading(DocumentApp.ParagraphHeading.HEADING2), 13, true, color||'#1d4ed8');
-  }
-  function sep() { body.appendParagraph('').editAsText().setFontSize(3); }
-  function styleTable(tbl, hdrBg, cols) {
-    var row=tbl.getRow(0);
-    for(var j=0;j<cols;j++){
-      row.getCell(j).setBackgroundColor(hdrBg);
-      row.getCell(j).editAsText().setBold(true).setFontSize(10).setForegroundColor('#ffffff');
-    }
-    for(var i=1;i<tbl.getNumRows();i++){
-      if(i%2===0) for(var j=0;j<cols;j++) tbl.getRow(i).getCell(j).setBackgroundColor('#f8fafc');
-    }
-  }
-
-  // ── Titre ──
-  styled(body.appendParagraph('Rapport de Maintenance — S'+arrets.sem+' · '+kpi.mois).setHeading(DocumentApp.ParagraphHeading.HEADING1), 17, true, '#1d4ed8');
-  styled(body.appendParagraph(d0+' → '+d1+'   ·   Généré le '+new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})), 10, false, '#64748b');
-  sep();
-
-  // ── Calendrier ──
-  h('Calendrier des arrêts — Semaine S'+arrets.sem, '#1d4ed8');
-  if (arrets.rows.length) {
-    var DAYS=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
-    var wMap={};
-    arrets.rows.forEach(function(r){
-      var wn=parseInt(r.semaine.toString().replace(/\D/g,''));
-      var k=r.annee+'-'+wn;
-      if(!wMap[k]) wMap[k]={semaine:r.semaine,wn:wn,annee:r.annee,days:{}};
-      var p=r.date.split('-').map(Number);
-      var dow=(new Date(p[0],p[1]-1,p[2]).getDay()+6)%7;
-      if(!wMap[k].days[dow]) wMap[k].days[dow]=[];
-      var icon=r.statut==='realise'?' ✓':r.statut==='imprevu'?' !':' ✗';
-      wMap[k].days[dow].push(r.install+icon);
-    });
-    var weeks=Object.values(wMap).sort(function(a,b){return a.annee!==b.annee?a.annee-b.annee:a.wn-b.wn;});
-    var calData=[['Sem.'].concat(DAYS)];
-    weeks.forEach(function(w){
-      var row=[w.semaine];
-      for(var di=0;di<7;di++) row.push((w.days[di]||[]).join('\n')||'—');
-      calData.push(row);
-    });
-    var tbl=body.appendTable(calData);
-    styleTable(tbl,'#1d4ed8',8);
-    for(var i=1;i<tbl.getNumRows();i++){
-      tbl.getRow(i).getCell(0).editAsText().setBold(true).setFontSize(10).setForegroundColor('#1d4ed8');
-      for(var j=1;j<8;j++) tbl.getRow(i).getCell(j).editAsText().setFontSize(9);
-    }
-  } else {
-    styled(body.appendParagraph('Aucun arrêt enregistré pour cette semaine.'), 11, false, '#94a3b8');
-  }
-  sep();
-
-  // ── KPIs OT ──
-  h('Indicateurs OT — '+kpi.mois, '#1d4ed8');
-  var nbA=arrets.rows.length;
-  var nbR=arrets.rows.filter(function(r){return r.statut==='realise';}).length;
-  var tA=nbA?((nbR/nbA)*100).toFixed(1)+'%':'—';
-  var scTot=kpi.sys+kpi.cur;
-  var sysPct=scTot?((kpi.sys/scTot)*100).toFixed(1)+'%':'—';
-  var curPct=scTot?((kpi.cur/scTot)*100).toFixed(1)+'%':'—';
-  var kpiRows=[
-    ['Indicateur','Valeur','Détail'],
-    ['Taux réalisation OT', kpi.tauxRealStr, kpi.real+' / '+kpi.total+' OT'],
-    ['Taux réalisation arrêts', tA, nbR+' / '+nbA+' arrêts (S'+arrets.sem+')'],
-    ['Systématique / Curatif', sysPct+' / '+curPct, kpi.sys+' ZCON+ZEST+ZETL · '+kpi.cur+' ZCOR'],
-    ['OT Lancés', kpi.lancPct, kpi.lanc+' en cours'],
-    ['Non lancés CRPR', kpi.crprPct, kpi.crpr+' OT'],
-    ['Backlog', kpi.backlog+' OT', 'ATPL + LANC'],
-    ['Préventif', kpi.sys+' OT — taux '+kpi.tauxPrevStr, 'ZCON + ZEST + ZETL'],
-    ['Correctif', kpi.cur+' OT — taux '+kpi.tauxCorStr, 'ZCOR uniquement'],
-  ];
-  var kt=body.appendTable(kpiRows); styleTable(kt,'#1d4ed8',3);
-  for(var i=1;i<kt.getNumRows();i++){
-    kt.getRow(i).getCell(0).editAsText().setBold(true).setFontSize(10);
-    kt.getRow(i).getCell(1).editAsText().setBold(true).setFontSize(11).setForegroundColor('#1d4ed8');
-    kt.getRow(i).getCell(2).editAsText().setFontSize(9).setForegroundColor('#64748b');
-  }
-  sep();
-
-  // ── Taux par poste ──
-  if(kpi.postes.length){
-    h('Taux de réalisation par corps de métier', '#1d4ed8');
-    var postRows=[['Poste de travail','Réalisés / Total','Taux']];
-    kpi.postes.forEach(function(p){ postRows.push([p.nom, p.real+' / '+p.total, p.taux.toFixed(1)+'%']); });
-    var pt=body.appendTable(postRows); styleTable(pt,'#1d4ed8',3);
-    for(var i=1;i<pt.getNumRows();i++){
-      pt.getRow(i).getCell(0).editAsText().setBold(true).setFontSize(10);
-      var taux=kpi.postes[i-1].taux;
-      var color=taux>=80?'#059669':taux>=50?'#d97706':'#dc2626';
-      pt.getRow(i).getCell(2).editAsText().setBold(true).setFontSize(11).setForegroundColor(color);
-    }
-    sep();
-  }
-
-  // ── Charts ──
-  function makeCB(labels,vals,title,w,h_){
-    try{
-      var dt=Charts.newDataTable().addColumn(Charts.ColumnType.STRING,'C').addColumn(Charts.ColumnType.NUMBER,'V');
-      for(var i=0;i<labels.length;i++) dt.addRow([labels[i],vals[i]]);
-      dt.build();
-      return Charts.newPieChart().setDataTable(dt).setDimensions(w||480,h_||280)
-        .setOption('title',title).setOption('backgroundColor','#ffffff')
-        .setOption('chartArea',{left:10,top:32,width:'60%',height:'78%'})
-        .setOption('legend',{position:'right',textStyle:{fontSize:11}}).build().getAs('image/png');
-    }catch(e){return null;}
-  }
-  function makeBB(labels,vals,color,title,w,h_){
-    try{
-      var dt=Charts.newDataTable().addColumn(Charts.ColumnType.STRING,'I').addColumn(Charts.ColumnType.NUMBER,'V');
-      for(var i=0;i<labels.length;i++) dt.addRow([labels[i],vals[i]]);
-      dt.build();
-      return Charts.newBarChart().setDataTable(dt).setDimensions(w||480,h_||280)
-        .setOption('title',title).setOption('backgroundColor','#ffffff')
-        .setOption('colors',[color||'#3b82f6']).setOption('legend',{position:'none'})
-        .setOption('chartArea',{left:110,top:32,width:'65%',height:'78%'})
-        .setOption('hAxis',{textStyle:{fontSize:10}}).setOption('vAxis',{textStyle:{fontSize:10}}).build().getAs('image/png');
-    }catch(e){return null;}
-  }
-
-  h('Graphiques OT', '#1d4ed8');
-  if(kpi.typeData.length){var b=makeCB(kpi.typeData.slice(0,6).map(function(x){return x.type;}),kpi.typeData.slice(0,6).map(function(x){return x.count;}),'Répartition par type d\'OT');if(b)body.appendImage(b);}
-  if(kpi.postes.length){var b=makeBB(kpi.postes.slice(0,7).map(function(x){return x.nom;}),kpi.postes.slice(0,7).map(function(x){return x.total;}),'#3b82f6','Volume OT par corps de métier');if(b)body.appendImage(b);}
-
-  // ── Avis ──
-  if(avis){
-    sep();
-    h('Analyse des Avis (ZC) — '+kpi.mois, '#7c3aed');
-    var avRows=[
-      ['Indicateur','Valeur'],
-      ['Total Avis', avis.total.toLocaleString('fr-FR')],
-      ['Convertis en OT', avis.avecOT+' ('+avis.txConv.toFixed(1)+'%)'],
-      ['Avis Ouverts (AOUV+AENC)', avis.ouverts.toLocaleString('fr-FR')],
-    ];
-    var at=body.appendTable(avRows); styleTable(at,'#7c3aed',2);
-    for(var i=1;i<at.getNumRows();i++){
-      at.getRow(i).getCell(0).editAsText().setBold(true).setFontSize(10);
-      at.getRow(i).getCell(1).editAsText().setBold(true).setFontSize(11).setForegroundColor('#7c3aed');
-    }
-    if(avis.bySecteur.length){var b=makeCB(avis.bySecteur.map(function(x){return x.label;}),avis.bySecteur.map(function(x){return x.count;}),'Répartition par secteur');if(b)body.appendImage(b);}
-    if(avis.byPoste.length){var b=makeCB(avis.byPoste.map(function(x){return x.label;}),avis.byPoste.map(function(x){return x.count;}),'Avis par corps de métier');if(b)body.appendImage(b);}
-    if(avis.byInstall.length){var b=makeBB(avis.byInstall.slice(0,8).map(function(x){return x.label;}),avis.byInstall.slice(0,8).map(function(x){return x.count;}),'#0891b2','Avis par installation');if(b)body.appendImage(b);}
-    if(avis.openByPoste.length){
-      sep();
-      var tot=avis.openByPoste.reduce(function(s,r){return s+r.count;},0);
-      var opRows=[['Corps de Métier','Ouverts','Part']];
-      avis.openByPoste.forEach(function(r){opRows.push([r.label,String(r.count),tot?((r.count/tot)*100).toFixed(1)+'%':'—']);});
-      opRows.push(['TOTAL',String(tot),'100%']);
-      var ot=body.appendTable(opRows); styleTable(ot,'#dc2626',3);
-      var last=ot.getRow(ot.getNumRows()-1);
-      for(var j=0;j<3;j++) last.getCell(j).editAsText().setBold(true).setFontSize(10);
-    }
-  }
-
-  // ── Export PDF ──
-  doc.saveAndClose();
-  var pdf=DriveApp.getFileById(doc.getId()).getAs('application/pdf');
-  pdf.setName('Rapport_Maintenance_S'+arrets.sem+'_'+kpi.mois.replace(' ','_')+'.pdf');
-  try{DriveApp.getFileById(doc.getId()).setTrashed(true);}catch(e){}
-  return pdf;
 }
 
 // ── Construction HTML du rapport (compatible Outlook desktop) ─
@@ -791,10 +674,9 @@ function envoyerRapportDepuisInterface(p) {
     var kpi    = rhGetKpi(mo, yr);
     var avis   = rhGetAvis(mo, yr);
     var html   = rhBuildHtml(arrets, kpi, avis);
-    var pdf    = rhGeneratePdf(arrets, kpi, avis);
     var MOIS   = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
     var sujet  = 'Rapport Hebdomadaire de Planification — S' + arrets.sem + ' · ' + MOIS[mo] + ' ' + yr;
-    sendEmailRH(p.emails, sujet, html, 'Bureau Méthode Daoui - Planification', [pdf]);
+    sendEmailRH(p.emails, sujet, html, 'Bureau Méthode Daoui - Planification');
     PropertiesService.getScriptProperties().setProperty('RH_EMAILS', p.emails);
     return { ok: true, msg: 'Rapport envoyé avec succès à : ' + p.emails };
   } catch(e) {
@@ -861,11 +743,10 @@ function executerRapportPlanifie(e) {
   var kpi    = rhGetKpi(mo, yr);
   var avis   = rhGetAvis(mo, yr);
   var html   = rhBuildHtml(arrets, kpi, avis);
-  var pdf    = rhGeneratePdf(arrets, kpi, avis);
   var MOIS   = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
   var sujet  = 'Rapport Hebdomadaire de Planification — S' + arrets.sem + ' · ' + MOIS[mo] + ' ' + yr;
 
-  sendEmailRH(emails, sujet, html, 'Bureau Méthode Daoui - Planification', [pdf]);
+  sendEmailRH(emails, sujet, html, 'Bureau Méthode Daoui - Planification');
 
   // Supprimer le trigger si "unique"
   if (cfg.frequence === 'unique' && triggerId) {
@@ -922,9 +803,8 @@ function testerRapportHebdo() {
   Logger.log('Avis : ' + (avis ? avis.total + ' total / ' + avis.ouverts + ' ouverts' : 'non disponibles'));
 
   var html  = rhBuildHtml(arrets, kpi, avis);
-  var pdf   = rhGeneratePdf(arrets, kpi, avis);
   var sujet = '[TEST] Rapport Hebdomadaire S' + arrets.sem;
 
-  sendEmailRH(RH_OCP_EMAIL, sujet, html, 'Bureau Méthode Daoui - Planification', [pdf]);
+  sendEmailRH(RH_OCP_EMAIL, sujet, html, 'Bureau Méthode Daoui - Planification');
   Logger.log('✅ Test envoyé à : ' + RH_OCP_EMAIL);
 }
