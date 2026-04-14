@@ -3868,6 +3868,41 @@ const ALL_KPIS_DEF = [
       return { value: v, sub: 'En attente de planification' };
     }
   },
+  // ── PRÉPARATION ─────────────────────────────────────────────────
+  {
+    id: 'taux-caract', label: 'Taux caractérisation', icon: '🏷️', color: '#15803d', cat: 'Préparation',
+    getValue() {
+      const v = document.getElementById('kpi-caract')?.textContent;
+      const nb = document.getElementById('kpi-caract-nb')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: nb || 'excl. SOPL' };
+    }
+  },
+  {
+    id: 'pdr-conf', label: 'Taux confirmation PDR', icon: '📦', color: '#c2410c', cat: 'Préparation',
+    getValue() {
+      const v = document.getElementById('kpi-pdr-conf')?.textContent;
+      const nb = document.getElementById('kpi-pdr-conf-nb')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: nb || 'CRPR ATPD / CRPR AVPD' };
+    }
+  },
+  {
+    id: 'ot-attente-pdr', label: 'OT en attente confirmation PDR', icon: '⏳', color: '#1d4ed8', cat: 'Préparation',
+    getValue() {
+      const v = document.getElementById('kpi-ot-attente')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: 'CRPR ATPD / CRPR AVPD' };
+    }
+  },
+  {
+    id: 'temps-moyen-prep', label: 'Temps moyen de préparation', icon: '📅', color: '#7c3aed', cat: 'Préparation',
+    getValue() {
+      const v = document.getElementById('kpi-temps-moyen')?.textContent;
+      if (!v || v === '—') return null;
+      return { value: v, sub: 'Moy. créé → aujourd\'hui · statut créé' };
+    }
+  },
 ];
 
 const KPI_FAV_KEY = 'dashboard_kpi_favoris';
@@ -3920,6 +3955,10 @@ const KPI_CARD_MAP = {
   'avis-kpi-aenc':     'avis-aenc',
   'avis-kpi-aouv':     'avis-aouv',
   'avis-kpi-plan':     'avis-plan',
+  'kpi-caract':        'taux-caract',
+  'kpi-pdr-conf':      'pdr-conf',
+  'kpi-ot-attente':    'ot-attente-pdr',
+  'kpi-temps-moyen':   'temps-moyen-prep',
 };
 
 function renderKpiStars() {
