@@ -9853,7 +9853,7 @@ function calcKpiEntite(rows) {
     taux6 === null ? 'var(--text)' : taux6 >= 80 ? 'var(--green)' : taux6 >= 50 ? 'var(--amber)' : 'var(--red)';
 
   // ── Score Performance : moyenne des 6 KPIs ─────────────────────────────
-  const kpiValues = [taux, tauxCor, tauxBack, taux13, taux36, taux6].filter(v => v !== null);
+  const kpiValues = [taux, tauxCor, tauxBack].filter(v => v !== null);
   const scorePerf = kpiValues.length > 0 ? kpiValues.reduce((a, b) => a + b, 0) / kpiValues.length : null;
 
   document.getElementById('ke-score-perf').textContent    = scorePerf !== null ? Math.round(scorePerf) + ' %' : '—';
