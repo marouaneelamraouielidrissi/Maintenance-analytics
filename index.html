@@ -9623,6 +9623,8 @@ function calcKpiEntite(rows) {
     if (!s) return null;
     const gviz = String(s).match(/^Date\((\d{4}),(\d{1,2}),(\d{1,2})\)$/);
     if (gviz) return new Date(+gviz[1], +gviz[2], +gviz[3]);
+    const dmy = String(s).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (dmy) return new Date(+dmy[3], +dmy[2]-1, +dmy[1]); // DD/MM/YYYY
     const d = new Date(s);
     return isNaN(d.getTime()) ? null : d;
   };
@@ -9635,7 +9637,7 @@ function calcKpiEntite(rows) {
     const s4   = keNorm4(r[iAU]);
     const plan = (r[iAS] || '').trim();
     const d    = keParseDate(r[iD]);
-    return (s4 === 'TCLO' || s4 === 'CLOT') && plan !== '' && d && d < today;
+    return (s4 === 'TCLO' || s4 === 'CLOT') && plan !== '' && d && d <= today;
   }).length;
 
   // Dénominateur : AV = 'SOPL' ET AS non vide ET date début planifiée < aujourd'hui
@@ -9643,7 +9645,7 @@ function calcKpiEntite(rows) {
     const statUtil = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
     const plan     = (r[iAS] || '').trim();
     const d        = keParseDate(r[iD]);
-    return statUtil === 'SOPL' && plan !== '' && d && d < today;
+    return statUtil === 'SOPL' && plan !== '' && d && d <= today;
   }).length;
 
   const taux = den > 0 ? (num / den * 100) : null;
@@ -9663,7 +9665,7 @@ function calcKpiEntite(rows) {
     const s4   = keNorm4(r[iAU]);
     const plan = (r[iAS] || '').trim();
     const d    = keParseDate(r[iD]);
-    return (s4 === 'TCLO' || s4 === 'CLOT') && plan === '' && d && d < today;
+    return (s4 === 'TCLO' || s4 === 'CLOT') && plan === '' && d && d <= today;
   }).length;
 
   // Dénominateur : AV = 'SOPL' ET AS vide ET date D < aujourd'hui
@@ -9671,7 +9673,7 @@ function calcKpiEntite(rows) {
     const statUtil = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
     const plan     = (r[iAS] || '').trim();
     const d        = keParseDate(r[iD]);
-    return statUtil === 'SOPL' && plan === '' && d && d < today;
+    return statUtil === 'SOPL' && plan === '' && d && d <= today;
   }).length;
 
   const tauxCor = denCor > 0 ? (numCor / denCor * 100) : null;
