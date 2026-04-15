@@ -3797,7 +3797,7 @@ function processData(raw, sourceName) {
   document.getElementById('file-name-display').textContent = sourceName;
   document.getElementById('row-count').textContent = allData.length.toLocaleString('fr-FR');
   document.getElementById('screen-upload').style.display = 'none';
-  const onRapport = document.getElementById('nav-tab-rapport').classList.contains('active');
+  const onRapport = document.getElementById('nav-tab-dashboard').classList.contains('active');
   if (onRapport) document.getElementById('control-bar').style.display = 'flex';
   generateReport();
 }
