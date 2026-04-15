@@ -9785,13 +9785,7 @@ function calcKpiEntite(rows) {
   document.getElementById('ke-backlog-1m').style.color =
     tauxBack === null ? 'var(--text)' : tauxBack >= 80 ? 'var(--green)' : tauxBack >= 50 ? 'var(--amber)' : 'var(--red)';
 
-<<<<<<< HEAD
-  // ── KPI 4 : Age Backlog 1-3M ─────────────────────────────────────────────
-  // Dénominateur : même filtre que KPI 3 (AU ≠ CLOT et AU ≠ TCLO)
-  // Numérateur   : OT avec 31 < (aujourd'hui - Créé le) < 91 jours
-=======
   // ── KPI 4 : Age Backlog 1-3M (31–90 jours) ────────────────────────────
->>>>>>> origin/main
   const numBack13 = backlogData.filter(r => {
     const dc = keParseDate(r[iI]);
     if (!dc) return false;
