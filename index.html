@@ -9593,7 +9593,9 @@ function calcKpiEntite(rows) {
     return -1;
   };
 
-  // Colonnes : AS=44, AU=46, AV=47 (0-indexé) — fallback par index si nom non trouvé
+  // Colonnes : D=3, AS=44, AU=46, AV=47 (0-indexé) — fallback par index si nom non trouvé
+  const iD  = ci('date debut planif', 'date de debut planif', 'debut planif', 'basic start') !== -1
+    ? ci('date debut planif', 'date de debut planif', 'debut planif', 'basic start') : 3;
   const iAS = ci('plan entretien', 'plan maintenance', 'maintenance plan') !== -1
     ? ci('plan entretien', 'plan maintenance', 'maintenance plan') : 44;
   const iAU = ci('statut systeme', 'statut sys', 'system status', 'syst') !== -1
@@ -9601,22 +9603,35 @@ function calcKpiEntite(rows) {
   const iAV = ci('statut util', 'user status', 'statut utilis') !== -1
     ? ci('statut util', 'user status', 'statut utilis') : 47;
 
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // Parser une date depuis le format gviz "Date(2026,3,15)" ou chaîne ISO
+  const keParseDate = s => {
+    if (!s) return null;
+    const gviz = String(s).match(/^Date\((\d{4}),(\d{1,2}),(\d{1,2})\)$/);
+    if (gviz) return new Date(+gviz[1], +gviz[2], +gviz[3]);
+    const d = new Date(s);
+    return isNaN(d.getTime()) ? null : d;
+  };
+
   const data = rows.slice(1);
 
   // ── KPI 1 : Taux de réalisation Calendrier préventif ──────────────────
-  // Numérateur : AU commence par TCLO ou CLOT ET AS (plan d'entretien) non vide
+  // Numérateur : AU commence par TCLO ou CLOT ET AS non vide ET date début planifiée < aujourd'hui
   const num = data.filter(r => {
     const s4   = keNorm4(r[iAU]);
     const plan = (r[iAS] || '').trim();
-    return (s4 === 'TCLO' || s4 === 'CLOT') && plan !== '';
+    const d    = keParseDate(r[iD]);
+    return (s4 === 'TCLO' || s4 === 'CLOT') && plan !== '' && d && d < today;
   }).length;
 
-  // Dénominateur : AV = 'SOPL' ET AU ne commence PAS par 'CREE' ET AS non vide (OT préventif)
+  // Dénominateur : AV = 'SOPL' ET AU ≠ 'CREE' ET AS non vide ET date début planifiée < aujourd'hui
   const den = data.filter(r => {
     const statUtil = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
     const s4       = keNorm4(r[iAU]);
     const plan     = (r[iAS] || '').trim();
-    return statUtil === 'SOPL' && s4 !== 'CREE' && plan !== '';
+    const d        = keParseDate(r[iD]);
+    return statUtil === 'SOPL' && s4 !== 'CREE' && plan !== '' && d && d < today;
   }).length;
 
   const taux = den > 0 ? (num / den * 100) : null;
