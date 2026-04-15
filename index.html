@@ -2541,6 +2541,19 @@ td { padding: 9px 14px; vertical-align: middle; }
         <div class="kpi-sub">Clôturés : <b id="ke-taux-cor-num">—</b> / Planifiés : <b id="ke-taux-cor-den">—</b></div>
       </div>
 
+      <!-- KPI 3 : Age Backlog <1M -->
+      <div class="kpi-card">
+        <div class="kpi-card-top">
+          <div class="kpi-icon-box amber">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <span class="kpi-tag neu" id="ke-backlog-1m-tag">—</span>
+        </div>
+        <div class="kpi-value" id="ke-backlog-1m">—</div>
+        <div class="kpi-label">Age Backlog &lt;1M</div>
+        <div class="kpi-sub">Récents : <b id="ke-backlog-1m-num">—</b> / Total backlog : <b id="ke-backlog-1m-den">—</b></div>
+      </div>
+
     </div>
   </div>
 
@@ -9688,6 +9701,37 @@ function calcKpiEntite(rows) {
   tagCor.className   = 'kpi-tag ' + (tauxCor === null ? 'neu' : tauxCor >= 80 ? 'up' : tauxCor >= 50 ? 'neu' : 'down');
   document.getElementById('ke-taux-cor').style.color =
     tauxCor === null ? 'var(--text)' : tauxCor >= 80 ? 'var(--green)' : tauxCor >= 50 ? 'var(--amber)' : 'var(--red)';
+
+  // ── KPI 3 : Age Backlog <1M ─────────────────────────────────────────────
+  // Filtre général : AU ≠ CLOT et AU ≠ TCLO
+  // Dénominateur : OT total avec filtre général
+  // Numérateur   : OT avec (aujourd'hui - Créé le col I) < 30 jours
+  const iI = ci('Créé le', 'Cree le', 'Creation', 'Created');
+  const today3 = new Date(); today3.setHours(0,0,0,0);
+  const MS_DAY = 86400000;
+
+  const backlogData = data.filter(r => {
+    const au4 = keNorm4(r[iAU]);
+    return au4 !== 'CLOT' && au4 !== 'TCLO';
+  });
+
+  const denBack = backlogData.length;
+  const numBack = backlogData.filter(r => {
+    const dc = keParseDate(r[iI]);
+    if (!dc) return false;
+    return (today3 - dc) / MS_DAY < 30;
+  }).length;
+
+  const tauxBack = denBack > 0 ? (numBack / denBack * 100) : null;
+
+  document.getElementById('ke-backlog-1m').textContent     = tauxBack !== null ? Math.round(tauxBack) + ' %' : '—';
+  document.getElementById('ke-backlog-1m-num').textContent  = numBack;
+  document.getElementById('ke-backlog-1m-den').textContent  = denBack;
+  const tagBack = document.getElementById('ke-backlog-1m-tag');
+  tagBack.textContent = tauxBack !== null ? Math.round(tauxBack) + ' %' : '—';
+  tagBack.className   = 'kpi-tag ' + (tauxBack === null ? 'neu' : tauxBack >= 80 ? 'up' : tauxBack >= 50 ? 'neu' : 'down');
+  document.getElementById('ke-backlog-1m').style.color =
+    tauxBack === null ? 'var(--text)' : tauxBack >= 80 ? 'var(--green)' : tauxBack >= 50 ? 'var(--amber)' : 'var(--red)';
 }
 </script>
 
