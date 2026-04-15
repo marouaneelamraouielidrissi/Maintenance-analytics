@@ -2528,6 +2528,19 @@ td { padding: 9px 14px; vertical-align: middle; }
         <div class="kpi-sub">Clôturés : <b id="ke-taux-prev-num">—</b> / Planifiés : <b id="ke-taux-prev-den">—</b></div>
       </div>
 
+      <!-- KPI 2 : Taux réalisation correctif -->
+      <div class="kpi-card">
+        <div class="kpi-card-top">
+          <div class="kpi-icon-box red">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <span class="kpi-tag neu" id="ke-taux-cor-tag">—</span>
+        </div>
+        <div class="kpi-value" id="ke-taux-cor">—</div>
+        <div class="kpi-label">Taux réalisation correctif</div>
+        <div class="kpi-sub">Clôturés : <b id="ke-taux-cor-num">—</b> / Planifiés : <b id="ke-taux-cor-den">—</b></div>
+      </div>
+
     </div>
   </div>
 
@@ -9636,16 +9649,43 @@ function calcKpiEntite(rows) {
 
   const taux = den > 0 ? (num / den * 100) : null;
 
-  document.getElementById('ke-taux-prev').textContent    = taux !== null ? taux.toFixed(1) + ' %' : '—';
-  document.getElementById('ke-taux-prev-num').textContent = num;
-  document.getElementById('ke-taux-prev-den').textContent = den;
-
-  const tagEl = document.getElementById('ke-taux-prev-tag');
-  tagEl.textContent = taux !== null ? taux.toFixed(1) + ' %' : '—';
-  tagEl.className   = 'kpi-tag ' + (taux === null ? 'neu' : taux >= 80 ? 'up' : taux >= 50 ? 'neu' : 'down');
-
+  document.getElementById('ke-taux-prev').textContent     = taux !== null ? taux.toFixed(1) + ' %' : '—';
+  document.getElementById('ke-taux-prev-num').textContent  = num;
+  document.getElementById('ke-taux-prev-den').textContent  = den;
+  const tagPrev = document.getElementById('ke-taux-prev-tag');
+  tagPrev.textContent = taux !== null ? taux.toFixed(1) + ' %' : '—';
+  tagPrev.className   = 'kpi-tag ' + (taux === null ? 'neu' : taux >= 80 ? 'up' : taux >= 50 ? 'neu' : 'down');
   document.getElementById('ke-taux-prev').style.color =
     taux === null ? 'var(--text)' : taux >= 80 ? 'var(--green)' : taux >= 50 ? 'var(--amber)' : 'var(--red)';
+
+  // ── KPI 2 : Taux de réalisation correctif (AS vide) ───────────────────
+  // Numérateur : TCLO/CLOT ET AS vide ET date D < aujourd'hui
+  const numCor = data.filter(r => {
+    const s4   = keNorm4(r[iAU]);
+    const plan = (r[iAS] || '').trim();
+    const d    = keParseDate(r[iD]);
+    return (s4 === 'TCLO' || s4 === 'CLOT') && plan === '' && d && d < today;
+  }).length;
+
+  // Dénominateur : AV = 'SOPL' ET AU ≠ 'CREE' ET AS vide ET date D < aujourd'hui
+  const denCor = data.filter(r => {
+    const statUtil = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+    const s4       = keNorm4(r[iAU]);
+    const plan     = (r[iAS] || '').trim();
+    const d        = keParseDate(r[iD]);
+    return statUtil === 'SOPL' && s4 !== 'CREE' && plan === '' && d && d < today;
+  }).length;
+
+  const tauxCor = denCor > 0 ? (numCor / denCor * 100) : null;
+
+  document.getElementById('ke-taux-cor').textContent     = tauxCor !== null ? tauxCor.toFixed(1) + ' %' : '—';
+  document.getElementById('ke-taux-cor-num').textContent  = numCor;
+  document.getElementById('ke-taux-cor-den').textContent  = denCor;
+  const tagCor = document.getElementById('ke-taux-cor-tag');
+  tagCor.textContent = tauxCor !== null ? tauxCor.toFixed(1) + ' %' : '—';
+  tagCor.className   = 'kpi-tag ' + (tauxCor === null ? 'neu' : tauxCor >= 80 ? 'up' : tauxCor >= 50 ? 'neu' : 'down');
+  document.getElementById('ke-taux-cor').style.color =
+    tauxCor === null ? 'var(--text)' : tauxCor >= 80 ? 'var(--green)' : tauxCor >= 50 ? 'var(--amber)' : 'var(--red)';
 }
 </script>
 
