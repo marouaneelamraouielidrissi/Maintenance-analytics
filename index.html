@@ -9781,7 +9781,7 @@ function calcKpiEntite(rows) {
   const backlogData = data.filter(r => {
     const au4 = keNorm4(r[iAU]);
     const av  = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-    return au4 !== 'CLOT' && au4 !== 'TCLO' && (av === 'CRPR' || av === 'X');
+    return au4 !== 'CLOT' && au4 !== 'TCLO' && (av.startsWith('CRPR') || av.startsWith('X'));
   });
 
   const denBack = backlogData.length;
