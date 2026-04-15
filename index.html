@@ -9667,13 +9667,12 @@ function calcKpiEntite(rows) {
     return (s4 === 'TCLO' || s4 === 'CLOT') && plan === '' && d && d < today;
   }).length;
 
-  // Dénominateur : AV = 'SOPL' ET AU ≠ 'CREE' ET AS vide ET date D < aujourd'hui
+  // Dénominateur : AV = 'SOPL' ET AS vide ET date D < aujourd'hui
   const denCor = data.filter(r => {
     const statUtil = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-    const s4       = keNorm4(r[iAU]);
     const plan     = (r[iAS] || '').trim();
     const d        = keParseDate(r[iD]);
-    return statUtil === 'SOPL' && s4 !== 'CREE' && plan === '' && d && d < today;
+    return statUtil === 'SOPL' && plan === '' && d && d < today;
   }).length;
 
   const tauxCor = denCor > 0 ? (numCor / denCor * 100) : null;
