@@ -9611,11 +9611,12 @@ function calcKpiEntite(rows) {
     return (s4 === 'TCLO' || s4 === 'CLOT') && plan !== '';
   }).length;
 
-  // Dénominateur : AV = 'SOPL' ET AU ne commence PAS par 'CREE'
+  // Dénominateur : AV = 'SOPL' ET AU ne commence PAS par 'CREE' ET AS non vide (OT préventif)
   const den = data.filter(r => {
     const statUtil = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
     const s4       = keNorm4(r[iAU]);
-    return statUtil === 'SOPL' && s4 !== 'CREE';
+    const plan     = (r[iAS] || '').trim();
+    return statUtil === 'SOPL' && s4 !== 'CREE' && plan !== '';
   }).length;
 
   const taux = den > 0 ? (num / den * 100) : null;
