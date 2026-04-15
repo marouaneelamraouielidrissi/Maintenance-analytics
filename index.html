@@ -1937,6 +1937,10 @@ td { padding: 9px 14px; vertical-align: middle; }
     <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     Livrables
   </button>
+  <button class="nav-tab" id="nav-tab-kpi-entite" onclick="showMainPage('kpi-entite')">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    KPI Entité
+  </button>
 </nav>
 
 <!-- ── PLAN DE CHARGE MODAL ── -->
@@ -2467,6 +2471,75 @@ td { padding: 9px 14px; vertical-align: middle; }
     </div>
     <div id="arr-liv-preview" class="livrable-filename"></div>
   </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     PAGE — KPI ENTITÉ
+     ════════════════════════════════════════════════════════════ -->
+<div id="page-kpi-entite" style="display:none; padding: 24px 32px 60px; max-width: 1100px; margin: 0 auto;">
+
+  <!-- En-tête -->
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+    <div>
+      <h1 style="font-size:22px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px;">KPI Entité</h1>
+      <p style="font-size:13px;color:var(--muted);">Indicateurs de performance OT &amp; Avis</p>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <select id="ke-sel-mois" style="padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;background:var(--white);color:var(--text);">
+        <option value="0">Janvier</option><option value="1">Février</option><option value="2">Mars</option>
+        <option value="3">Avril</option><option value="4">Mai</option><option value="5">Juin</option>
+        <option value="6">Juillet</option><option value="7">Août</option><option value="8">Septembre</option>
+        <option value="9">Octobre</option><option value="10">Novembre</option><option value="11">Décembre</option>
+      </select>
+      <input type="number" id="ke-inp-annee" min="2020" max="2099" style="width:80px;padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;background:var(--white);color:var(--text);" />
+      <button onclick="loadKpiEntiteOT()" style="padding:7px 14px;background:var(--blue);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">↺ Actualiser</button>
+    </div>
+  </div>
+
+  <!-- Sous-onglets -->
+  <div style="display:flex;gap:4px;margin-bottom:20px;border-bottom:2px solid var(--border2);">
+    <button id="ke-tab-ot" onclick="showKpiEntiteTab('ot')"
+      style="padding:8px 20px;border:none;border-radius:7px 7px 0 0;font-size:13px;font-weight:600;cursor:pointer;background:var(--blue);color:#fff;margin-bottom:-2px;border-bottom:2px solid var(--blue);">
+      ⚙ OT
+    </button>
+    <button id="ke-tab-avis" onclick="showKpiEntiteTab('avis')"
+      style="padding:8px 20px;border:none;border-radius:7px 7px 0 0;font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);margin-bottom:-2px;border-bottom:2px solid transparent;">
+      📋 Avis
+    </button>
+  </div>
+
+  <!-- ── Section OT ── -->
+  <div id="ke-section-ot">
+    <div id="ke-status" style="font-size:12px;color:var(--muted);margin-bottom:16px;display:none;padding:8px 12px;background:var(--bg);border-radius:6px;border:1px solid var(--border2);"></div>
+
+    <div class="section-label">Calendrier Préventif</div>
+    <div class="kpi-grid">
+
+      <!-- KPI 1 : Taux réalisation calendrier préventif -->
+      <div class="kpi-card">
+        <div class="kpi-card-top">
+          <div class="kpi-icon-box green">
+            <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <span class="kpi-tag neu" id="ke-taux-prev-tag">—</span>
+        </div>
+        <div class="kpi-value" id="ke-taux-prev">—</div>
+        <div class="kpi-label">Taux réalisation calendrier préventif</div>
+        <div class="kpi-sub">Clôturés : <b id="ke-taux-prev-num">—</b> / Planifiés : <b id="ke-taux-prev-den">—</b></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Section Avis (placeholder) ── -->
+  <div id="ke-section-avis" style="display:none;">
+    <div style="text-align:center;padding:60px 20px;color:var(--muted);">
+      <div style="font-size:36px;margin-bottom:12px;">📋</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:6px;">KPI Avis</div>
+      <div style="font-size:12px;">Disponible prochainement</div>
+    </div>
+  </div>
+
 </div>
 
 <!-- ════════════════════════════════════════════════════════════
@@ -5817,6 +5890,7 @@ function showMainPage(page) {
   document.getElementById('nav-tab-planification').classList.toggle('active', page === 'planification');
   document.getElementById('nav-tab-moteur').classList.toggle('active', page === 'moteur');
   document.getElementById('nav-tab-livrable').classList.toggle('active', page === 'livrable');
+  document.getElementById('nav-tab-kpi-entite').classList.toggle('active', page === 'kpi-entite');
 
   // Sections rapport
   const rapportEls = ['control-bar', 'dashboard', 'screen-upload'];
@@ -5859,6 +5933,10 @@ function showMainPage(page) {
   // Page livrables
   document.getElementById('page-livrable').style.display = page === 'livrable' ? 'block' : 'none';
   if (page === 'livrable') initLivrableSelectors();
+
+  // Page KPI Entité
+  document.getElementById('page-kpi-entite').style.display = page === 'kpi-entite' ? 'block' : 'none';
+  if (page === 'kpi-entite') initKpiEntite();
 }
 
 function showPlanTab(tab) {
@@ -9413,6 +9491,137 @@ function startNotifPolling() {
     });
   }
   // si 'denied' : ne rien faire
+}
+</script>
+
+<!-- ══ KPI ENTITÉ ══ -->
+<script>
+// ════════════════════════════════════════════════════════════
+//  KPI ENTITÉ — OT depuis fichier Google Sheets séparé
+// ════════════════════════════════════════════════════════════
+const KE_OT_FILE_ID = '1w94BXGKw7f-LG6WgG1NWhcmkFF8Dq1XRkjdkCQ0KLvM';
+let _keOtData = null;
+
+function initKpiEntite() {
+  const now = new Date();
+  document.getElementById('ke-sel-mois').value = now.getMonth();
+  document.getElementById('ke-inp-annee').value = now.getFullYear();
+  if (!_keOtData) loadKpiEntiteOT();
+  else calcKpiEntite(_keOtData);
+}
+
+function showKpiEntiteTab(tab) {
+  ['ot', 'avis'].forEach(t => {
+    const btn = document.getElementById(`ke-tab-${t}`);
+    const sec = document.getElementById(`ke-section-${t}`);
+    const active = t === tab;
+    if (btn) {
+      btn.style.background    = active ? 'var(--blue)' : 'transparent';
+      btn.style.color         = active ? '#fff' : 'var(--muted)';
+      btn.style.borderBottom  = active ? '2px solid var(--blue)' : '2px solid transparent';
+    }
+    if (sec) sec.style.display = active ? '' : 'none';
+  });
+}
+
+async function loadKpiEntiteOT() {
+  const statusEl = document.getElementById('ke-status');
+  statusEl.style.display = 'block';
+  statusEl.style.color = 'var(--muted)';
+  statusEl.textContent = 'Chargement des données OT…';
+
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${KE_OT_FILE_ID}/gviz/tq?tqx=out:csv&t=${Date.now()}`;
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} — vérifiez que le fichier est partagé en lecture publique.`);
+    const text = await resp.text();
+
+    const rows = keParseCSV(text);
+    if (rows.length < 2) throw new Error('Fichier vide ou inaccessible.');
+
+    _keOtData = rows;
+    statusEl.textContent = `✓ ${rows.length - 1} lignes chargées.`;
+    setTimeout(() => { statusEl.style.display = 'none'; }, 2500);
+    calcKpiEntite(rows);
+  } catch(e) {
+    statusEl.style.color = 'var(--red)';
+    statusEl.textContent = `Erreur : ${e.message}`;
+  }
+}
+
+function keParseCSV(text) {
+  return text.split('\n').map(line => {
+    const cols = [];
+    let inQ = false, cur = '';
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+      else cur += ch;
+    }
+    cols.push(cur.trim());
+    return cols;
+  }).filter(r => r.some(Boolean));
+}
+
+// Normalise et prend les 4 premiers caractères (gère accents + casse)
+function keNorm4(s) {
+  return (s || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().substring(0, 4);
+}
+
+function calcKpiEntite(rows) {
+  const headers = rows[0];
+
+  // Trouver une colonne par noms alternatifs (insensible aux accents/casse)
+  const ci = (...names) => {
+    for (const n of names) {
+      const idx = headers.findIndex(h =>
+        h.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(
+          n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        )
+      );
+      if (idx >= 0) return idx;
+    }
+    return -1;
+  };
+
+  // Colonnes : AS=44, AU=46, AV=47 (0-indexé) — fallback par index si nom non trouvé
+  const iAS = ci('plan entretien', 'plan maintenance', 'maintenance plan') !== -1
+    ? ci('plan entretien', 'plan maintenance', 'maintenance plan') : 44;
+  const iAU = ci('statut systeme', 'statut sys', 'system status', 'syst') !== -1
+    ? ci('statut systeme', 'statut sys', 'system status', 'syst') : 46;
+  const iAV = ci('statut util', 'user status', 'statut utilis') !== -1
+    ? ci('statut util', 'user status', 'statut utilis') : 47;
+
+  const data = rows.slice(1);
+
+  // ── KPI 1 : Taux de réalisation Calendrier préventif ──────────────────
+  // Numérateur : AU commence par TCLO ou CLOT ET AS (plan d'entretien) non vide
+  const num = data.filter(r => {
+    const s4   = keNorm4(r[iAU]);
+    const plan = (r[iAS] || '').trim();
+    return (s4 === 'TCLO' || s4 === 'CLOT') && plan !== '';
+  }).length;
+
+  // Dénominateur : AV = 'SOPL' ET AU ne commence PAS par 'CREE'
+  const den = data.filter(r => {
+    const statUtil = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+    const s4       = keNorm4(r[iAU]);
+    return statUtil === 'SOPL' && s4 !== 'CREE';
+  }).length;
+
+  const taux = den > 0 ? (num / den * 100) : null;
+
+  document.getElementById('ke-taux-prev').textContent    = taux !== null ? taux.toFixed(1) + ' %' : '—';
+  document.getElementById('ke-taux-prev-num').textContent = num;
+  document.getElementById('ke-taux-prev-den').textContent = den;
+
+  const tagEl = document.getElementById('ke-taux-prev-tag');
+  tagEl.textContent = taux !== null ? taux.toFixed(1) + ' %' : '—';
+  tagEl.className   = 'kpi-tag ' + (taux === null ? 'neu' : taux >= 80 ? 'up' : taux >= 50 ? 'neu' : 'down');
+
+  document.getElementById('ke-taux-prev').style.color =
+    taux === null ? 'var(--text)' : taux >= 80 ? 'var(--green)' : taux >= 50 ? 'var(--amber)' : 'var(--red)';
 }
 </script>
 
