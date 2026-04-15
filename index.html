@@ -9531,10 +9531,18 @@ async function loadKpiEntiteOT() {
   statusEl.textContent = 'Chargement des données OT…';
 
   try {
-    const url = `https://docs.google.com/spreadsheets/d/${KE_OT_FILE_ID}/gviz/tq?tqx=out:csv&t=${Date.now()}`;
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status} — vérifiez que le fichier est partagé en lecture publique.`);
-    const text = await resp.text();
+    const proxyUrl  = `/proxy-kpi-entite-ot?t=${Date.now()}`;
+    const directUrl = `https://docs.google.com/spreadsheets/d/${KE_OT_FILE_ID}/gviz/tq?tqx=out:csv&t=${Date.now()}`;
+    let text;
+    try {
+      const r = await fetch(proxyUrl);
+      if (!r.ok) throw new Error('proxy');
+      text = await r.text();
+    } catch(e) {
+      const r = await fetch(directUrl);
+      if (!r.ok) throw new Error(`HTTP ${r.status} — vérifiez que le fichier est partagé en lecture publique.`);
+      text = await r.text();
+    }
 
     const rows = keParseCSV(text);
     if (rows.length < 2) throw new Error('Fichier vide ou inaccessible.');
