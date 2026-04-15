@@ -9632,12 +9632,13 @@ function calcKpiEntite(rows) {
   const data = rows.slice(1);
 
   // ── KPI 1 : Taux de réalisation Calendrier préventif ──────────────────
-  // Numérateur : AU commence par TCLO ou CLOT ET AS non vide ET date début planifiée < aujourd'hui
+  // Numérateur : dénominateur + AU commence par TCLO ou CLOT
   const num = data.filter(r => {
-    const s4   = keNorm4(r[iAU]);
-    const plan = (r[iAS] || '').trim();
-    const d    = keParseDate(r[iD]);
-    return (s4 === 'TCLO' || s4 === 'CLOT') && plan !== '' && d && d <= today;
+    const s4       = keNorm4(r[iAU]);
+    const statUtil = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+    const plan     = (r[iAS] || '').trim();
+    const d        = keParseDate(r[iD]);
+    return statUtil === 'SOPL' && plan !== '' && d && d <= today && (s4 === 'TCLO' || s4 === 'CLOT');
   }).length;
 
   // Dénominateur : AV = 'SOPL' ET AS non vide ET date début planifiée < aujourd'hui
@@ -9660,12 +9661,13 @@ function calcKpiEntite(rows) {
     taux === null ? 'var(--text)' : taux >= 80 ? 'var(--green)' : taux >= 50 ? 'var(--amber)' : 'var(--red)';
 
   // ── KPI 2 : Taux de réalisation correctif (AS vide) ───────────────────
-  // Numérateur : TCLO/CLOT ET AS vide ET date D < aujourd'hui
+  // Numérateur : dénominateur + AU commence par TCLO ou CLOT
   const numCor = data.filter(r => {
-    const s4   = keNorm4(r[iAU]);
-    const plan = (r[iAS] || '').trim();
-    const d    = keParseDate(r[iD]);
-    return (s4 === 'TCLO' || s4 === 'CLOT') && plan === '' && d && d <= today;
+    const s4       = keNorm4(r[iAU]);
+    const statUtil = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+    const plan     = (r[iAS] || '').trim();
+    const d        = keParseDate(r[iD]);
+    return statUtil === 'SOPL' && plan === '' && d && d <= today && (s4 === 'TCLO' || s4 === 'CLOT');
   }).length;
 
   // Dénominateur : AV = 'SOPL' ET AS vide ET date D < aujourd'hui
