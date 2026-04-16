@@ -2524,174 +2524,6 @@ td { padding: 9px 14px; vertical-align: middle; }
 </div>
 
 <!-- ════════════════════════════════════════════════════════════
-     PAGE — KPI ENTITÉ
-     ════════════════════════════════════════════════════════════ -->
-<div id="page-kpi-entite" style="display:none; padding: 24px 32px 60px; max-width: 1100px; margin: 0 auto;">
-
-  <!-- Champs cachés requis par le JS -->
-  <select id="ke-sel-mois" style="display:none;">
-    <option value="0">Janvier</option><option value="1">Février</option><option value="2">Mars</option>
-    <option value="3">Avril</option><option value="4">Mai</option><option value="5">Juin</option>
-    <option value="6">Juillet</option><option value="7">Août</option><option value="8">Septembre</option>
-    <option value="9">Octobre</option><option value="10">Novembre</option><option value="11">Décembre</option>
-  </select>
-  <input type="number" id="ke-inp-annee" style="display:none;" />
-
-  <!-- ── Section OT ── -->
-  <div id="ke-section-ot">
-    <div id="ke-status" style="font-size:12px;color:var(--muted);margin-bottom:16px;display:none;padding:8px 12px;background:var(--bg);border-radius:6px;border:1px solid var(--border2);"></div>
-
-    <div class="kpi-grid ke-kpi-row">
-
-      <!-- KPI 1 : Taux réalisation calendrier préventif -->
-      <div class="kpi-card expandable" id="ke-prev-card" onclick="togglePrevSubKpi(this)">
-        <div class="kpi-card-top">
-          <div class="kpi-icon-box green">
-            <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          </div>
-          <span class="kpi-tag neu" id="ke-taux-prev-tag">—</span>
-        </div>
-        <div class="kpi-value" id="ke-taux-prev">—</div>
-        <div class="kpi-label">Taux réalisation calendrier préventif</div>
-        <div class="kpi-sub">Clôturés : <b id="ke-taux-prev-num">—</b> / Planifiés : <b id="ke-taux-prev-den">—</b></div>
-        <div class="kpi-expand-hint">
-          <svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          Détail par poste de travail
-        </div>
-      </div>
-
-      <!-- KPI 2 : Taux réalisation correctif -->
-      <div class="kpi-card">
-        <div class="kpi-card-top">
-          <div class="kpi-icon-box red">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          </div>
-          <span class="kpi-tag neu" id="ke-taux-cor-tag">—</span>
-        </div>
-        <div class="kpi-value" id="ke-taux-cor">—</div>
-        <div class="kpi-label">Taux réalisation correctif</div>
-        <div class="kpi-sub">Clôturés : <b id="ke-taux-cor-num">—</b> / Planifiés : <b id="ke-taux-cor-den">—</b></div>
-      </div>
-
-      <!-- KPI 3 : Age Backlog <1M -->
-      <div class="kpi-card">
-        <div class="kpi-card-top">
-          <div class="kpi-icon-box amber">
-            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </div>
-          <span class="kpi-tag neu" id="ke-backlog-1m-tag">—</span>
-        </div>
-        <div class="kpi-value" id="ke-backlog-1m">—</div>
-        <div class="kpi-label">Age Backlog &lt;1M</div>
-        <div class="kpi-sub">Récents : <b id="ke-backlog-1m-num">—</b> / Total backlog : <b id="ke-backlog-1m-den">—</b></div>
-      </div>
-
-      <!-- KPI 4 : Age Backlog 1-3M -->
-      <div class="kpi-card">
-        <div class="kpi-card-top">
-          <div class="kpi-icon-box amber">
-            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </div>
-          <span class="kpi-tag neu" id="ke-backlog-1-3m-tag">—</span>
-        </div>
-        <div class="kpi-value" id="ke-backlog-1-3m">—</div>
-        <div class="kpi-label">Age Backlog 1-3M</div>
-        <div class="kpi-sub">31–90j : <b id="ke-backlog-1-3m-num">—</b> / Total backlog : <b id="ke-backlog-1-3m-den">—</b></div>
-      </div>
-
-      <!-- KPI 5 : Age Backlog 3<>6M -->
-      <div class="kpi-card">
-        <div class="kpi-card-top">
-          <div class="kpi-icon-box red">
-            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </div>
-          <span class="kpi-tag neu" id="ke-backlog-3-6m-tag">—</span>
-        </div>
-        <div class="kpi-value" id="ke-backlog-3-6m">—</div>
-        <div class="kpi-label">Age Backlog 3&lt;&gt;6M</div>
-        <div class="kpi-sub">91–180j : <b id="ke-backlog-3-6m-num">—</b> / Total backlog : <b id="ke-backlog-3-6m-den">—</b></div>
-      </div>
-
-      <!-- KPI 6 : Age Backlog >6M -->
-      <div class="kpi-card">
-        <div class="kpi-card-top">
-          <div class="kpi-icon-box red">
-            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </div>
-          <span class="kpi-tag neu" id="ke-backlog-6m-tag">—</span>
-        </div>
-        <div class="kpi-value" id="ke-backlog-6m">—</div>
-        <div class="kpi-label">Age Backlog &gt;6M</div>
-        <div class="kpi-sub">&gt;180j : <b id="ke-backlog-6m-num">—</b> / Total backlog : <b id="ke-backlog-6m-den">—</b></div>
-      </div>
-
-      <!-- KPI 7 : Score Performance -->
-      <div class="kpi-card" style="border:2px solid var(--blue);">
-        <div class="kpi-card-top">
-          <div class="kpi-icon-box" style="background:var(--blue-lt);">
-            <svg viewBox="0 0 24 24" stroke="var(--blue)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          </div>
-          <span class="kpi-tag neu" id="ke-score-perf-tag">—</span>
-        </div>
-        <div class="kpi-value" id="ke-score-perf" style="color:var(--blue);">—</div>
-        <div class="kpi-label">Score Performance</div>
-        <div class="kpi-sub">Moyenne de <b id="ke-score-perf-n">—</b> KPIs calculés</div>
-      </div>
-
-    </div>
-
-    <!-- ── Sous-KPI : Taux préventif par poste de travail ── -->
-    <div class="kpi-prev-expand" id="ke-prev-subkpi">
-      <div class="sub-kpi-header">
-        <span class="sub-kpi-header-label">
-          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-          Détail par poste de travail
-        </span>
-        <div class="sub-kpi-connector"></div>
-      </div>
-      <div class="kpi-sub-grid">
-
-        <!-- 421-MEC -->
-        <div class="kpi-sub-card">
-          <span class="sub-poste">421-MEC</span>
-          <div class="sub-value" id="ke-prev-421mec">—</div>
-          <div class="sub-label">Taux réalisation calendrier préventif · 421-MEC</div>
-          <div class="sub-info">Clôturés : <b id="ke-prev-421mec-num">—</b> / Planifiés : <b id="ke-prev-421mec-den">—</b></div>
-        </div>
-
-        <!-- 421-INST -->
-        <div class="kpi-sub-card">
-          <span class="sub-poste">421-INST</span>
-          <div class="sub-value" id="ke-prev-421inst">—</div>
-          <div class="sub-label">Taux réalisation calendrier préventif · 421-INST</div>
-          <div class="sub-info">Clôturés : <b id="ke-prev-421inst-num">—</b> / Planifiés : <b id="ke-prev-421inst-den">—</b></div>
-        </div>
-
-        <!-- 423-ELEC -->
-        <div class="kpi-sub-card">
-          <span class="sub-poste">423-ELEC</span>
-          <div class="sub-value" id="ke-prev-423elec">—</div>
-          <div class="sub-label">Taux réalisation calendrier préventif · 423-ELEC</div>
-          <div class="sub-info">Clôturés : <b id="ke-prev-423elec-num">—</b> / Planifiés : <b id="ke-prev-423elec-den">—</b></div>
-        </div>
-
-        <!-- 423-REG -->
-        <div class="kpi-sub-card">
-          <span class="sub-poste">423-REG</span>
-          <div class="sub-value" id="ke-prev-423reg">—</div>
-          <div class="sub-label">Taux réalisation calendrier préventif · 423-REG</div>
-          <div class="sub-info">Clôturés : <b id="ke-prev-423reg-num">—</b> / Planifiés : <b id="ke-prev-423reg-den">—</b></div>
-        </div>
-
-      </div>
-    </div>
-
-  </div>
-
-
-</div>
-
-<!-- ════════════════════════════════════════════════════════════
      PAGE — DEMANDES DE MOTEURS ÉLECTRIQUES
      ════════════════════════════════════════════════════════════ -->
 <div id="page-moteur">
@@ -3037,6 +2869,173 @@ td { padding: 9px 14px; vertical-align: middle; }
     <select id="year-select" onchange="generateReport()"></select>
     <select id="year-only-select" style="display:none;" onchange="generateReport()"></select>
   </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     PAGE — KPI ENTITÉ
+     ════════════════════════════════════════════════════════════ -->
+<div id="page-kpi-entite" style="display:none; padding: 24px 32px 60px; max-width: 1100px; margin: 0 auto;">
+
+  <!-- Champs cachés requis par le JS -->
+  <select id="ke-sel-mois" style="display:none;">
+    <option value="0">Janvier</option><option value="1">Février</option><option value="2">Mars</option>
+    <option value="3">Avril</option><option value="4">Mai</option><option value="5">Juin</option>
+    <option value="6">Juillet</option><option value="7">Août</option><option value="8">Septembre</option>
+    <option value="9">Octobre</option><option value="10">Novembre</option><option value="11">Décembre</option>
+  </select>
+  <input type="number" id="ke-inp-annee" style="display:none;" />
+
+  <!-- ── Section OT ── -->
+  <div id="ke-section-ot">
+    <div id="ke-status" style="font-size:12px;color:var(--muted);margin-bottom:16px;display:none;padding:8px 12px;background:var(--bg);border-radius:6px;border:1px solid var(--border2);"></div>
+
+    <div class="kpi-grid ke-kpi-row">
+
+      <!-- KPI 1 : Taux réalisation calendrier préventif -->
+      <div class="kpi-card expandable" id="ke-prev-card" onclick="togglePrevSubKpi(this)">
+        <div class="kpi-card-top">
+          <div class="kpi-icon-box green">
+            <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <span class="kpi-tag neu" id="ke-taux-prev-tag">—</span>
+        </div>
+        <div class="kpi-value" id="ke-taux-prev">—</div>
+        <div class="kpi-label">Taux réalisation calendrier préventif</div>
+        <div class="kpi-sub">Clôturés : <b id="ke-taux-prev-num">—</b> / Planifiés : <b id="ke-taux-prev-den">—</b></div>
+        <div class="kpi-expand-hint">
+          <svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          Détail par poste de travail
+        </div>
+      </div>
+
+      <!-- KPI 2 : Taux réalisation correctif -->
+      <div class="kpi-card">
+        <div class="kpi-card-top">
+          <div class="kpi-icon-box red">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <span class="kpi-tag neu" id="ke-taux-cor-tag">—</span>
+        </div>
+        <div class="kpi-value" id="ke-taux-cor">—</div>
+        <div class="kpi-label">Taux réalisation correctif</div>
+        <div class="kpi-sub">Clôturés : <b id="ke-taux-cor-num">—</b> / Planifiés : <b id="ke-taux-cor-den">—</b></div>
+      </div>
+
+      <!-- KPI 3 : Age Backlog <1M -->
+      <div class="kpi-card">
+        <div class="kpi-card-top">
+          <div class="kpi-icon-box amber">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <span class="kpi-tag neu" id="ke-backlog-1m-tag">—</span>
+        </div>
+        <div class="kpi-value" id="ke-backlog-1m">—</div>
+        <div class="kpi-label">Age Backlog &lt;1M</div>
+        <div class="kpi-sub">Récents : <b id="ke-backlog-1m-num">—</b> / Total backlog : <b id="ke-backlog-1m-den">—</b></div>
+      </div>
+
+      <!-- KPI 4 : Age Backlog 1-3M -->
+      <div class="kpi-card">
+        <div class="kpi-card-top">
+          <div class="kpi-icon-box amber">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <span class="kpi-tag neu" id="ke-backlog-1-3m-tag">—</span>
+        </div>
+        <div class="kpi-value" id="ke-backlog-1-3m">—</div>
+        <div class="kpi-label">Age Backlog 1-3M</div>
+        <div class="kpi-sub">31–90j : <b id="ke-backlog-1-3m-num">—</b> / Total backlog : <b id="ke-backlog-1-3m-den">—</b></div>
+      </div>
+
+      <!-- KPI 5 : Age Backlog 3<>6M -->
+      <div class="kpi-card">
+        <div class="kpi-card-top">
+          <div class="kpi-icon-box red">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <span class="kpi-tag neu" id="ke-backlog-3-6m-tag">—</span>
+        </div>
+        <div class="kpi-value" id="ke-backlog-3-6m">—</div>
+        <div class="kpi-label">Age Backlog 3&lt;&gt;6M</div>
+        <div class="kpi-sub">91–180j : <b id="ke-backlog-3-6m-num">—</b> / Total backlog : <b id="ke-backlog-3-6m-den">—</b></div>
+      </div>
+
+      <!-- KPI 6 : Age Backlog >6M -->
+      <div class="kpi-card">
+        <div class="kpi-card-top">
+          <div class="kpi-icon-box red">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <span class="kpi-tag neu" id="ke-backlog-6m-tag">—</span>
+        </div>
+        <div class="kpi-value" id="ke-backlog-6m">—</div>
+        <div class="kpi-label">Age Backlog &gt;6M</div>
+        <div class="kpi-sub">&gt;180j : <b id="ke-backlog-6m-num">—</b> / Total backlog : <b id="ke-backlog-6m-den">—</b></div>
+      </div>
+
+      <!-- KPI 7 : Score Performance -->
+      <div class="kpi-card" style="border:2px solid var(--blue);">
+        <div class="kpi-card-top">
+          <div class="kpi-icon-box" style="background:var(--blue-lt);">
+            <svg viewBox="0 0 24 24" stroke="var(--blue)" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <span class="kpi-tag neu" id="ke-score-perf-tag">—</span>
+        </div>
+        <div class="kpi-value" id="ke-score-perf" style="color:var(--blue);">—</div>
+        <div class="kpi-label">Score Performance</div>
+        <div class="kpi-sub">Moyenne de <b id="ke-score-perf-n">—</b> KPIs calculés</div>
+      </div>
+
+    </div>
+
+    <!-- ── Sous-KPI : Taux préventif par poste de travail ── -->
+    <div class="kpi-prev-expand" id="ke-prev-subkpi">
+      <div class="sub-kpi-header">
+        <span class="sub-kpi-header-label">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          Détail par poste de travail
+        </span>
+        <div class="sub-kpi-connector"></div>
+      </div>
+      <div class="kpi-sub-grid">
+
+        <!-- 421-MEC -->
+        <div class="kpi-sub-card">
+          <span class="sub-poste">421-MEC</span>
+          <div class="sub-value" id="ke-prev-421mec">—</div>
+          <div class="sub-label">Taux réalisation calendrier préventif · 421-MEC</div>
+          <div class="sub-info">Clôturés : <b id="ke-prev-421mec-num">—</b> / Planifiés : <b id="ke-prev-421mec-den">—</b></div>
+        </div>
+
+        <!-- 421-INST -->
+        <div class="kpi-sub-card">
+          <span class="sub-poste">421-INST</span>
+          <div class="sub-value" id="ke-prev-421inst">—</div>
+          <div class="sub-label">Taux réalisation calendrier préventif · 421-INST</div>
+          <div class="sub-info">Clôturés : <b id="ke-prev-421inst-num">—</b> / Planifiés : <b id="ke-prev-421inst-den">—</b></div>
+        </div>
+
+        <!-- 423-ELEC -->
+        <div class="kpi-sub-card">
+          <span class="sub-poste">423-ELEC</span>
+          <div class="sub-value" id="ke-prev-423elec">—</div>
+          <div class="sub-label">Taux réalisation calendrier préventif · 423-ELEC</div>
+          <div class="sub-info">Clôturés : <b id="ke-prev-423elec-num">—</b> / Planifiés : <b id="ke-prev-423elec-den">—</b></div>
+        </div>
+
+        <!-- 423-REG -->
+        <div class="kpi-sub-card">
+          <span class="sub-poste">423-REG</span>
+          <div class="sub-value" id="ke-prev-423reg">—</div>
+          <div class="sub-label">Taux réalisation calendrier préventif · 423-REG</div>
+          <div class="sub-info">Clôturés : <b id="ke-prev-423reg-num">—</b> / Planifiés : <b id="ke-prev-423reg-den">—</b></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
 </div>
 
 <!-- ═══════════════════════════════════════════════════════
