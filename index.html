@@ -3477,21 +3477,12 @@ td { padding: 9px 14px; vertical-align: middle; }
 <div id="page-kpi-entite" style="display:none; padding: 24px 32px 60px; max-width: 1100px; margin: 0 auto;">
 
   <!-- En-tête -->
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
-    <div>
-      <h1 style="font-size:22px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px;">KPI Entité</h1>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <select id="ke-sel-mois" style="padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;background:var(--white);color:var(--text);">
-        <option value="0">Janvier</option><option value="1">Février</option><option value="2">Mars</option>
-        <option value="3">Avril</option><option value="4">Mai</option><option value="5">Juin</option>
-        <option value="6">Juillet</option><option value="7">Août</option><option value="8">Septembre</option>
-        <option value="9">Octobre</option><option value="10">Novembre</option><option value="11">Décembre</option>
-      </select>
-      <input type="number" id="ke-inp-annee" min="2020" max="2099" style="width:80px;padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;background:var(--white);color:var(--text);" />
-      <button onclick="loadKpiEntiteOT()" style="padding:7px 14px;background:var(--blue);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">↺ Actualiser</button>
-    </div>
+  <div style="margin-bottom:20px;">
+    <h1 style="font-size:22px;font-weight:700;letter-spacing:-0.5px;">KPI Entité</h1>
   </div>
+  <!-- Champs cachés nécessaires pour initKpiEntite -->
+  <select id="ke-sel-mois" style="display:none;"></select>
+  <input type="number" id="ke-inp-annee" style="display:none;" />
 
 
   <!-- ── Section OT ── -->
