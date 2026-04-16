@@ -2890,7 +2890,7 @@ td { padding: 9px 14px; vertical-align: middle; }
     <div class="kpi-grid ke-kpi-row">
 
       <!-- KPI 1 : Taux réalisation calendrier préventif -->
-      <div class="kpi-card expandable" id="ke-prev-card" onclick="togglePrevSubKpi(this)">
+      <div class="kpi-card expandable" id="ke-prev-card" onclick="toggleKpiExpand(this,'ke-prev-subkpi')">
         <div class="kpi-card-top">
           <div class="kpi-icon-box green">
             <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -2907,7 +2907,7 @@ td { padding: 9px 14px; vertical-align: middle; }
       </div>
 
       <!-- KPI 2 : Taux réalisation correctif -->
-      <div class="kpi-card">
+      <div class="kpi-card expandable" id="ke-cor-card" onclick="toggleKpiExpand(this,'ke-cor-subkpi')">
         <div class="kpi-card-top">
           <div class="kpi-icon-box red">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -2917,10 +2917,14 @@ td { padding: 9px 14px; vertical-align: middle; }
         <div class="kpi-value" id="ke-taux-cor">—</div>
         <div class="kpi-label">Taux réalisation correctif</div>
         <div class="kpi-sub">Clôturés : <b id="ke-taux-cor-num">—</b> / Planifiés : <b id="ke-taux-cor-den">—</b></div>
+        <div class="kpi-expand-hint">
+          <svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          Détail par poste de travail
+        </div>
       </div>
 
       <!-- KPI 3 : Age Backlog <1M -->
-      <div class="kpi-card">
+      <div class="kpi-card expandable" id="ke-back1m-card" onclick="toggleKpiExpand(this,'ke-back1m-subkpi')">
         <div class="kpi-card-top">
           <div class="kpi-icon-box amber">
             <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -2930,10 +2934,14 @@ td { padding: 9px 14px; vertical-align: middle; }
         <div class="kpi-value" id="ke-backlog-1m">—</div>
         <div class="kpi-label">Age Backlog &lt;1M</div>
         <div class="kpi-sub">Récents : <b id="ke-backlog-1m-num">—</b> / Total backlog : <b id="ke-backlog-1m-den">—</b></div>
+        <div class="kpi-expand-hint">
+          <svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          Détail par poste de travail
+        </div>
       </div>
 
       <!-- KPI 4 : Age Backlog 1-3M -->
-      <div class="kpi-card">
+      <div class="kpi-card expandable" id="ke-back13-card" onclick="toggleKpiExpand(this,'ke-back13-subkpi')">
         <div class="kpi-card-top">
           <div class="kpi-icon-box amber">
             <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -2943,10 +2951,14 @@ td { padding: 9px 14px; vertical-align: middle; }
         <div class="kpi-value" id="ke-backlog-1-3m">—</div>
         <div class="kpi-label">Age Backlog 1-3M</div>
         <div class="kpi-sub">31–90j : <b id="ke-backlog-1-3m-num">—</b> / Total backlog : <b id="ke-backlog-1-3m-den">—</b></div>
+        <div class="kpi-expand-hint">
+          <svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          Détail par poste de travail
+        </div>
       </div>
 
       <!-- KPI 5 : Age Backlog 3<>6M -->
-      <div class="kpi-card">
+      <div class="kpi-card expandable" id="ke-back36-card" onclick="toggleKpiExpand(this,'ke-back36-subkpi')">
         <div class="kpi-card-top">
           <div class="kpi-icon-box red">
             <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -2956,10 +2968,14 @@ td { padding: 9px 14px; vertical-align: middle; }
         <div class="kpi-value" id="ke-backlog-3-6m">—</div>
         <div class="kpi-label">Age Backlog 3&lt;&gt;6M</div>
         <div class="kpi-sub">91–180j : <b id="ke-backlog-3-6m-num">—</b> / Total backlog : <b id="ke-backlog-3-6m-den">—</b></div>
+        <div class="kpi-expand-hint">
+          <svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          Détail par poste de travail
+        </div>
       </div>
 
       <!-- KPI 6 : Age Backlog >6M -->
-      <div class="kpi-card">
+      <div class="kpi-card expandable" id="ke-back6m-card" onclick="toggleKpiExpand(this,'ke-back6m-subkpi')">
         <div class="kpi-card-top">
           <div class="kpi-icon-box red">
             <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -2969,6 +2985,10 @@ td { padding: 9px 14px; vertical-align: middle; }
         <div class="kpi-value" id="ke-backlog-6m">—</div>
         <div class="kpi-label">Age Backlog &gt;6M</div>
         <div class="kpi-sub">&gt;180j : <b id="ke-backlog-6m-num">—</b> / Total backlog : <b id="ke-backlog-6m-den">—</b></div>
+        <div class="kpi-expand-hint">
+          <svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          Détail par poste de travail
+        </div>
       </div>
 
       <!-- KPI 7 : Score Performance -->
@@ -2998,6 +3018,66 @@ td { padding: 9px 14px; vertical-align: middle; }
       <div class="kpi-sub-grid" id="ke-prev-subkpi-grid">
         <!-- Généré dynamiquement par calcKpiEntite() -->
       </div>
+    </div>
+
+    <!-- ── Sous-KPI : Taux correctif par poste de travail ── -->
+    <div class="kpi-prev-expand" id="ke-cor-subkpi">
+      <div class="sub-kpi-header">
+        <span class="sub-kpi-header-label">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          Détail par poste de travail
+        </span>
+        <div class="sub-kpi-connector"></div>
+      </div>
+      <div class="kpi-sub-grid" id="ke-cor-subkpi-grid"></div>
+    </div>
+
+    <!-- ── Sous-KPI : Backlog <1M par poste de travail ── -->
+    <div class="kpi-prev-expand" id="ke-back1m-subkpi">
+      <div class="sub-kpi-header">
+        <span class="sub-kpi-header-label">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          Détail par poste de travail
+        </span>
+        <div class="sub-kpi-connector"></div>
+      </div>
+      <div class="kpi-sub-grid" id="ke-back1m-subkpi-grid"></div>
+    </div>
+
+    <!-- ── Sous-KPI : Backlog 1-3M par poste de travail ── -->
+    <div class="kpi-prev-expand" id="ke-back13-subkpi">
+      <div class="sub-kpi-header">
+        <span class="sub-kpi-header-label">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          Détail par poste de travail
+        </span>
+        <div class="sub-kpi-connector"></div>
+      </div>
+      <div class="kpi-sub-grid" id="ke-back13-subkpi-grid"></div>
+    </div>
+
+    <!-- ── Sous-KPI : Backlog 3<>6M par poste de travail ── -->
+    <div class="kpi-prev-expand" id="ke-back36-subkpi">
+      <div class="sub-kpi-header">
+        <span class="sub-kpi-header-label">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          Détail par poste de travail
+        </span>
+        <div class="sub-kpi-connector"></div>
+      </div>
+      <div class="kpi-sub-grid" id="ke-back36-subkpi-grid"></div>
+    </div>
+
+    <!-- ── Sous-KPI : Backlog >6M par poste de travail ── -->
+    <div class="kpi-prev-expand" id="ke-back6m-subkpi">
+      <div class="sub-kpi-header">
+        <span class="sub-kpi-header-label">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          Détail par poste de travail
+        </span>
+        <div class="sub-kpi-connector"></div>
+      </div>
+      <div class="kpi-sub-grid" id="ke-back6m-subkpi-grid"></div>
     </div>
 
   </div>
@@ -9817,17 +9897,56 @@ function keParseCSV(text) {
   }).filter(r => r.some(Boolean));
 }
 
-// ── Toggle sous-KPI préventif par poste de travail ───────────────────────
-function togglePrevSubKpi(card) {
-  const panel = document.getElementById('ke-prev-subkpi');
+// ── Toggle générique sous-KPI par poste de travail ───────────────────────
+function toggleKpiExpand(card, panelId) {
+  const panel = document.getElementById(panelId);
   const isOpen = card.classList.contains('expanded');
+  // Fermer tous les autres panneaux ouverts
+  document.querySelectorAll('.kpi-prev-expand.open').forEach(p => {
+    if (p.id !== panelId) {
+      p.classList.remove('open');
+      const c = document.querySelector('.kpi-card.expandable.expanded');
+      if (c && c !== card) c.classList.remove('expanded');
+    }
+  });
+  document.querySelectorAll('.kpi-card.expandable.expanded').forEach(c => {
+    if (c !== card) c.classList.remove('expanded');
+  });
   card.classList.toggle('expanded', !isOpen);
-  panel.classList.toggle('open', !isOpen);
+  if (panel) panel.classList.toggle('open', !isOpen);
 }
 
 // Normalise et prend les 4 premiers caractères (gère accents + casse)
 function keNorm4(s) {
   return (s || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().substring(0, 4);
+}
+
+// ── Helper : générer les sous-KPI par poste de travail ────────────────────
+function keRenderSubByPoste(gridId, data, iAC, denomFilter, numFilter, kpiLabel) {
+  const grid = document.getElementById(gridId);
+  if (!grid) return;
+  grid.innerHTML = '';
+  const postesSet = new Set();
+  data.forEach(r => { if (denomFilter(r)) { const p = (r[iAC] || '').trim(); if (p) postesSet.add(p); } });
+  const postes = [...postesSet].sort();
+  postes.forEach((poste, idx) => {
+    const postData = data.filter(r => (r[iAC] || '').trim() === poste);
+    const pDen = postData.filter(denomFilter).length;
+    const pNum = postData.filter(numFilter).length;
+    const pTaux = pDen > 0 ? (pNum / pDen * 100) : null;
+    const color = pTaux === null ? 'var(--border)' : pTaux >= 80 ? 'var(--green)' : pTaux >= 50 ? 'var(--amber)' : 'var(--red)';
+    const card = document.createElement('div');
+    card.className = 'kpi-sub-card';
+    card.style.borderColor = color;
+    card.style.transitionDelay = (0.07 + idx * 0.07) + 's';
+    card.innerHTML = `
+      <span class="sub-poste">${poste}</span>
+      <div class="sub-value" style="color:${color};">${pTaux !== null ? Math.round(pTaux) + ' %' : '—'}</div>
+      <div class="sub-label">${kpiLabel} · ${poste}</div>
+      <div class="sub-info">Clôturés : <b>${pNum}</b> / Total : <b>${pDen}</b></div>
+    `;
+    grid.appendChild(card);
+  });
 }
 
 function calcKpiEntite(rows) {
@@ -10073,6 +10192,42 @@ function calcKpiEntite(rows) {
   tagScore.className   = 'kpi-tag ' + (scorePerf === null ? 'neu' : scorePerf >= 80 ? 'up' : scorePerf >= 50 ? 'neu' : 'down');
   document.getElementById('ke-score-perf').style.color =
     scorePerf === null ? 'var(--blue)' : scorePerf >= 80 ? 'var(--green)' : scorePerf >= 50 ? 'var(--amber)' : 'var(--red)';
+
+  // ── Sub-KPIs dynamiques pour KPI 2 : Taux correctif par poste ────────────
+  keRenderSubByPoste(
+    'ke-cor-subkpi-grid', data, iAC,
+    r => { const su = (r[iAV]||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase(); const pl = (r[iAS]||'').trim(); const d2 = keParseDate(r[iD]); return su === 'SOPL' && pl === '' && d2 && d2 <= today; },
+    r => { const s4 = keNorm4(r[iAU]); const su = (r[iAV]||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase(); const pl = (r[iAS]||'').trim(); const d2 = keParseDate(r[iD]); return su === 'SOPL' && pl === '' && d2 && d2 <= today && (s4 === 'TCLO' || s4 === 'CLOT'); },
+    'Taux réalisation correctif'
+  );
+
+  // ── Sub-KPIs dynamiques pour KPI 3-6 : Backlog par poste ─────────────────
+  const backDenomFilter = r => { const au4 = keNorm4(r[iAU]); const av2 = (r[iAV]||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase(); return au4 !== 'CLOT' && au4 !== 'TCLO' && (av2.startsWith('CRPR') || av2.startsWith('X') || av2.startsWith('ATPL')); };
+
+  keRenderSubByPoste(
+    'ke-back1m-subkpi-grid', data, iAC,
+    backDenomFilter,
+    r => { if (!backDenomFilter(r)) return false; const dc = keParseDate(r[iI]); return dc && (today3 - dc) / MS_DAY < 30; },
+    'Age Backlog <1M'
+  );
+  keRenderSubByPoste(
+    'ke-back13-subkpi-grid', data, iAC,
+    backDenomFilter,
+    r => { if (!backDenomFilter(r)) return false; const dc = keParseDate(r[iI]); if (!dc) return false; const age = (today3 - dc) / MS_DAY; return age > 30 && age <= 90; },
+    'Age Backlog 1-3M'
+  );
+  keRenderSubByPoste(
+    'ke-back36-subkpi-grid', data, iAC,
+    backDenomFilter,
+    r => { if (!backDenomFilter(r)) return false; const dc = keParseDate(r[iI]); if (!dc) return false; const age = (today3 - dc) / MS_DAY; return age > 90 && age <= 180; },
+    'Age Backlog 3<>6M'
+  );
+  keRenderSubByPoste(
+    'ke-back6m-subkpi-grid', data, iAC,
+    backDenomFilter,
+    r => { if (!backDenomFilter(r)) return false; const dc = keParseDate(r[iI]); return dc && (today3 - dc) / MS_DAY > 180; },
+    'Age Backlog >6M'
+  );
 }
 </script>
 
