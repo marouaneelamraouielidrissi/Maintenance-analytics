@@ -9903,14 +9903,11 @@ function calcKpiEntite(rows) {
     taux === null ? 'var(--text)' : taux >= 80 ? 'var(--green)' : taux >= 50 ? 'var(--amber)' : 'var(--red)';
 
   // ── Sub-KPIs dynamiques : tous les postes détectés dans la Colonne AC ───
-  // Collecter les postes uniques présents dans les lignes du dénominateur
+  // Collecter toutes les valeurs uniques non vides de la colonne AC (sans filtre)
   const postesSet = new Set();
   data.forEach(r => {
-    const statUtil = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-    const plan     = (r[iAS] || '').trim();
-    const d        = keParseDate(r[iD]);
-    const poste    = (r[iAC] || '').trim();
-    if (statUtil === 'SOPL' && plan !== '' && d && d <= today && poste) postesSet.add(poste);
+    const poste = (r[iAC] || '').trim();
+    if (poste) postesSet.add(poste);
   });
   const postesDetectes = [...postesSet].sort();
 
