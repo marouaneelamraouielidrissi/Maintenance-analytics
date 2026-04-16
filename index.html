@@ -194,9 +194,7 @@ select:focus { border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(59,130,
 .sub-kpi-header-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); white-space: nowrap; display: flex; align-items: center; gap: 6px; }
 .sub-kpi-header-label svg { width: 10px; height: 10px; stroke: var(--green); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 .sub-kpi-connector { flex: 1; height: 1px; background: linear-gradient(90deg, var(--green-lt), var(--border2)); }
-.kpi-sub-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-@media(max-width:900px) { .kpi-sub-grid { grid-template-columns: repeat(2, 1fr); } }
-@media(max-width:500px) { .kpi-sub-grid { grid-template-columns: 1fr; } }
+.kpi-sub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
 
 /* Sub-KPI card */
 .kpi-sub-card { background: var(--white); border: 1.5px solid var(--border); border-radius: 9px; padding: 13px 15px 11px; box-shadow: var(--shadow); opacity: 0; transform: translateY(20px) scale(0.93); transition: opacity 0.38s ease, transform 0.38s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s, border-color 0.3s; }
@@ -2997,40 +2995,8 @@ td { padding: 9px 14px; vertical-align: middle; }
         </span>
         <div class="sub-kpi-connector"></div>
       </div>
-      <div class="kpi-sub-grid">
-
-        <!-- 421-MEC -->
-        <div class="kpi-sub-card">
-          <span class="sub-poste">421-MEC</span>
-          <div class="sub-value" id="ke-prev-421mec">—</div>
-          <div class="sub-label">Taux réalisation calendrier préventif · 421-MEC</div>
-          <div class="sub-info">Clôturés : <b id="ke-prev-421mec-num">—</b> / Planifiés : <b id="ke-prev-421mec-den">—</b></div>
-        </div>
-
-        <!-- 421-INST -->
-        <div class="kpi-sub-card">
-          <span class="sub-poste">421-INST</span>
-          <div class="sub-value" id="ke-prev-421inst">—</div>
-          <div class="sub-label">Taux réalisation calendrier préventif · 421-INST</div>
-          <div class="sub-info">Clôturés : <b id="ke-prev-421inst-num">—</b> / Planifiés : <b id="ke-prev-421inst-den">—</b></div>
-        </div>
-
-        <!-- 423-ELEC -->
-        <div class="kpi-sub-card">
-          <span class="sub-poste">423-ELEC</span>
-          <div class="sub-value" id="ke-prev-423elec">—</div>
-          <div class="sub-label">Taux réalisation calendrier préventif · 423-ELEC</div>
-          <div class="sub-info">Clôturés : <b id="ke-prev-423elec-num">—</b> / Planifiés : <b id="ke-prev-423elec-den">—</b></div>
-        </div>
-
-        <!-- 423-REG -->
-        <div class="kpi-sub-card">
-          <span class="sub-poste">423-REG</span>
-          <div class="sub-value" id="ke-prev-423reg">—</div>
-          <div class="sub-label">Taux réalisation calendrier préventif · 423-REG</div>
-          <div class="sub-info">Clôturés : <b id="ke-prev-423reg-num">—</b> / Planifiés : <b id="ke-prev-423reg-den">—</b></div>
-        </div>
-
+      <div class="kpi-sub-grid" id="ke-prev-subkpi-grid">
+        <!-- Généré dynamiquement par calcKpiEntite() -->
       </div>
     </div>
 
@@ -9936,37 +9902,54 @@ function calcKpiEntite(rows) {
   document.getElementById('ke-taux-prev').style.color =
     taux === null ? 'var(--text)' : taux >= 80 ? 'var(--green)' : taux >= 50 ? 'var(--amber)' : 'var(--red)';
 
-  // ── Sub-KPIs : Taux préventif par poste de travail (Colonne AC) ────────
-  const POSTES_PREV = [
-    { id: 'ke-prev-421mec',  poste: '421-MEC'  },
-    { id: 'ke-prev-421inst', poste: '421-INST' },
-    { id: 'ke-prev-423elec', poste: '423-ELEC' },
-    { id: 'ke-prev-423reg',  poste: '423-REG'  }
-  ];
-  POSTES_PREV.forEach(({ id, poste }) => {
-    const postData = data.filter(r => (r[iAC] || '').trim().toUpperCase() === poste);
-    const pNum = postData.filter(r => {
-      const s4       = keNorm4(r[iAU]);
-      const statUtil = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-      const plan     = (r[iAS] || '').trim();
-      const d        = keParseDate(r[iD]);
-      return statUtil === 'SOPL' && plan !== '' && d && d <= today && (s4 === 'TCLO' || s4 === 'CLOT');
-    }).length;
-    const pDen = postData.filter(r => {
-      const statUtil = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-      const plan     = (r[iAS] || '').trim();
-      const d        = keParseDate(r[iD]);
-      return statUtil === 'SOPL' && plan !== '' && d && d <= today;
-    }).length;
-    const pTaux = pDen > 0 ? (pNum / pDen * 100) : null;
-    const color = pTaux === null ? 'var(--text)' : pTaux >= 80 ? 'var(--green)' : pTaux >= 50 ? 'var(--amber)' : 'var(--red)';
-    document.getElementById(id).textContent           = pTaux !== null ? Math.round(pTaux) + ' %' : '—';
-    document.getElementById(id).style.color           = color;
-    document.getElementById(id + '-num').textContent  = pNum;
-    document.getElementById(id + '-den').textContent  = pDen;
-    const subCard = document.getElementById(id).closest('.kpi-sub-card');
-    if (subCard) subCard.style.borderColor = pTaux === null ? '' : color;
+  // ── Sub-KPIs dynamiques : tous les postes détectés dans la Colonne AC ───
+  // Collecter les postes uniques présents dans les lignes du dénominateur
+  const postesSet = new Set();
+  data.forEach(r => {
+    const statUtil = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+    const plan     = (r[iAS] || '').trim();
+    const d        = keParseDate(r[iD]);
+    const poste    = (r[iAC] || '').trim();
+    if (statUtil === 'SOPL' && plan !== '' && d && d <= today && poste) postesSet.add(poste);
   });
+  const postesDetectes = [...postesSet].sort();
+
+  const grid = document.getElementById('ke-prev-subkpi-grid');
+  if (grid) {
+    grid.innerHTML = '';
+    postesDetectes.forEach((poste, idx) => {
+      const postData = data.filter(r => (r[iAC] || '').trim() === poste);
+      const pNum = postData.filter(r => {
+        const s4       = keNorm4(r[iAU]);
+        const statUtil = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+        const plan     = (r[iAS] || '').trim();
+        const d        = keParseDate(r[iD]);
+        return statUtil === 'SOPL' && plan !== '' && d && d <= today && (s4 === 'TCLO' || s4 === 'CLOT');
+      }).length;
+      const pDen = postData.filter(r => {
+        const statUtil = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+        const plan     = (r[iAS] || '').trim();
+        const d        = keParseDate(r[iD]);
+        return statUtil === 'SOPL' && plan !== '' && d && d <= today;
+      }).length;
+      const pTaux = pDen > 0 ? (pNum / pDen * 100) : null;
+      const color = pTaux === null ? 'var(--border)' : pTaux >= 80 ? 'var(--green)' : pTaux >= 50 ? 'var(--amber)' : 'var(--red)';
+      const valColor = pTaux === null ? 'var(--text)' : color;
+      const delay = 0.07 + idx * 0.07;
+
+      const card = document.createElement('div');
+      card.className = 'kpi-sub-card';
+      card.style.borderColor = color;
+      card.style.transitionDelay = delay + 's';
+      card.innerHTML = `
+        <span class="sub-poste">${poste}</span>
+        <div class="sub-value" style="color:${valColor};">${pTaux !== null ? Math.round(pTaux) + ' %' : '—'}</div>
+        <div class="sub-label">Taux réalisation calendrier préventif · ${poste}</div>
+        <div class="sub-info">Clôturés : <b>${pNum}</b> / Planifiés : <b>${pDen}</b></div>
+      `;
+      grid.appendChild(card);
+    });
+  }
 
   // ── KPI 2 : Taux de réalisation correctif (AS vide) ───────────────────
   // Numérateur : dénominateur + AU commence par TCLO ou CLOT
