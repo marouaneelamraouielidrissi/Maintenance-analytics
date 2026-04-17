@@ -9991,8 +9991,8 @@ async function loadKpiEntiteAvis() {
 }
 
 // ── Calcul KPI "Taux d'approbation des avis" ──────────────────────────────
-// Dénominateur : toutes les avis SAUF (Statut utilisateur BL non vide ET type AJ ne contient pas 'ZL')
-// Numérateur   : parmi ces avis, les 4 premiers caractères de BL == 'APRV'
+// Dénominateur : Colonne BL non vide ET BL (4 premiers car.) différente de 'ZL'
+// Numérateur   : BL commence par 'APRV'
 function calcKpiApprobation(rows) {
   const headers = rows[0] || [];
   const ci = (...names) => {
@@ -10006,9 +10006,7 @@ function calcKpiApprobation(rows) {
     }
     return -1;
   };
-  // Colonne AJ (35) : Type d'avis ; Colonne BL (63) : Statut utilisateur
-  const iAJ = ci("type d'avis", 'type avis', 'notification type') !== -1
-    ? ci("type d'avis", 'type avis', 'notification type') : 35;
+  // Colonne BL (63) : Statut utilisateur
   const iBL = ci('statut utilisateur', 'user status', 'statut util') !== -1
     ? ci('statut utilisateur', 'user status', 'statut util') : 63;
 
@@ -10016,14 +10014,10 @@ function calcKpiApprobation(rows) {
   const norm4 = s => norm(s).substring(0, 4);
 
   const data = rows.slice(1);
-  // Exclure : BL non vide ET AJ ne contient pas 'ZL'
-  const denData = data.filter(r => {
-    const bl = (r[iBL] || '').trim();
-    const aj = norm(r[iAJ]);
-    const exclude = bl !== '' && !aj.includes('ZL');
-    return !exclude;
-  });
+  // Dénominateur : BL non vide ET BL (4 premiers car.) ≠ 'ZL'
+  const denData = data.filter(r => (r[iBL] || '').trim() !== '' && norm4(r[iBL]) !== 'ZL');
   const den = denData.length;
+  // Numérateur : BL commence par 'APRV'
   const num = denData.filter(r => norm4(r[iBL]) === 'APRV').length;
   const taux = den > 0 ? (num / den * 100) : null;
 
