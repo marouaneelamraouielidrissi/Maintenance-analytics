@@ -3137,17 +3137,20 @@ td { padding: 9px 14px; vertical-align: middle; }
     </div>
 
     <div class="kpi-grid ke-kpi-row" id="ke-kpi-row-qualite">
-      <!-- Les KPIs Qualité seront ajoutés ici -->
-      <div class="kpi-card" style="opacity:0.6;">
+
+      <!-- KPI Qualité 1 : Taux d'approbation des avis -->
+      <div class="kpi-card">
         <div class="kpi-card-top">
           <div class="kpi-icon-box" style="background:#ede9fe;">
-            <svg viewBox="0 0 24 24" stroke="#7c3aed" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <svg viewBox="0 0 24 24" stroke="#7c3aed" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
           </div>
+          <span class="kpi-tag neu" id="ke-taux-aprv-tag">—</span>
         </div>
-        <div class="kpi-value" style="color:#7c3aed;">—</div>
-        <div class="kpi-label">KPI Qualité à définir</div>
-        <div class="kpi-sub">En attente de spécification</div>
+        <div class="kpi-value" id="ke-taux-aprv">—</div>
+        <div class="kpi-label">Taux d'approbation des avis</div>
+        <div class="kpi-sub">Approuvés : <b id="ke-taux-aprv-num">—</b> / Total : <b id="ke-taux-aprv-den">—</b></div>
       </div>
+
     </div>
 
   </div>
@@ -9894,10 +9897,12 @@ function startNotifPolling() {
 // ════════════════════════════════════════════════════════════
 //  KPI ENTITÉ — OT depuis fichier Google Sheets séparé
 // ════════════════════════════════════════════════════════════
-const KE_OT_FILE_ID  = '1w94BXGKw7f-LG6WgG1NWhcmkFF8Dq1XRkjdkCQ0KLvM';
-const KE_GEN_FILE_ID = '1rkS_3AIXp4aclCOJmCdU_UMAsIEnnB7WARVqFgyMNGM';
-let _keOtData  = null;
-let _keGenData = null;
+const KE_OT_FILE_ID   = '1w94BXGKw7f-LG6WgG1NWhcmkFF8Dq1XRkjdkCQ0KLvM';
+const KE_GEN_FILE_ID  = '1rkS_3AIXp4aclCOJmCdU_UMAsIEnnB7WARVqFgyMNGM';
+const KE_AVIS_FILE_ID = '1YjFl5gMliQQ7zgVWyCpygCoZy0rWAo4FbLdtBgYwcHE';
+let _keOtData   = null;
+let _keGenData  = null;
+let _keAvisData = null;
 
 function initKpiEntite() {
   const now = new Date();
@@ -9907,6 +9912,8 @@ function initKpiEntite() {
   else calcKpiEntite(_keOtData);
   if (!_keGenData) loadKpiEntiteGen();
   else calcKpiGeneration(_keGenData);
+  if (!_keAvisData) loadKpiEntiteAvis();
+  else calcKpiApprobation(_keAvisData);
 }
 
 function showKpiEntiteTab(tab) {
@@ -9954,6 +9961,86 @@ async function loadKpiEntiteOT() {
     statusEl.style.color = 'var(--red)';
     statusEl.textContent = `Erreur : ${e.message}`;
   }
+}
+
+// ── Chargement du fichier séparé pour le KPI "Taux d'approbation des avis" ──
+async function loadKpiEntiteAvis() {
+  try {
+    const proxyUrl  = `/proxy-kpi-entite-avis?t=${Date.now()}`;
+    const directUrl = `https://docs.google.com/spreadsheets/d/${KE_AVIS_FILE_ID}/gviz/tq?tqx=out:csv&t=${Date.now()}`;
+    let text;
+    try {
+      const r = await fetch(proxyUrl);
+      if (!r.ok) throw new Error('proxy');
+      text = await r.text();
+    } catch(e) {
+      const r = await fetch(directUrl);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      text = await r.text();
+    }
+    const rows = keParseCSV(text);
+    if (rows.length < 2) throw new Error('Fichier Avis vide.');
+    _keAvisData = rows;
+    console.log('[KPI Approbation] ' + (rows.length - 1) + ' lignes chargées');
+    calcKpiApprobation(rows);
+  } catch(e) {
+    console.error('[KPI Approbation] Erreur :', e);
+    const el = document.getElementById('ke-taux-aprv');
+    if (el) el.textContent = '—';
+  }
+}
+
+// ── Calcul KPI "Taux d'approbation des avis" ──────────────────────────────
+// Dénominateur : toutes les avis SAUF (Statut utilisateur BL non vide ET type AJ ne contient pas 'ZL')
+// Numérateur   : parmi ces avis, les 4 premiers caractères de BL == 'APRV'
+function calcKpiApprobation(rows) {
+  const headers = rows[0] || [];
+  const ci = (...names) => {
+    for (const n of names) {
+      const idx = headers.findIndex(h =>
+        (h || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(
+          n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        )
+      );
+      if (idx >= 0) return idx;
+    }
+    return -1;
+  };
+  // Colonne AJ (35) : Type d'avis ; Colonne BL (63) : Statut utilisateur
+  const iAJ = ci("type d'avis", 'type avis', 'notification type') !== -1
+    ? ci("type d'avis", 'type avis', 'notification type') : 35;
+  const iBL = ci('statut utilisateur', 'user status', 'statut util') !== -1
+    ? ci('statut utilisateur', 'user status', 'statut util') : 63;
+
+  const norm = s => (s || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+  const norm4 = s => norm(s).substring(0, 4);
+
+  const data = rows.slice(1);
+  // Exclure : BL non vide ET AJ ne contient pas 'ZL'
+  const denData = data.filter(r => {
+    const bl = (r[iBL] || '').trim();
+    const aj = norm(r[iAJ]);
+    const exclude = bl !== '' && !aj.includes('ZL');
+    return !exclude;
+  });
+  const den = denData.length;
+  const num = denData.filter(r => norm4(r[iBL]) === 'APRV').length;
+  const taux = den > 0 ? (num / den * 100) : null;
+
+  const valEl = document.getElementById('ke-taux-aprv');
+  const numEl = document.getElementById('ke-taux-aprv-num');
+  const denEl = document.getElementById('ke-taux-aprv-den');
+  const tagEl = document.getElementById('ke-taux-aprv-tag');
+  if (!valEl) return;
+  valEl.textContent = taux !== null ? Math.round(taux) + ' %' : '—';
+  if (numEl) numEl.textContent = num;
+  if (denEl) denEl.textContent = den;
+  if (tagEl) {
+    tagEl.textContent = taux !== null ? Math.round(taux) + ' %' : '—';
+    tagEl.className   = 'kpi-tag ' + (taux === null ? 'neu' : taux >= 80 ? 'up' : taux >= 50 ? 'neu' : 'down');
+  }
+  valEl.style.color =
+    taux === null ? 'var(--text)' : taux >= 80 ? 'var(--green)' : taux >= 50 ? 'var(--amber)' : 'var(--red)';
 }
 
 // ── Chargement du fichier séparé pour le KPI "Taux de Génération des OT" ──
