@@ -136,12 +136,12 @@ select:focus { border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(59,130,
 
 /* KPI GRID — optimized for both screen & print */
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 14px; }
-/* KPI Entité — 7 cartes sur une seule ligne en PC */
-.ke-kpi-row { grid-template-columns: repeat(7, 1fr); gap: 10px; }
+/* KPI Entité — 8 cartes sur une seule ligne en PC */
+.ke-kpi-row { grid-template-columns: repeat(8, 1fr); gap: 10px; }
 @media(max-width:1100px) { .ke-kpi-row { grid-template-columns: repeat(4, 1fr); } }
 @media(max-width:700px)  { .ke-kpi-row { grid-template-columns: repeat(2, 1fr); } }
-/* KPI Entité — 7 colonnes sur PC, auto sur mobile */
-.ke-kpi-row { grid-template-columns: repeat(7, 1fr); }
+/* KPI Entité — 8 colonnes sur PC, auto sur mobile */
+.ke-kpi-row { grid-template-columns: repeat(8, 1fr); }
 @media (max-width: 900px) { .ke-kpi-row { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } }
 
 /* KPI SOUS-SECTIONS */
@@ -3001,7 +3001,20 @@ td { padding: 9px 14px; vertical-align: middle; }
         </div>
       </div>
 
-      <!-- KPI 7 : Score Performance -->
+      <!-- KPI 7 : Taux de Génération des OT -->
+      <div class="kpi-card">
+        <div class="kpi-card-top">
+          <div class="kpi-icon-box purple">
+            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <span class="kpi-tag neu" id="ke-taux-gen-tag">—</span>
+        </div>
+        <div class="kpi-value" id="ke-taux-gen">—</div>
+        <div class="kpi-label">Taux de Génération des OT</div>
+        <div class="kpi-sub">OT générés : <b id="ke-taux-gen-num">—</b> / Appels : <b id="ke-taux-gen-den">—</b></div>
+      </div>
+
+      <!-- KPI 8 : Score Performance -->
       <div class="kpi-card" style="border:2px solid var(--blue);">
         <div class="kpi-card-top">
           <div class="kpi-icon-box" style="background:var(--blue-lt);">
@@ -9978,8 +9991,13 @@ function calcKpiEntite(rows) {
   // Colonnes : D=3, AS=44, AU=46, AV=47 (0-indexé) — fallback par index si nom non trouvé
   const iD  = ci('date debut planif', 'date de debut planif', 'debut planif', 'basic start') !== -1
     ? ci('date debut planif', 'date de debut planif', 'debut planif', 'basic start') : 3;
-  const iAS = ci('plan entretien', 'plan maintenance', 'maintenance plan') !== -1
-    ? ci('plan entretien', 'plan maintenance', 'maintenance plan') : 44;
+  const iAS = ci("plan d'entretien", 'plan entretien', 'plan maintenance', 'maintenance plan', "plan d entretien") !== -1
+    ? ci("plan d'entretien", 'plan entretien', 'plan maintenance', 'maintenance plan', "plan d entretien") : 44;
+  // Colonne F (5) : N° appel pl.entret. ; Colonne H (7) : Ordre
+  const iF = ci("n appel pl entret", "n° appel pl.entret.", "appel pl entret", "no appel pl entret", "numero appel") !== -1
+    ? ci("n appel pl entret", "n° appel pl.entret.", "appel pl entret", "no appel pl entret", "numero appel") : 5;
+  const iH = ci('ordre', 'order number', 'n ordre', 'no ordre') !== -1
+    ? ci('ordre', 'order number', 'n ordre', 'no ordre') : 7;
   const iAU = ci('statut systeme', 'statut sys', 'system status', 'syst') !== -1
     ? ci('statut systeme', 'statut sys', 'system status', 'syst') : 46;
   const iAV = ci('statut util', 'user status', 'statut utilis') !== -1
@@ -10191,8 +10209,24 @@ function calcKpiEntite(rows) {
   document.getElementById('ke-backlog-6m').style.color =
     taux6 === null ? 'var(--text)' : taux6 >= 80 ? 'var(--green)' : taux6 >= 50 ? 'var(--amber)' : 'var(--red)';
 
-  // ── Score Performance : moyenne des 6 KPIs ─────────────────────────────
-  const kpiValues = [taux, tauxCor, tauxBack].filter(v => v !== null);
+  // ── KPI 7 : Taux de Génération des OT ────────────────────────────────
+  // Numérateur : lignes avec Colonne H (Ordre) non vide
+  // Dénominateur : lignes avec Colonne F (N° appel pl.entret.) non vide
+  const denGen = data.filter(r => (r[iF] || '').toString().trim() !== '').length;
+  const numGen = data.filter(r => (r[iF] || '').toString().trim() !== '' && (r[iH] || '').toString().trim() !== '').length;
+  const tauxGen = denGen > 0 ? (numGen / denGen * 100) : null;
+
+  document.getElementById('ke-taux-gen').textContent     = tauxGen !== null ? Math.round(tauxGen) + ' %' : '—';
+  document.getElementById('ke-taux-gen-num').textContent  = numGen;
+  document.getElementById('ke-taux-gen-den').textContent  = denGen;
+  const tagGen = document.getElementById('ke-taux-gen-tag');
+  tagGen.textContent = tauxGen !== null ? Math.round(tauxGen) + ' %' : '—';
+  tagGen.className   = 'kpi-tag ' + (tauxGen === null ? 'neu' : tauxGen >= 80 ? 'up' : tauxGen >= 50 ? 'neu' : 'down');
+  document.getElementById('ke-taux-gen').style.color =
+    tauxGen === null ? 'var(--text)' : tauxGen >= 80 ? 'var(--green)' : tauxGen >= 50 ? 'var(--amber)' : 'var(--red)';
+
+  // ── Score Performance : moyenne des KPIs calculés ─────────────────────
+  const kpiValues = [taux, tauxCor, tauxBack, tauxGen].filter(v => v !== null);
   const scorePerf = kpiValues.length > 0 ? kpiValues.reduce((a, b) => a + b, 0) / kpiValues.length : null;
 
   document.getElementById('ke-score-perf').textContent    = scorePerf !== null ? Math.round(scorePerf) + ' %' : '—';
