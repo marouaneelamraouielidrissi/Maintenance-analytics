@@ -9847,8 +9847,10 @@ function startNotifPolling() {
 // ════════════════════════════════════════════════════════════
 //  KPI ENTITÉ — OT depuis fichier Google Sheets séparé
 // ════════════════════════════════════════════════════════════
-const KE_OT_FILE_ID = '1w94BXGKw7f-LG6WgG1NWhcmkFF8Dq1XRkjdkCQ0KLvM';
-let _keOtData = null;
+const KE_OT_FILE_ID  = '1w94BXGKw7f-LG6WgG1NWhcmkFF8Dq1XRkjdkCQ0KLvM';
+const KE_GEN_FILE_ID = '1rkS_3AIXp4aclCOJmCdU_UMAsIEnnB7WARVqFgyMNGM';
+let _keOtData  = null;
+let _keGenData = null;
 
 function initKpiEntite() {
   const now = new Date();
@@ -9856,6 +9858,8 @@ function initKpiEntite() {
   document.getElementById('ke-inp-annee').value = now.getFullYear();
   if (!_keOtData) loadKpiEntiteOT();
   else calcKpiEntite(_keOtData);
+  if (!_keGenData) loadKpiEntiteGen();
+  else calcKpiGeneration(_keGenData);
 }
 
 function showKpiEntiteTab(tab) {
@@ -9902,6 +9906,93 @@ async function loadKpiEntiteOT() {
   } catch(e) {
     statusEl.style.color = 'var(--red)';
     statusEl.textContent = `Erreur : ${e.message}`;
+  }
+}
+
+// ── Chargement du fichier séparé pour le KPI "Taux de Génération des OT" ──
+async function loadKpiEntiteGen() {
+  try {
+    const directUrl = `https://docs.google.com/spreadsheets/d/${KE_GEN_FILE_ID}/gviz/tq?tqx=out:csv&t=${Date.now()}`;
+    const r = await fetch(directUrl);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const text = await r.text();
+    const rows = keParseCSV(text);
+    if (rows.length < 2) throw new Error('Fichier Génération vide.');
+    _keGenData = rows;
+    calcKpiGeneration(rows);
+  } catch(e) {
+    console.error('[KPI Génération]', e);
+    const el = document.getElementById('ke-taux-gen');
+    if (el) el.textContent = '—';
+  }
+}
+
+// ── Calcul KPI "Taux de Génération des OT" ───────────────────────────────
+// Numérateur : Colonne H (Ordre) non vide
+// Dénominateur : Colonne F (N° appel pl.entret.) non vide
+function calcKpiGeneration(rows) {
+  const headers = rows[0] || [];
+  const ci = (...names) => {
+    for (const n of names) {
+      const idx = headers.findIndex(h =>
+        (h || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(
+          n.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        )
+      );
+      if (idx >= 0) return idx;
+    }
+    return -1;
+  };
+  const iF = ci("n appel pl entret", "n° appel pl.entret.", "appel pl entret", "no appel pl entret", "numero appel") !== -1
+    ? ci("n appel pl entret", "n° appel pl.entret.", "appel pl entret", "no appel pl entret", "numero appel") : 5;
+  const iH = ci('ordre', 'order number', 'n ordre', 'no ordre') !== -1
+    ? ci('ordre', 'order number', 'n ordre', 'no ordre') : 7;
+
+  const data = rows.slice(1);
+  const denGen = data.filter(r => (r[iF] || '').toString().trim() !== '').length;
+  const numGen = data.filter(r => (r[iF] || '').toString().trim() !== '' && (r[iH] || '').toString().trim() !== '').length;
+  const tauxGen = denGen > 0 ? (numGen / denGen * 100) : null;
+
+  const valEl = document.getElementById('ke-taux-gen');
+  const numEl = document.getElementById('ke-taux-gen-num');
+  const denEl = document.getElementById('ke-taux-gen-den');
+  const tagEl = document.getElementById('ke-taux-gen-tag');
+  if (!valEl) return;
+  valEl.textContent  = tauxGen !== null ? Math.round(tauxGen) + ' %' : '—';
+  if (numEl) numEl.textContent = numGen;
+  if (denEl) denEl.textContent = denGen;
+  if (tagEl) {
+    tagEl.textContent = tauxGen !== null ? Math.round(tauxGen) + ' %' : '—';
+    tagEl.className   = 'kpi-tag ' + (tauxGen === null ? 'neu' : tauxGen >= 80 ? 'up' : tauxGen >= 50 ? 'neu' : 'down');
+  }
+  valEl.style.color =
+    tauxGen === null ? 'var(--text)' : tauxGen >= 80 ? 'var(--green)' : tauxGen >= 50 ? 'var(--amber)' : 'var(--red)';
+
+  // Mettre à jour le Score Performance en incluant ce taux
+  const texts = [
+    document.getElementById('ke-taux-prev')?.textContent,
+    document.getElementById('ke-taux-cor')?.textContent,
+    document.getElementById('ke-backlog-1m')?.textContent,
+    valEl.textContent
+  ];
+  const vals = texts.map(t => {
+    const m = (t || '').match(/(-?\d+(\.\d+)?)/);
+    return m ? parseFloat(m[1]) : null;
+  }).filter(v => v !== null && !isNaN(v));
+  if (vals.length > 0) {
+    const score = vals.reduce((a, b) => a + b, 0) / vals.length;
+    const sEl = document.getElementById('ke-score-perf');
+    const sN  = document.getElementById('ke-score-perf-n');
+    const sT  = document.getElementById('ke-score-perf-tag');
+    if (sEl) {
+      sEl.textContent = Math.round(score) + ' %';
+      sEl.style.color = score >= 80 ? 'var(--green)' : score >= 50 ? 'var(--amber)' : 'var(--red)';
+    }
+    if (sN) sN.textContent = vals.length;
+    if (sT) {
+      sT.textContent = Math.round(score) + ' %';
+      sT.className   = 'kpi-tag ' + (score >= 80 ? 'up' : score >= 50 ? 'neu' : 'down');
+    }
   }
 }
 
@@ -10209,24 +10300,10 @@ function calcKpiEntite(rows) {
   document.getElementById('ke-backlog-6m').style.color =
     taux6 === null ? 'var(--text)' : taux6 >= 80 ? 'var(--green)' : taux6 >= 50 ? 'var(--amber)' : 'var(--red)';
 
-  // ── KPI 7 : Taux de Génération des OT ────────────────────────────────
-  // Numérateur : lignes avec Colonne H (Ordre) non vide
-  // Dénominateur : lignes avec Colonne F (N° appel pl.entret.) non vide
-  const denGen = data.filter(r => (r[iF] || '').toString().trim() !== '').length;
-  const numGen = data.filter(r => (r[iF] || '').toString().trim() !== '' && (r[iH] || '').toString().trim() !== '').length;
-  const tauxGen = denGen > 0 ? (numGen / denGen * 100) : null;
-
-  document.getElementById('ke-taux-gen').textContent     = tauxGen !== null ? Math.round(tauxGen) + ' %' : '—';
-  document.getElementById('ke-taux-gen-num').textContent  = numGen;
-  document.getElementById('ke-taux-gen-den').textContent  = denGen;
-  const tagGen = document.getElementById('ke-taux-gen-tag');
-  tagGen.textContent = tauxGen !== null ? Math.round(tauxGen) + ' %' : '—';
-  tagGen.className   = 'kpi-tag ' + (tauxGen === null ? 'neu' : tauxGen >= 80 ? 'up' : tauxGen >= 50 ? 'neu' : 'down');
-  document.getElementById('ke-taux-gen').style.color =
-    tauxGen === null ? 'var(--text)' : tauxGen >= 80 ? 'var(--green)' : tauxGen >= 50 ? 'var(--amber)' : 'var(--red)';
-
   // ── Score Performance : moyenne des KPIs calculés ─────────────────────
-  const kpiValues = [taux, tauxCor, tauxBack, tauxGen].filter(v => v !== null);
+  // Note : le taux de génération est calculé séparément depuis un autre fichier
+  // et mis à jour par calcKpiGeneration() qui recalcule aussi le Score.
+  const kpiValues = [taux, tauxCor, tauxBack].filter(v => v !== null);
   const scorePerf = kpiValues.length > 0 ? kpiValues.reduce((a, b) => a + b, 0) / kpiValues.length : null;
 
   document.getElementById('ke-score-perf').textContent    = scorePerf !== null ? Math.round(scorePerf) + ' %' : '—';
