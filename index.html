@@ -136,6 +136,23 @@ select:focus { border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(59,130,
 
 /* KPI GRID — optimized for both screen & print */
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 14px; }
+/* KPI Entité — Titre de section (Performance, Qualité) */
+.ke-section-title {
+  display: flex; align-items: center; gap: 10px;
+  margin: 4px 0 14px; padding: 0;
+  font-size: 15px; font-weight: 700; letter-spacing: 0.3px;
+  color: var(--text);
+}
+.ke-section-title svg { stroke: var(--blue); flex-shrink: 0; }
+.ke-section-title span { white-space: nowrap; }
+.ke-section-title .ke-section-line {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--border2), transparent);
+}
+.ke-section-title.qualite svg { stroke: #7c3aed; }
+.ke-kpi-row + .ke-section-title { margin-top: 28px; }
+.kpi-prev-expand + .ke-section-title { margin-top: 24px; }
+
 /* KPI Entité — 8 cartes sur une seule ligne en PC */
 .ke-kpi-row { grid-template-columns: repeat(8, 1fr); gap: 10px; }
 @media(max-width:1100px) { .ke-kpi-row { grid-template-columns: repeat(4, 1fr); } }
@@ -2897,6 +2914,13 @@ td { padding: 9px 14px; vertical-align: middle; }
   <div id="ke-section-ot">
     <div id="ke-status" style="font-size:12px;color:var(--muted);margin-bottom:16px;display:none;padding:8px 12px;background:var(--bg);border-radius:6px;border:1px solid var(--border2);"></div>
 
+    <!-- Titre section Performance -->
+    <div class="ke-section-title">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Performance</span>
+      <div class="ke-section-line"></div>
+    </div>
+
     <div class="kpi-grid ke-kpi-row">
 
       <!-- KPI 1 : Taux réalisation calendrier préventif -->
@@ -3101,6 +3125,29 @@ td { padding: 9px 14px; vertical-align: middle; }
         <div class="sub-kpi-connector"></div>
       </div>
       <div class="kpi-sub-grid" id="ke-back6m-subkpi-grid"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         Section Qualité
+         ══════════════════════════════════════════════════════════ -->
+    <div class="ke-section-title qualite">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+      <span>Qualité</span>
+      <div class="ke-section-line"></div>
+    </div>
+
+    <div class="kpi-grid ke-kpi-row" id="ke-kpi-row-qualite">
+      <!-- Les KPIs Qualité seront ajoutés ici -->
+      <div class="kpi-card" style="opacity:0.6;">
+        <div class="kpi-card-top">
+          <div class="kpi-icon-box" style="background:#ede9fe;">
+            <svg viewBox="0 0 24 24" stroke="#7c3aed" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+        </div>
+        <div class="kpi-value" style="color:#7c3aed;">—</div>
+        <div class="kpi-label">KPI Qualité à définir</div>
+        <div class="kpi-sub">En attente de spécification</div>
+      </div>
     </div>
 
   </div>
