@@ -3139,7 +3139,7 @@ td { padding: 9px 14px; vertical-align: middle; }
     <div class="kpi-grid ke-kpi-row" id="ke-kpi-row-qualite">
 
       <!-- KPI Qualité 1 : Taux d'approbation des avis -->
-      <div class="kpi-card">
+      <div class="kpi-card expandable" id="ke-aprv-card" onclick="toggleKpiExpand(this,'ke-aprv-subkpi')">
         <div class="kpi-card-top">
           <div class="kpi-icon-box" style="background:#ede9fe;">
             <svg viewBox="0 0 24 24" stroke="#7c3aed" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
@@ -3149,6 +3149,10 @@ td { padding: 9px 14px; vertical-align: middle; }
         <div class="kpi-value" id="ke-taux-aprv">—</div>
         <div class="kpi-label">Taux d'approbation des avis</div>
         <div class="kpi-sub">Approuvés : <b id="ke-taux-aprv-num">—</b> / Total : <b id="ke-taux-aprv-den">—</b></div>
+        <div class="kpi-expand-hint">
+          <svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          Détail par poste de travail
+        </div>
       </div>
 
       <!-- KPI Qualité 2 : Taux de confirmation -->
@@ -3177,6 +3181,18 @@ td { padding: 9px 14px; vertical-align: middle; }
         <div class="kpi-sub">Caractérisés : <b id="ke-taux-caract-num">—</b> / Backlog : <b id="ke-taux-caract-den">—</b></div>
       </div>
 
+    </div>
+
+    <!-- ── Sous-KPI : Taux d'approbation par poste de travail ── -->
+    <div class="kpi-prev-expand" id="ke-aprv-subkpi">
+      <div class="sub-kpi-header">
+        <span class="sub-kpi-header-label">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          Détail par poste de travail
+        </span>
+        <div class="sub-kpi-connector"></div>
+      </div>
+      <div class="kpi-sub-grid" id="ke-aprv-subkpi-grid"></div>
     </div>
 
   </div>
@@ -10032,9 +10048,11 @@ function calcKpiApprobation(rows) {
     }
     return -1;
   };
-  // Colonne BL (63) : Statut utilisateur
+  // Colonne BL (63) : Statut utilisateur ; Colonne BI (60) : Poste travail princ.
   const iBL = ci('statut utilisateur', 'user status', 'statut util') !== -1
     ? ci('statut utilisateur', 'user status', 'statut util') : 63;
+  const iPoste = ci('poste travail princ', 'poste de travail princ', 'main work center') !== -1
+    ? ci('poste travail princ', 'poste de travail princ', 'main work center') : 60;
 
   const norm = s => (s || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
   const norm4 = s => norm(s).substring(0, 4);
@@ -10046,6 +10064,33 @@ function calcKpiApprobation(rows) {
   // Numérateur : BL commence par 'APRV'
   const num = denData.filter(r => norm4(r[iBL]) === 'APRV').length;
   const taux = den > 0 ? (num / den * 100) : null;
+
+  // ── Sous-KPIs par Poste travail princ. ────────────────────────────────
+  const postesSet = new Set();
+  denData.forEach(r => { const p = (r[iPoste] || '').trim(); if (p) postesSet.add(p); });
+  const postes = [...postesSet].sort();
+  const grid = document.getElementById('ke-aprv-subkpi-grid');
+  if (grid) {
+    grid.innerHTML = '';
+    postes.forEach((poste, idx) => {
+      const postData = data.filter(r => (r[iPoste] || '').trim() === poste);
+      const pDen = postData.filter(r => (r[iBL] || '').trim() !== '' && norm4(r[iBL]) !== 'ZL').length;
+      const pNum = postData.filter(r => (r[iBL] || '').trim() !== '' && norm4(r[iBL]) !== 'ZL' && norm4(r[iBL]) === 'APRV').length;
+      const pTaux = pDen > 0 ? (pNum / pDen * 100) : null;
+      const color = pTaux === null ? 'var(--border)' : pTaux >= 80 ? 'var(--green)' : pTaux >= 50 ? 'var(--amber)' : 'var(--red)';
+      const card = document.createElement('div');
+      card.className = 'kpi-sub-card';
+      card.style.borderColor = color;
+      card.style.transitionDelay = (0.07 + idx * 0.07) + 's';
+      card.innerHTML = `
+        <span class="sub-poste">${poste}</span>
+        <div class="sub-value" style="color:${color};">${pTaux !== null ? Math.round(pTaux) + ' %' : '—'}</div>
+        <div class="sub-label">Taux d'approbation · ${poste}</div>
+        <div class="sub-info">Approuvés : <b>${pNum}</b> / Total : <b>${pDen}</b></div>
+      `;
+      grid.appendChild(card);
+    });
+  }
 
   const valEl = document.getElementById('ke-taux-aprv');
   const numEl = document.getElementById('ke-taux-aprv-num');
