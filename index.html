@@ -3164,6 +3164,19 @@ td { padding: 9px 14px; vertical-align: middle; }
         <div class="kpi-sub">Confirmés : <b id="ke-taux-conf-num">—</b> / Clôturés : <b id="ke-taux-conf-den">—</b></div>
       </div>
 
+      <!-- KPI Qualité 3 : Taux de caractérisation du Backlog -->
+      <div class="kpi-card">
+        <div class="kpi-card-top">
+          <div class="kpi-icon-box" style="background:#ede9fe;">
+            <svg viewBox="0 0 24 24" stroke="#7c3aed" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          </div>
+          <span class="kpi-tag neu" id="ke-taux-caract-tag">—</span>
+        </div>
+        <div class="kpi-value" id="ke-taux-caract">—</div>
+        <div class="kpi-label">Taux de caractérisation du Backlog</div>
+        <div class="kpi-sub">Caractérisés : <b id="ke-taux-caract-num">—</b> / Backlog : <b id="ke-taux-caract-den">—</b></div>
+      </div>
+
     </div>
 
   </div>
@@ -10472,6 +10485,37 @@ function calcKpiEntite(rows) {
     tagConf.textContent = tauxConf !== null ? Math.round(tauxConf) + ' %' : '—';
     tagConf.className   = 'kpi-tag ' + (tauxConf === null ? 'neu' : tauxConf >= 80 ? 'up' : tauxConf >= 50 ? 'neu' : 'down');
     confEl.style.color = tauxConf === null ? 'var(--text)' : tauxConf >= 80 ? 'var(--green)' : tauxConf >= 50 ? 'var(--amber)' : 'var(--red)';
+  }
+
+  // ── KPI Qualité : Taux de caractérisation du Backlog ───────────────────
+  // Dénominateur : AU ne commence pas par 'TCLO' ou 'CLOT'
+  // Numérateur   : dénominateur + AV contient l'une des combinaisons caractérisantes
+  const CARACT_PATTERNS = [
+    'CRPR ATPD','CRPR AVPD','CRPR ATOU','CRPR ATER',
+    'SOPL REPL','SOPL REWO',
+    'ATPL ATMR','ATPL ATRS','ATPL ATEI','ATPL ATAL','ATPL ATAS','ATPL AGAR','ATPL ATML'
+  ];
+  const denCaract = data.filter(r => {
+    const s4 = keNorm4(r[iAU]);
+    return s4 !== 'TCLO' && s4 !== 'CLOT';
+  }).length;
+  const numCaract = data.filter(r => {
+    const s4 = keNorm4(r[iAU]);
+    if (s4 === 'TCLO' || s4 === 'CLOT') return false;
+    const av = (r[iAV] || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+    return CARACT_PATTERNS.some(p => av.includes(p));
+  }).length;
+  const tauxCaract = denCaract > 0 ? (numCaract / denCaract * 100) : null;
+
+  const caractEl = document.getElementById('ke-taux-caract');
+  if (caractEl) {
+    caractEl.textContent = tauxCaract !== null ? Math.round(tauxCaract) + ' %' : '—';
+    document.getElementById('ke-taux-caract-num').textContent = numCaract;
+    document.getElementById('ke-taux-caract-den').textContent = denCaract;
+    const tagCaract = document.getElementById('ke-taux-caract-tag');
+    tagCaract.textContent = tauxCaract !== null ? Math.round(tauxCaract) + ' %' : '—';
+    tagCaract.className   = 'kpi-tag ' + (tauxCaract === null ? 'neu' : tauxCaract >= 80 ? 'up' : tauxCaract >= 50 ? 'neu' : 'down');
+    caractEl.style.color = tauxCaract === null ? 'var(--text)' : tauxCaract >= 80 ? 'var(--green)' : tauxCaract >= 50 ? 'var(--amber)' : 'var(--red)';
   }
 
   // ── Score Performance : moyenne des KPIs calculés ─────────────────────
