@@ -3181,6 +3181,19 @@ td { padding: 9px 14px; vertical-align: middle; }
         <div class="kpi-sub">Caractérisés : <b id="ke-taux-caract-num">—</b> / Backlog : <b id="ke-taux-caract-den">—</b></div>
       </div>
 
+      <!-- KPI Qualité 4 : Nombre d'avis Z4 -->
+      <div class="kpi-card">
+        <div class="kpi-card-top">
+          <div class="kpi-icon-box" style="background:#ede9fe;">
+            <svg viewBox="0 0 24 24" stroke="#7c3aed" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <span class="kpi-tag neu" id="ke-nb-avis-z4-tag">—</span>
+        </div>
+        <div class="kpi-value" id="ke-nb-avis-z4">—</div>
+        <div class="kpi-label">Nombre d'avis Z4</div>
+        <div class="kpi-sub">Type d'avis = Z4 : <b id="ke-nb-avis-z4-val">—</b></div>
+      </div>
+
     </div>
 
     <!-- ── Sous-KPI : Taux d'approbation par poste de travail ── -->
@@ -10048,11 +10061,13 @@ function calcKpiApprobation(rows) {
     }
     return -1;
   };
-  // Colonne BL (63) : Statut utilisateur ; Colonne BI (60) : Poste travail princ.
+  // Colonne BL (63) : Statut utilisateur ; Colonne BI (60) : Poste travail princ. ; Colonne AJ (35) : Type d'avis
   const iBL = ci('statut utilisateur', 'user status', 'statut util') !== -1
     ? ci('statut utilisateur', 'user status', 'statut util') : 63;
   const iPoste = ci('poste travail princ', 'poste de travail princ', 'main work center') !== -1
     ? ci('poste travail princ', 'poste de travail princ', 'main work center') : 60;
+  const iTypeAvis = ci("type d'avis", 'type avis', 'notification type') !== -1
+    ? ci("type d'avis", 'type avis', 'notification type') : 35;
 
   const norm = s => (s || '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
   const norm4 = s => norm(s).substring(0, 4);
@@ -10106,6 +10121,15 @@ function calcKpiApprobation(rows) {
   }
   valEl.style.color =
     taux === null ? 'var(--text)' : taux >= 80 ? 'var(--green)' : taux >= 50 ? 'var(--amber)' : 'var(--red)';
+
+  // ── KPI Qualité 4 : Nombre d'avis Z4 ──────────────────────────────────────
+  const nbZ4 = data.filter(r => (r[iTypeAvis] || '').trim().toUpperCase() === 'Z4').length;
+  const z4Val  = document.getElementById('ke-nb-avis-z4');
+  const z4Sub  = document.getElementById('ke-nb-avis-z4-val');
+  const z4Tag  = document.getElementById('ke-nb-avis-z4-tag');
+  if (z4Val) z4Val.textContent = nbZ4;
+  if (z4Sub) z4Sub.textContent = nbZ4;
+  if (z4Tag) { z4Tag.textContent = nbZ4; z4Tag.className = 'kpi-tag neu'; }
 }
 
 // ── Chargement du fichier séparé pour le KPI "Taux de Génération des OT" ──
