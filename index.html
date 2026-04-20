@@ -8183,34 +8183,21 @@ function getPDRConf(ordreKey) {
   return getPDRStore()[ordreKey] || null;
 }
 
-/* ── Actualisation globale (topbar) ── */
+/* ── Actualisation globale (topbar) — hard refresh ── */
 async function globalRefresh() {
   const btn  = document.getElementById('global-refresh-btn');
   const icon = document.getElementById('global-refresh-icon');
   if (btn) btn.disabled = true;
   if (icon) icon.style.animation = 'pdr-spin 0.8s linear infinite';
-  // Reset tous les caches
-  _travHebdoCsvRows  = null;
-  _travHebdoFetching = null;
-  try { localStorage.removeItem(_TRAV_LS_KEY); } catch(e) {}
-  pdrDataLoaded    = false;
-  pdrTableRendered = false;
-  mapDataLoaded    = false;
-  mapTableRendered = false;
-  _caLoaded        = false;
-  // Rester sur la page et sous-onglet actifs
+  // Vider les caches service worker si présents
   try {
-    if (_currentMainPage === 'planification') {
-      showMainPage('planification');
-      if (_currentPlanTab === 'pdr')            await loadPDRData();
-      else if (_currentPlanTab === 'map')       await loadMAPData();
-      else if (_currentPlanTab === 'calarrets') loadCalArretsData();
-    } else if (_currentMainPage) {
-      showMainPage(_currentMainPage);
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
     }
   } catch(e) {}
-  if (btn) btn.disabled = false;
-  if (icon) icon.style.animation = '';
+  // Hard reload (contourne le cache navigateur)
+  window.location.href = window.location.pathname + '?v=' + Date.now();
 }
 
 /* ── Chargement données ── */
