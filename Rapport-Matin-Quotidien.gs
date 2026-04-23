@@ -105,16 +105,23 @@ function envoyerRapportMatin() {
     // ── Génération PDF natif (DocumentApp)
     const pdfBlob = genererPdfDocApp(dateStr, pdrConfirmes, otRealises, nomFich);
 
-    // ── Corps du mail (bref résumé)
+    // ── Sauvegarde dans Drive + lien de téléchargement
+    const lienPdf = sauvegarderPdfDrive(pdfBlob);
+
+    // ── Corps du mail avec lien Drive (envoyé via sendEmailOCP existant)
     const corps = '<p>Bonjour,</p>'
-      + '<p>Veuillez trouver ci-joint le rapport matin du <strong>' + cap(dateStr) + '</strong>.</p>'
+      + '<p>Le rapport matin du <strong>' + cap(dateStr) + '</strong> est disponible :</p>'
       + '<ul>'
       + '<li><strong>' + pdrConfirmes.length + '</strong> PDR confirmé(s)</li>'
       + '<li><strong>' + otRealises.length   + '</strong> OT réalisé(s)</li>'
       + '</ul>'
+      + '<p style="margin:20px 0;">'
+      + '<a href="' + lienPdf + '" style="background:#1e3a5f;color:#fff;padding:10px 20px;'
+      + 'border-radius:6px;text-decoration:none;font-weight:bold;">Télécharger le rapport PDF</a>'
+      + '</p>'
       + '<p style="color:#9ca3af;font-size:11px;">Maintenance Analytics · OCP Daoui</p>';
 
-    envoyerEmailAvecPDF(DESTINATAIRE_RAPPORT, subject, corps, pdfBlob);
+    sendEmailOCP(DESTINATAIRE_RAPPORT, subject, '', { htmlBody: corps });
 
     Logger.log('[Rapport Matin] Envoyé | PDR=' + pdrConfirmes.length + ' | OT=' + otRealises.length);
 
@@ -268,10 +275,29 @@ function genererPdfDocApp(dateStr, pdrConfirmes, otRealises, nomFichier) {
   return pdfBlob;
 }
 
-// ── Envoi EWS avec pièce jointe PDF (3 étapes : Create → Attach → Send) ───────
-//
-// Remplace l'approche MimeContent qui dépassait le quota de bande passante.
-// Le PDF est attaché dans un appel séparé, ce qui évite le double encodage base64.
+// ── Sauvegarde PDF dans Google Drive ─────────────────────────────────────────
+
+/**
+ * Sauvegarde le PDF dans un dossier Drive "Rapports Matin" et retourne
+ * l'URL de prévisualisation (accessible à quiconque possède le lien).
+ */
+function sauvegarderPdfDrive(pdfBlob) {
+  const NOM_DOSSIER = 'Rapports Matin — Maintenance Daoui';
+
+  // Cherche ou crée le dossier
+  const folders = DriveApp.getFoldersByName(NOM_DOSSIER);
+  const dossier = folders.hasNext() ? folders.next() : DriveApp.createFolder(NOM_DOSSIER);
+
+  // Sauvegarde le PDF
+  const fichier = dossier.createFile(pdfBlob);
+  fichier.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+  return fichier.getUrl();
+}
+
+// ── [OBSOLÈTE — conservé pour référence] ─────────────────────────────────────
+// L'envoi EWS avec pièce jointe est bloqué par le pare-feu OCP.
+// Le PDF est désormais sauvegardé dans Drive et le lien est inclus dans le mail.
 
 function envoyerEmailAvecPDF(to, subject, htmlBody, pdfBlob) {
   const props     = PropertiesService.getScriptProperties();
