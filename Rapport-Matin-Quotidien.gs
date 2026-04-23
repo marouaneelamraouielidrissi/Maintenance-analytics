@@ -130,15 +130,60 @@ function envoyerRapportMatin() {
 // ── Génération PDF via DriveApp ───────────────────────────────────────────────
 
 /**
- * Convertit un contenu HTML en blob PDF en passant par Google Drive.
- * Le fichier temporaire est supprimé immédiatement après conversion.
+ * Convertit un contenu HTML en blob PDF via l'API Drive REST.
+ * Utilise ScriptApp.getOAuthToken() — pas besoin d'autorisation supplémentaire
+ * si le scope drive est déclaré dans appsscript.json.
+ *
+ * Scope requis (à ajouter dans appsscript.json) :
+ * "https://www.googleapis.com/auth/drive"
  */
 function genererPdfDepuisHtml(htmlContent, nomFichier) {
-  const htmlBlob = Utilities.newBlob(htmlContent, MimeType.HTML, 'tmp_rapport.html');
-  const tempFile = DriveApp.createFile(htmlBlob);
-  const pdfBlob  = tempFile.getAs(MimeType.PDF);
+  const token = ScriptApp.getOAuthToken();
+
+  // Étape 1 : upload du HTML en tant que Google Doc (conversion automatique)
+  const uploadResp = UrlFetchApp.fetch(
+    'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&convert=true',
+    {
+      method      : 'POST',
+      contentType : 'multipart/related; boundary=boundary_rm',
+      headers     : { Authorization: 'Bearer ' + token },
+      payload     : Utilities.newBlob(
+        '--boundary_rm\r\n'
+        + 'Content-Type: application/json; charset=UTF-8\r\n\r\n'
+        + JSON.stringify({ name: 'tmp_rapport', mimeType: 'application/vnd.google-apps.document' })
+        + '\r\n--boundary_rm\r\n'
+        + 'Content-Type: text/html; charset=UTF-8\r\n\r\n'
+        + htmlContent
+        + '\r\n--boundary_rm--'
+      ),
+      muteHttpExceptions: true,
+    }
+  );
+
+  if (uploadResp.getResponseCode() !== 200) {
+    throw new Error('Drive upload erreur ' + uploadResp.getResponseCode() + ' : ' + uploadResp.getContentText().substring(0, 400));
+  }
+
+  const fileId = JSON.parse(uploadResp.getContentText()).id;
+
+  // Étape 2 : export en PDF
+  const pdfResp = UrlFetchApp.fetch(
+    'https://www.googleapis.com/drive/v3/files/' + fileId + '/export?mimeType=application/pdf',
+    { headers: { Authorization: 'Bearer ' + token }, muteHttpExceptions: true }
+  );
+
+  // Étape 3 : suppression du fichier temporaire
+  UrlFetchApp.fetch(
+    'https://www.googleapis.com/drive/v3/files/' + fileId,
+    { method: 'DELETE', headers: { Authorization: 'Bearer ' + token }, muteHttpExceptions: true }
+  );
+
+  if (pdfResp.getResponseCode() !== 200) {
+    throw new Error('Drive export PDF erreur ' + pdfResp.getResponseCode());
+  }
+
+  const pdfBlob = pdfResp.getBlob();
   pdfBlob.setName(nomFichier);
-  tempFile.setTrashed(true);
   return pdfBlob;
 }
 
