@@ -1,15 +1,21 @@
 /**
  * Rapport-Matin-Quotidien.gs
  * ─────────────────────────────────────────────────────────────────────────────
- * Envoie chaque jour à 8h un email avec le rapport en PIÈCE JOINTE PDF :
- *   • PDR confirmés  : Dispo = "OUI"  AND  Col V ∉ {TCLO, CLOT}  AND  Col K ne commence pas par "SOPL"
- *   • OT réalisés    : Réalisation = "Fait"  AND  Col V ∉ {TCLO, CLOT}
+ * Envoie chaque jour à 8h un email avec le rapport en PIÈCE JOINTE PDF natif.
+ * Le PDF est généré via DocumentApp (Google Docs) — pas de conversion HTML.
  *
- * INSTALLATION :
- *   1. Copiez ce fichier dans le même projet Google Apps Script que google_apps_script.js
- *   2. Vérifiez que RM_SHEET_ID correspond bien à votre feuille "Travaux hebdomadaire"
- *   3. Modifiez DESTINATAIRE_RAPPORT si besoin
- *   4. Exécutez UNE SEULE FOIS configurerDeclencheurMatin() pour créer le trigger quotidien
+ * Filtres :
+ *   PDR confirmés  : Dispo = "OUI"
+ *                    ET Col V ∉ {TCLO, CLOT, LANC}
+ *                    ET Col K ne commence pas par "SOPL"
+ *   OT réalisés    : Réalisation = "Fait"
+ *                    ET Col V ∉ {TCLO, CLOT, LANC}
+ *
+ * Scopes requis dans appsscript.json :
+ *   "https://www.googleapis.com/auth/drive"
+ *   "https://www.googleapis.com/auth/documents"
+ *   "https://www.googleapis.com/auth/spreadsheets"
+ *   "https://www.googleapis.com/auth/script.external_request"
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -17,7 +23,6 @@
 
 const RM_SHEET_ID   = '1C9bYkPsoYg81ARgolVDlZRwsMZk4Seff6aC7vfxoVeE';
 const RM_SHEET_NAME = 'Travaux hebdomadaire';
-
 const DESTINATAIRE_RAPPORT = 'm.elamraoui@ocpgroup.ma';
 
 // Colonnes (index 0-basé)
@@ -25,23 +30,31 @@ const COL_ORDRE       = 0;   // A  – Numéro OT
 const COL_DESC        = 3;   // D  – Description
 const COL_OBJET       = 5;   // F  – Objet technique
 const COL_POSTE       = 8;   // I  – Poste de travail
-const COL_STATUT_UTIL = 10;  // K  – Statut utilisateur (ex : CRPR, SOPL…)
-const COL_REALISATION = 14;  // O  – Réalisation : "Fait" | "NFait"
+const COL_STATUT_UTIL = 10;  // K  – Statut utilisateur
+const COL_REALISATION = 14;  // O  – "Fait" | "NFait"
 const COL_PDR         = 18;  // S  – Désignation PDR
-const COL_DISPO       = 19;  // T  – Disponibilité : "OUI" | "NON" | vide
+const COL_DISPO       = 19;  // T  – "OUI" | "NON" | vide
 const COL_OBS         = 20;  // U  – Observation
-const COL_STATUT_SYS  = 21;  // V  – Statut système ABR (TCLO, CLOT, créé…)
+const COL_STATUT_SYS  = 21;  // V  – Statut système ABR
+
+// Couleurs
+const VERT_FONCE  = '#166534';
+const VERT_CLAIR  = '#d1fae5';
+const VERT_ZEBRE  = '#f0fdf4';
+const BLEU_FONCE  = '#1e3a5f';
+const BLEU_CLAIR  = '#dbeafe';
+const BLEU_ZEBRE  = '#eff6ff';
+const GRIS_TEXTE  = '#6b7280';
+const GRIS_PIED   = '#9ca3af';
 
 // ── Helpers de filtrage ───────────────────────────────────────────────────────
 
-/** Retourne true si le statut système ABR exclut la ligne (TCLO ou CLOT) */
-function estStatutSysExclu(row) {
+function statutSysExclu(row) {
   const s = String(row[COL_STATUT_SYS] || '').toUpperCase();
-  return s.includes('TCLO') || s.includes('CLOT');
+  return s.includes('TCLO') || s.includes('CLOT') || s.includes('LANC');
 }
 
-/** Retourne true si le statut utilisateur commence par SOPL */
-function estStatutUtilSOPL(row) {
+function statutUtilSOPL(row) {
   return String(row[COL_STATUT_UTIL] || '').trim().toUpperCase().startsWith('SOPL');
 }
 
@@ -51,135 +64,203 @@ function envoyerRapportMatin() {
   try {
     const ss    = SpreadsheetApp.openById(RM_SHEET_ID);
     const sheet = ss.getSheetByName(RM_SHEET_NAME);
-
-    if (!sheet) {
-      Logger.log('[Rapport Matin] Feuille introuvable : ' + RM_SHEET_NAME);
-      return;
-    }
+    if (!sheet) { Logger.log('[Rapport Matin] Feuille introuvable : ' + RM_SHEET_NAME); return; }
 
     const data = sheet.getDataRange().getValues();
-    if (data.length < 2) {
-      Logger.log('[Rapport Matin] Aucune donnée dans la feuille.');
-      return;
-    }
+    if (data.length < 2) { Logger.log('[Rapport Matin] Aucune donnée.'); return; }
 
     const rows = data.slice(1);
 
-    // ── PDR confirmés ──────────────────────────────────────────────────────
-    // Règle : Dispo = "OUI"  ET  Col V ∉ {TCLO, CLOT}  ET  Col K ne commence pas par "SOPL"
+    // ── PDR confirmés : Dispo=OUI  ET  Col V ∉ {TCLO,CLOT,LANC}  ET  Col K ne commence pas par SOPL
     const pdrConfirmes = rows
-      .filter(row => {
-        const pdr   = String(row[COL_PDR]   || '').trim();
-        const dispo = String(row[COL_DISPO] || '').trim().toUpperCase();
-        return pdr && dispo === 'OUI' && !estStatutSysExclu(row) && !estStatutUtilSOPL(row);
-      })
-      .map(row => ({
-        ordre      : String(row[COL_ORDRE]       || '').trim(),
-        desc       : String(row[COL_DESC]        || '').trim(),
-        objet      : String(row[COL_OBJET]       || '').trim(),
-        poste      : String(row[COL_POSTE]       || '').trim(),
-        statutUtil : String(row[COL_STATUT_UTIL] || '').trim(),
-        pdr        : String(row[COL_PDR]         || '').trim(),
-        obs        : String(row[COL_OBS]         || '').trim(),
+      .filter(r => String(r[COL_PDR] || '').trim()
+               && String(r[COL_DISPO] || '').trim().toUpperCase() === 'OUI'
+               && !statutSysExclu(r)
+               && !statutUtilSOPL(r))
+      .map(r => ({
+        ordre : String(r[COL_ORDRE]       || '').trim(),
+        desc  : String(r[COL_DESC]        || '').trim(),
+        objet : String(r[COL_OBJET]       || '').trim(),
+        poste : String(r[COL_POSTE]       || '').trim(),
+        pdr   : String(r[COL_PDR]         || '').trim(),
+        obs   : String(r[COL_OBS]         || '').trim(),
       }));
 
-    // ── OT réalisés ────────────────────────────────────────────────────────
-    // Règle : Réalisation = "Fait"  ET  Col V ∉ {TCLO, CLOT}
+    // ── OT réalisés : Réalisation=Fait  ET  Col V ∉ {TCLO,CLOT,LANC}
     const otRealises = rows
-      .filter(row => {
-        const real = String(row[COL_REALISATION] || '').trim();
-        return real === 'Fait' && !estStatutSysExclu(row);
-      })
-      .map(row => ({
-        ordre      : String(row[COL_ORDRE]       || '').trim(),
-        desc       : String(row[COL_DESC]        || '').trim(),
-        objet      : String(row[COL_OBJET]       || '').trim(),
-        poste      : String(row[COL_POSTE]       || '').trim(),
-        statutUtil : String(row[COL_STATUT_UTIL] || '').trim(),
-        obs        : String(row[COL_OBS]         || '').trim(),
+      .filter(r => String(r[COL_REALISATION] || '').trim() === 'Fait' && !statutSysExclu(r))
+      .map(r => ({
+        ordre : String(r[COL_ORDRE]  || '').trim(),
+        desc  : String(r[COL_DESC]   || '').trim(),
+        objet : String(r[COL_OBJET]  || '').trim(),
+        poste : String(r[COL_POSTE]  || '').trim(),
+        obs   : String(r[COL_OBS]    || '').trim(),
       }));
 
-    const today   = new Date();
-    const dateStr = Utilities.formatDate(today, Session.getScriptTimeZone(), "EEEE dd MMMM yyyy");
-    const subject = 'Rapport Matin — ' + capitaliserPremiere(dateStr);
+    const today    = new Date();
+    const dateStr  = Utilities.formatDate(today, Session.getScriptTimeZone(), "EEEE dd MMMM yyyy");
+    const nomFich  = 'Rapport-Matin-' + Utilities.formatDate(today, Session.getScriptTimeZone(), 'yyyy-MM-dd') + '.pdf';
+    const subject  = 'Rapport Matin — ' + cap(dateStr);
 
-    // ── Génération du PDF ──────────────────────────────────────────────────
-    const htmlContent = construireHtmlRapport(dateStr, pdrConfirmes, otRealises);
-    const nomFichier  = 'Rapport-Matin-' + Utilities.formatDate(today, Session.getScriptTimeZone(), 'yyyy-MM-dd') + '.pdf';
-    const pdfBlob     = genererPdfDepuisHtml(htmlContent, nomFichier);
+    // ── Génération PDF natif (DocumentApp)
+    const pdfBlob = genererPdfDocApp(dateStr, pdrConfirmes, otRealises, nomFich);
 
-    // ── Envoi avec pièce jointe ────────────────────────────────────────────
-    const corpsMail = '<p>Bonjour,</p>'
-      + '<p>Veuillez trouver ci-joint le rapport matin du <strong>' + capitaliserPremiere(dateStr) + '</strong>.</p>'
+    // ── Corps du mail (bref résumé)
+    const corps = '<p>Bonjour,</p>'
+      + '<p>Veuillez trouver ci-joint le rapport matin du <strong>' + cap(dateStr) + '</strong>.</p>'
       + '<ul>'
       + '<li><strong>' + pdrConfirmes.length + '</strong> PDR confirmé(s)</li>'
-      + '<li><strong>' + otRealises.length + '</strong> OT réalisé(s)</li>'
+      + '<li><strong>' + otRealises.length   + '</strong> OT réalisé(s)</li>'
       + '</ul>'
-      + '<p style="color:#6b7280;font-size:12px;">Maintenance Analytics · OCP Daoui</p>';
+      + '<p style="color:#9ca3af;font-size:11px;">Maintenance Analytics · OCP Daoui</p>';
 
-    envoyerEmailAvecPDF(DESTINATAIRE_RAPPORT, subject, corpsMail, pdfBlob);
+    envoyerEmailAvecPDF(DESTINATAIRE_RAPPORT, subject, corps, pdfBlob);
 
-    Logger.log('[Rapport Matin] Email envoyé | PDR confirmés : ' + pdrConfirmes.length
-               + ' | OT réalisés : ' + otRealises.length);
+    Logger.log('[Rapport Matin] Envoyé | PDR=' + pdrConfirmes.length + ' | OT=' + otRealises.length);
 
   } catch (err) {
-    Logger.log('[Rapport Matin] ERREUR : ' + err.toString() + '\n' + err.stack);
+    Logger.log('[Rapport Matin] ERREUR : ' + err.toString() + '\n' + (err.stack || ''));
   }
 }
 
-// ── Génération PDF via DriveApp ───────────────────────────────────────────────
+// ── Génération PDF natif via DocumentApp ──────────────────────────────────────
 
-/**
- * Convertit un contenu HTML en blob PDF via l'API Drive REST.
- * Utilise ScriptApp.getOAuthToken() — pas besoin d'autorisation supplémentaire
- * si le scope drive est déclaré dans appsscript.json.
- *
- * Scope requis (à ajouter dans appsscript.json) :
- * "https://www.googleapis.com/auth/drive"
- */
-function genererPdfDepuisHtml(htmlContent, nomFichier) {
-  const token = ScriptApp.getOAuthToken();
+function genererPdfDocApp(dateStr, pdrConfirmes, otRealises, nomFichier) {
 
-  // Étape 1 : upload du HTML en tant que Google Doc (conversion automatique)
-  const uploadResp = UrlFetchApp.fetch(
-    'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&convert=true',
-    {
-      method      : 'POST',
-      contentType : 'multipart/related; boundary=boundary_rm',
-      headers     : { Authorization: 'Bearer ' + token },
-      payload     : Utilities.newBlob(
-        '--boundary_rm\r\n'
-        + 'Content-Type: application/json; charset=UTF-8\r\n\r\n'
-        + JSON.stringify({ name: 'tmp_rapport', mimeType: 'application/vnd.google-apps.document' })
-        + '\r\n--boundary_rm\r\n'
-        + 'Content-Type: text/html; charset=UTF-8\r\n\r\n'
-        + htmlContent
-        + '\r\n--boundary_rm--'
-      ),
-      muteHttpExceptions: true,
-    }
-  );
+  const doc  = DocumentApp.create('__tmp_rapport_matin__');
+  const body = doc.getBody();
+  body.setMarginTop(40).setMarginBottom(40).setMarginLeft(50).setMarginRight(50);
 
-  if (uploadResp.getResponseCode() !== 200) {
-    throw new Error('Drive upload erreur ' + uploadResp.getResponseCode() + ' : ' + uploadResp.getContentText().substring(0, 400));
+  // ── Titre ──────────────────────────────────────────────────────────────────
+  const titre = body.appendParagraph('RAPPORT MATIN — MAINTENANCE DAOUI');
+  titre.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+  titre.editAsText().setFontFamily('Arial').setFontSize(16).setBold(true).setForegroundColor(BLEU_FONCE);
+
+  const datePara = body.appendParagraph(cap(dateStr));
+  datePara.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+  datePara.editAsText().setFontFamily('Arial').setFontSize(11).setItalic(true).setForegroundColor(GRIS_TEXTE);
+
+  body.appendParagraph('');
+
+  // ── Résumé (tableau 2 colonnes) ────────────────────────────────────────────
+  const resumeData = [
+    [String(pdrConfirmes.length), String(otRealises.length)],
+    ['PDR Confirmés',             'OT Réalisés'            ],
+  ];
+  const resumeTable = body.appendTable(resumeData);
+  resumeTable.setBorderWidth(0);
+
+  [[VERT_CLAIR, BLEU_CLAIR], [VERT_CLAIR, BLEU_CLAIR]].forEach((cols, ri) => {
+    const tRow = resumeTable.getRow(ri);
+    cols.forEach((bg, ci) => {
+      const cell = tRow.getCell(ci);
+      cell.setBackgroundColor(bg);
+      const para = cell.getChild(0).asParagraph();
+      para.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+      const txt = para.editAsText().setFontFamily('Arial');
+      if (ri === 0) {
+        txt.setFontSize(28).setBold(true).setForegroundColor(ci === 0 ? VERT_FONCE : BLEU_FONCE);
+      } else {
+        txt.setFontSize(10).setBold(false).setForegroundColor(ci === 0 ? VERT_FONCE : BLEU_FONCE);
+      }
+    });
+  });
+
+  body.appendParagraph('');
+
+  // ── Section PDR confirmés ──────────────────────────────────────────────────
+  const pdrTitre = body.appendParagraph('PDR CONFIRMÉS');
+  pdrTitre.editAsText().setFontFamily('Arial').setFontSize(12).setBold(true).setForegroundColor(VERT_FONCE);
+
+  if (pdrConfirmes.length === 0) {
+    const vide = body.appendParagraph('Aucun PDR confirmé pour le moment.');
+    vide.editAsText().setFontFamily('Arial').setFontSize(10).setItalic(true).setForegroundColor(GRIS_TEXTE);
+  } else {
+    const entetesPDR = ['Ordre OT', 'Description', 'Objet technique', 'Poste', 'PDR', 'Observation'];
+    const pdrTable   = body.appendTable();
+    pdrTable.setBorderWidth(1);
+
+    // En-tête
+    const hRow = pdrTable.appendTableRow();
+    entetesPDR.forEach(label => {
+      const c = hRow.appendTableCell(label);
+      c.setBackgroundColor(VERT_FONCE);
+      c.editAsText().setFontFamily('Arial').setFontSize(8).setBold(true).setForegroundColor('#ffffff');
+    });
+
+    // Données
+    pdrConfirmes.forEach((r, i) => {
+      const bg   = i % 2 === 0 ? VERT_ZEBRE : '#ffffff';
+      const dRow = pdrTable.appendTableRow();
+      [r.ordre, r.desc, r.objet, r.poste, r.pdr, r.obs || '—'].forEach((val, j) => {
+        const c = dRow.appendTableCell(val);
+        c.setBackgroundColor(bg);
+        const t = c.editAsText().setFontFamily('Arial').setFontSize(8).setForegroundColor('#111827');
+        if (j === 0) t.setBold(true).setForegroundColor(VERT_FONCE);
+      });
+    });
   }
 
-  const fileId = JSON.parse(uploadResp.getContentText()).id;
+  body.appendParagraph('');
 
-  // Étape 2 : export en PDF
+  // ── Section OT réalisés ────────────────────────────────────────────────────
+  const otTitre = body.appendParagraph('OT RÉALISÉS');
+  otTitre.editAsText().setFontFamily('Arial').setFontSize(12).setBold(true).setForegroundColor(BLEU_FONCE);
+
+  if (otRealises.length === 0) {
+    const vide = body.appendParagraph('Aucun OT réalisé pour le moment.');
+    vide.editAsText().setFontFamily('Arial').setFontSize(10).setItalic(true).setForegroundColor(GRIS_TEXTE);
+  } else {
+    const entetesOT = ['Ordre OT', 'Description', 'Objet technique', 'Poste', 'Observation'];
+    const otTable   = body.appendTable();
+    otTable.setBorderWidth(1);
+
+    // En-tête
+    const hRow = otTable.appendTableRow();
+    entetesOT.forEach(label => {
+      const c = hRow.appendTableCell(label);
+      c.setBackgroundColor(BLEU_FONCE);
+      c.editAsText().setFontFamily('Arial').setFontSize(8).setBold(true).setForegroundColor('#ffffff');
+    });
+
+    // Données
+    otRealises.forEach((r, i) => {
+      const bg   = i % 2 === 0 ? BLEU_ZEBRE : '#ffffff';
+      const dRow = otTable.appendTableRow();
+      [r.ordre, r.desc, r.objet, r.poste, r.obs || '—'].forEach((val, j) => {
+        const c = dRow.appendTableCell(val);
+        c.setBackgroundColor(bg);
+        const t = c.editAsText().setFontFamily('Arial').setFontSize(8).setForegroundColor('#111827');
+        if (j === 0) t.setBold(true).setForegroundColor(BLEU_FONCE);
+      });
+    });
+  }
+
+  // ── Pied de page ──────────────────────────────────────────────────────────
+  body.appendParagraph('');
+  const pied = body.appendParagraph('Rapport généré automatiquement chaque jour à 8h00 — Maintenance Analytics · OCP Daoui');
+  pied.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+  pied.editAsText().setFontFamily('Arial').setFontSize(8).setItalic(true).setForegroundColor(GRIS_PIED);
+
+  doc.saveAndClose();
+
+  // ── Export en PDF via Drive API ────────────────────────────────────────────
+  const fileId = doc.getId();
+  const token  = ScriptApp.getOAuthToken();
+
   const pdfResp = UrlFetchApp.fetch(
     'https://www.googleapis.com/drive/v3/files/' + fileId + '/export?mimeType=application/pdf',
     { headers: { Authorization: 'Bearer ' + token }, muteHttpExceptions: true }
   );
 
-  // Étape 3 : suppression du fichier temporaire
+  // Suppression du document temporaire
   UrlFetchApp.fetch(
     'https://www.googleapis.com/drive/v3/files/' + fileId,
     { method: 'DELETE', headers: { Authorization: 'Bearer ' + token }, muteHttpExceptions: true }
   );
 
   if (pdfResp.getResponseCode() !== 200) {
-    throw new Error('Drive export PDF erreur ' + pdfResp.getResponseCode());
+    throw new Error('Export PDF erreur ' + pdfResp.getResponseCode() + ' : ' + pdfResp.getContentText().substring(0, 300));
   }
 
   const pdfBlob = pdfResp.getBlob();
@@ -189,29 +270,24 @@ function genererPdfDepuisHtml(htmlContent, nomFichier) {
 
 // ── Envoi EWS avec pièce jointe PDF (MIME multipart) ─────────────────────────
 
-/**
- * Envoie un email via OCP Exchange (EWS) avec un PDF en pièce jointe.
- * Utilise la méthode MimeContent de l'API EWS pour un support natif des attachements.
- */
 function envoyerEmailAvecPDF(to, subject, htmlBody, pdfBlob) {
-  const props       = PropertiesService.getScriptProperties();
-  const OCP_EMAIL   = props.getProperty('OCP_EMAIL')   || 'm.elamraoui@ocpgroup.ma';
-  const OCP_PASS    = props.getProperty('OCP_PASSWORD') || '';
-  const EWS_URL     = 'https://owa.ocpgroup.ma/EWS/Exchange.asmx';
+  const props     = PropertiesService.getScriptProperties();
+  const OCP_EMAIL = props.getProperty('OCP_EMAIL')   || 'm.elamraoui@ocpgroup.ma';
+  const OCP_PASS  = props.getProperty('OCP_PASSWORD') || '';
+  const EWS_URL   = 'https://owa.ocpgroup.ma/EWS/Exchange.asmx';
 
   if (!OCP_PASS) throw new Error('OCP_PASSWORD non défini dans les propriétés du script.');
 
-  const boundary  = 'boundary_' + Utilities.getUuid().replace(/-/g, '');
-  const subjectB64 = Utilities.base64Encode(subject, Utilities.Charset.UTF_8);
-  const htmlB64   = chunkBase64(Utilities.base64Encode(htmlBody,        Utilities.Charset.UTF_8));
-  const pdfB64    = chunkBase64(Utilities.base64Encode(pdfBlob.getBytes()));
-  const pdfName   = pdfBlob.getName();
+  const boundary   = 'boundary_rm_' + Utilities.getUuid().replace(/-/g, '');
+  const subjB64    = Utilities.base64Encode(subject,          Utilities.Charset.UTF_8);
+  const htmlB64    = chunk76(Utilities.base64Encode(htmlBody, Utilities.Charset.UTF_8));
+  const pdfB64     = chunk76(Utilities.base64Encode(pdfBlob.getBytes()));
+  const pdfName    = pdfBlob.getName();
 
-  // Construction du message MIME multipart/mixed
-  const mimeLines = [
-    'From: ' + OCP_EMAIL,
-    'To: ' + to,
-    'Subject: =?UTF-8?B?' + subjectB64 + '?=',
+  const mime = [
+    'From: '    + OCP_EMAIL,
+    'To: '      + to,
+    'Subject: =?UTF-8?B?' + subjB64 + '?=',
     'MIME-Version: 1.0',
     'Content-Type: multipart/mixed; boundary="' + boundary + '"',
     '',
@@ -229,10 +305,7 @@ function envoyerEmailAvecPDF(to, subject, htmlBody, pdfBlob) {
     pdfB64,
     '',
     '--' + boundary + '--',
-  ];
-
-  const mimeRaw   = mimeLines.join('\r\n');
-  const mimeB64   = Utilities.base64Encode(mimeRaw, Utilities.Charset.UTF_8);
+  ].join('\r\n');
 
   const soap = '<?xml version="1.0" encoding="utf-8"?>'
     + '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'
@@ -240,187 +313,53 @@ function envoyerEmailAvecPDF(to, subject, htmlBody, pdfBlob) {
     + ' xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages">'
     + '<soap:Body>'
     + '<m:CreateItem MessageDisposition="SendAndSaveCopy">'
-    + '<m:Items>'
-    + '<t:Message>'
-    + '<t:MimeContent CharacterSet="UTF-8">' + mimeB64 + '</t:MimeContent>'
-    + '</t:Message>'
-    + '</m:Items>'
+    + '<m:Items><t:Message>'
+    + '<t:MimeContent CharacterSet="UTF-8">'
+    + Utilities.base64Encode(mime, Utilities.Charset.UTF_8)
+    + '</t:MimeContent>'
+    + '</t:Message></m:Items>'
     + '</m:CreateItem>'
-    + '</soap:Body>'
-    + '</soap:Envelope>';
+    + '</soap:Body></soap:Envelope>';
 
   const resp = UrlFetchApp.fetch(EWS_URL, {
-    method          : 'POST',
-    contentType     : 'text/xml; charset=utf-8',
-    headers         : {
+    method            : 'POST',
+    contentType       : 'text/xml; charset=utf-8',
+    headers           : {
       'Authorization' : 'Basic ' + Utilities.base64Encode(OCP_EMAIL + ':' + OCP_PASS),
       'SOAPAction'    : 'http://schemas.microsoft.com/exchange/services/2006/messages/CreateItem',
     },
-    payload         : soap,
+    payload           : soap,
     muteHttpExceptions: true,
   });
 
   const code = resp.getResponseCode();
-  if (code !== 200) {
-    throw new Error('EWS HTTP ' + code + ' : ' + resp.getContentText().substring(0, 600));
-  }
-
-  const xml = resp.getContentText();
-  if (xml.indexOf('ResponseClass="Error"') !== -1) {
-    const msg = xml.match(/<m:MessageText>(.*?)<\/m:MessageText>/);
-    throw new Error('EWS erreur : ' + (msg ? msg[1] : xml.substring(0, 400)));
+  if (code !== 200) throw new Error('EWS HTTP ' + code + ' : ' + resp.getContentText().substring(0, 500));
+  if (resp.getContentText().indexOf('ResponseClass="Error"') !== -1) {
+    const m = resp.getContentText().match(/<m:MessageText>(.*?)<\/m:MessageText>/);
+    throw new Error('EWS erreur : ' + (m ? m[1] : resp.getContentText().substring(0, 300)));
   }
 }
 
-/** Découpe une chaîne base64 en lignes de 76 caractères (standard MIME) */
-function chunkBase64(b64) {
-  return (b64.match(/.{1,76}/g) || []).join('\r\n');
-}
+function chunk76(b64) { return (b64.match(/.{1,76}/g) || []).join('\r\n'); }
+function cap(str)     { return str ? str.charAt(0).toUpperCase() + str.slice(1) : str; }
 
-// ── Construction du HTML (utilisé pour le PDF) ────────────────────────────────
-
-function construireHtmlRapport(dateStr, pdrConfirmes, otRealises) {
-  const totalPDR = pdrConfirmes.length;
-  const totalOT  = otRealises.length;
-
-  // ── Tableau PDR confirmés
-  let tablePDR = '';
-  if (totalPDR === 0) {
-    tablePDR = '<p style="color:#6b7280;font-style:italic;margin:8px 0 0;">Aucun PDR confirmé.</p>';
-  } else {
-    const lignesPDR = pdrConfirmes.map((r, i) =>
-      '<tr style="background:' + (i % 2 === 0 ? '#f0fdf4' : '#ffffff') + ';">'
-      + '<td style="' + tdStyle + 'font-weight:600;color:#166534;">' + esc(r.ordre)      + '</td>'
-      + '<td style="' + tdStyle + '">'                                + esc(r.desc)       + '</td>'
-      + '<td style="' + tdStyle + '">'                                + esc(r.objet)      + '</td>'
-      + '<td style="' + tdStyle + '">'                                + badgePoste(r.poste) + '</td>'
-      + '<td style="' + tdStyle + 'font-weight:600;">'               + esc(r.pdr)        + '</td>'
-      + '<td style="' + tdStyle + 'color:#6b7280;">'                 + (esc(r.obs) || '—') + '</td>'
-      + '</tr>'
-    ).join('');
-
-    tablePDR = '<table style="width:100%;border-collapse:collapse;font-size:12px;">'
-      + '<thead><tr style="background:#166534;color:#fff;">'
-      + thStyle('Ordre OT') + thStyle('Description') + thStyle('Objet technique')
-      + thStyle('Poste') + thStyle('PDR') + thStyle('Observation')
-      + '</tr></thead><tbody>' + lignesPDR + '</tbody></table>';
-  }
-
-  // ── Tableau OT réalisés
-  let tableOT = '';
-  if (totalOT === 0) {
-    tableOT = '<p style="color:#6b7280;font-style:italic;margin:8px 0 0;">Aucun OT réalisé.</p>';
-  } else {
-    const lignesOT = otRealises.map((r, i) =>
-      '<tr style="background:' + (i % 2 === 0 ? '#eff6ff' : '#ffffff') + ';">'
-      + '<td style="' + tdStyle + 'font-weight:600;color:#1e3a5f;">' + esc(r.ordre)        + '</td>'
-      + '<td style="' + tdStyle + '">'                                + esc(r.desc)         + '</td>'
-      + '<td style="' + tdStyle + '">'                                + esc(r.objet)        + '</td>'
-      + '<td style="' + tdStyle + '">'                                + badgePoste(r.poste)  + '</td>'
-      + '<td style="' + tdStyle + 'color:#6b7280;">'                 + (esc(r.obs) || '—')  + '</td>'
-      + '</tr>'
-    ).join('');
-
-    tableOT = '<table style="width:100%;border-collapse:collapse;font-size:12px;">'
-      + '<thead><tr style="background:#1e3a5f;color:#fff;">'
-      + thStyleBlue('Ordre OT') + thStyleBlue('Description') + thStyleBlue('Objet technique')
-      + thStyleBlue('Poste') + thStyleBlue('Observation')
-      + '</tr></thead><tbody>' + lignesOT + '</tbody></table>';
-  }
-
-  return '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">'
-    + '<style>body{margin:0;padding:0;background:#f3f4f6;font-family:Arial,sans-serif;}'
-    + 'h2{margin:0 0 14px;font-size:15px;} .section{padding:22px 28px;}'
-    + '</style></head><body>'
-    + '<div style="max-width:820px;margin:20px auto;background:#fff;border-radius:8px;'
-    + 'box-shadow:0 2px 10px rgba(0,0,0,.10);overflow:hidden;">'
-
-    // En-tête
-    + '<div style="background:linear-gradient(135deg,#1e3a5f 0%,#166534 100%);padding:26px 28px;color:#fff;">'
-    + '<div style="font-size:20px;font-weight:700;">Rapport Matin — Maintenance Daoui</div>'
-    + '<div style="font-size:13px;margin-top:5px;opacity:.85;">' + capitaliserPremiere(dateStr) + '</div>'
-    + '</div>'
-
-    // Compteurs
-    + '<div style="display:flex;border-bottom:1px solid #e5e7eb;">'
-    + '<div style="flex:1;padding:18px 28px;border-right:1px solid #e5e7eb;text-align:center;">'
-    + '<div style="font-size:34px;font-weight:800;color:#166534;">' + totalPDR + '</div>'
-    + '<div style="font-size:12px;color:#6b7280;margin-top:3px;">PDR confirmés</div></div>'
-    + '<div style="flex:1;padding:18px 28px;text-align:center;">'
-    + '<div style="font-size:34px;font-weight:800;color:#1e3a5f;">' + totalOT + '</div>'
-    + '<div style="font-size:12px;color:#6b7280;margin-top:3px;">OT réalisés</div></div>'
-    + '</div>'
-
-    // Section PDR
-    + '<div class="section">'
-    + '<h2 style="color:#166534;border-left:4px solid #166534;padding-left:10px;">'
-    + 'PDR Confirmés <span style="font-size:11px;font-weight:400;color:#6b7280;">— Dispo = OUI · Col V ∉ TCLO/CLOT · Col K ne commence pas par SOPL</span></h2>'
-    + tablePDR + '</div>'
-
-    + '<div style="height:1px;background:#e5e7eb;margin:0 28px;"></div>'
-
-    // Section OT
-    + '<div class="section">'
-    + '<h2 style="color:#1e3a5f;border-left:4px solid #1e3a5f;padding-left:10px;">'
-    + 'OT Réalisés <span style="font-size:11px;font-weight:400;color:#6b7280;">— Liste de mise à profit &amp; Plan de charge · Col V ∉ TCLO/CLOT</span></h2>'
-    + tableOT + '</div>'
-
-    // Pied de page
-    + '<div style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:14px 28px;'
-    + 'font-size:10px;color:#9ca3af;text-align:center;">'
-    + 'Rapport généré automatiquement chaque jour à 8h00 — Maintenance Analytics · OCP Daoui</div>'
-    + '</div></body></html>';
-}
-
-// ── Micro-helpers HTML ────────────────────────────────────────────────────────
-
-const tdStyle     = 'padding:6px 9px;border:1px solid #d1fae5;';
-const tdStyleBlue = 'padding:6px 9px;border:1px solid #bfdbfe;';
-
-function thStyle(label) {
-  return '<th style="padding:8px 9px;text-align:left;border:1px solid #d1fae5;">' + label + '</th>';
-}
-function thStyleBlue(label) {
-  return '<th style="padding:8px 9px;text-align:left;border:1px solid #bfdbfe;">' + label + '</th>';
-}
-
-function esc(str) {
-  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-function badgePoste(poste) {
-  const map = {
-    '421-MEC'  : 'background:#fef3c7;color:#92400e;border:1px solid #fcd34d;',
-    '421-CHAU' : 'background:#fef3c7;color:#92400e;border:1px solid #fcd34d;',
-    '421-INST' : 'background:#e0f2fe;color:#075985;border:1px solid #7dd3fc;',
-    '423-ELEC' : 'background:#f3e8ff;color:#6b21a8;border:1px solid #c084fc;',
-    '423-REG'  : 'background:#fce7f3;color:#9d174d;border:1px solid #f9a8d4;',
-  };
-  const style = map[poste] || 'background:#f3f4f6;color:#374151;border:1px solid #d1d5db;';
-  return '<span style="display:inline-block;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:600;' + style + '">' + esc(poste) + '</span>';
-}
-
-function capitaliserPremiere(str) {
-  return str ? str.charAt(0).toUpperCase() + str.slice(1) : str;
-}
-
-// ── Autorisation Drive (à exécuter une seule fois) ───────────────────────────
+// ── Autorisation (à exécuter une seule fois) ──────────────────────────────────
 
 /**
- * Déclenche la demande d'autorisation Google Drive.
- * → Exécutez cette fonction UNE SEULE FOIS, acceptez la permission,
- *   puis relancez envoyerRapportMaintenant().
+ * Déclenche la demande d'autorisation pour Drive et Documents.
+ * Exécutez cette fonction UNE SEULE FOIS et acceptez toutes les permissions.
  */
-function autoriserDrive() {
-  DriveApp.getRootFolder();
-  Logger.log('Autorisation Drive accordée.');
+function autoriserAcces() {
+  const doc = DocumentApp.create('__test_autorisation__');
+  DriveApp.getFileById(doc.getId()).setTrashed(true);
+  Logger.log('Autorisation Drive + Documents accordée.');
 }
 
 // ── Envoi instantané ──────────────────────────────────────────────────────────
 
 /**
  * Envoie immédiatement le rapport (test ou envoi manuel).
- * → Sélectionnez cette fonction dans le menu déroulant et cliquez "Exécuter".
+ * → Sélectionnez cette fonction dans le menu et cliquez "Exécuter".
  */
 function envoyerRapportMaintenant() {
   Logger.log('[Rapport Matin] Envoi instantané déclenché manuellement.');
@@ -434,18 +373,10 @@ function envoyerRapportMaintenant() {
  * ⚠️ À exécuter UNE SEULE FOIS depuis l'éditeur Apps Script.
  */
 function configurerDeclencheurMatin() {
-  ScriptApp.getProjectTriggers().forEach(function(trigger) {
-    if (trigger.getHandlerFunction() === 'envoyerRapportMatin') {
-      ScriptApp.deleteTrigger(trigger);
-    }
+  ScriptApp.getProjectTriggers().forEach(function(t) {
+    if (t.getHandlerFunction() === 'envoyerRapportMatin') ScriptApp.deleteTrigger(t);
   });
-
   ScriptApp.newTrigger('envoyerRapportMatin')
-    .timeBased()
-    .everyDays(1)
-    .atHour(8)
-    .inTimezone('Africa/Casablanca')
-    .create();
-
-  Logger.log('Trigger quotidien configuré : envoyerRapportMatin() a 8h (Africa/Casablanca)');
+    .timeBased().everyDays(1).atHour(8).inTimezone('Africa/Casablanca').create();
+  Logger.log('Trigger quotidien configure : 8h (Africa/Casablanca)');
 }
