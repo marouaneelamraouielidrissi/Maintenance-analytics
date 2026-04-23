@@ -102,25 +102,17 @@ function envoyerRapportMatin() {
     const nomFich  = 'Rapport-Matin-' + Utilities.formatDate(today, Session.getScriptTimeZone(), 'yyyy-MM-dd') + '.pdf';
     const subject  = 'Rapport Matin — ' + cap(dateStr);
 
-    // ── Génération PDF natif (DocumentApp)
-    const pdfBlob = genererPdfDocApp(dateStr, pdrConfirmes, otRealises, nomFich);
+    // ── Génération PDF + sauvegarde Drive (silencieuse, sans lien dans le mail)
+    try {
+      const pdfBlob = genererPdfDocApp(dateStr, pdrConfirmes, otRealises, nomFich);
+      sauvegarderPdfDrive(pdfBlob);
+      Logger.log('[Rapport Matin] PDF sauvegardé dans Drive.');
+    } catch (pdfErr) {
+      Logger.log('[Rapport Matin] PDF non généré (Drive) : ' + pdfErr.toString());
+    }
 
-    // ── Sauvegarde dans Drive + lien de téléchargement
-    const lienPdf = sauvegarderPdfDrive(pdfBlob);
-
-    // ── Corps du mail avec lien Drive (envoyé via sendEmailOCP existant)
-    const corps = '<p>Bonjour,</p>'
-      + '<p>Le rapport matin du <strong>' + cap(dateStr) + '</strong> est disponible :</p>'
-      + '<ul>'
-      + '<li><strong>' + pdrConfirmes.length + '</strong> PDR confirmé(s)</li>'
-      + '<li><strong>' + otRealises.length   + '</strong> OT réalisé(s)</li>'
-      + '</ul>'
-      + '<p style="margin:20px 0;">'
-      + '<a href="' + lienPdf + '" style="background:#1e3a5f;color:#fff;padding:10px 20px;'
-      + 'border-radius:6px;text-decoration:none;font-weight:bold;">Télécharger le rapport PDF</a>'
-      + '</p>'
-      + '<p style="color:#9ca3af;font-size:11px;">Maintenance Analytics · OCP Daoui</p>';
-
+    // ── Corps du mail HTML complet (envoyé via sendEmailOCP)
+    const corps = construireHtmlMail(dateStr, pdrConfirmes, otRealises);
     sendEmailOCP(DESTINATAIRE_RAPPORT, subject, '', { htmlBody: corps });
 
     Logger.log('[Rapport Matin] Envoyé | PDR=' + pdrConfirmes.length + ' | OT=' + otRealises.length);
@@ -128,6 +120,93 @@ function envoyerRapportMatin() {
   } catch (err) {
     Logger.log('[Rapport Matin] ERREUR : ' + err.toString() + '\n' + (err.stack || ''));
   }
+}
+
+// ── Corps HTML du mail ────────────────────────────────────────────────────────
+
+function construireHtmlMail(dateStr, pdrConfirmes, otRealises) {
+  const totalPDR = pdrConfirmes.length;
+  const totalOT  = otRealises.length;
+
+  function lignesPDR() {
+    if (totalPDR === 0) return '<tr><td colspan="6" style="padding:10px;color:#6b7280;font-style:italic;">Aucun PDR confirmé.</td></tr>';
+    return pdrConfirmes.map((r, i) => {
+      const bg = i % 2 === 0 ? '#f0fdf4' : '#ffffff';
+      return '<tr style="background:' + bg + ';">'
+        + td(r.ordre, 'font-weight:700;color:#166534;')
+        + td(r.desc) + td(r.objet) + td(r.poste)
+        + td(r.pdr, 'font-weight:600;')
+        + td(r.obs || '—', 'color:#6b7280;')
+        + '</tr>';
+    }).join('');
+  }
+
+  function lignesOT() {
+    if (totalOT === 0) return '<tr><td colspan="5" style="padding:10px;color:#6b7280;font-style:italic;">Aucun OT réalisé.</td></tr>';
+    return otRealises.map((r, i) => {
+      const bg = i % 2 === 0 ? '#eff6ff' : '#ffffff';
+      return '<tr style="background:' + bg + ';">'
+        + td(r.ordre, 'font-weight:700;color:#1e3a5f;')
+        + td(r.desc) + td(r.objet) + td(r.poste)
+        + td(r.obs || '—', 'color:#6b7280;')
+        + '</tr>';
+    }).join('');
+  }
+
+  return '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"></head>'
+    + '<body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,sans-serif;">'
+    + '<div style="max-width:860px;margin:20px auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.1);">'
+
+    // En-tête
+    + '<div style="background:linear-gradient(135deg,#1e3a5f,#166534);padding:24px 28px;color:#fff;">'
+    + '<div style="font-size:18px;font-weight:700;">Rapport Matin — Maintenance Daoui</div>'
+    + '<div style="font-size:12px;margin-top:4px;opacity:.85;">' + cap(dateStr) + '</div>'
+    + '</div>'
+
+    // Compteurs
+    + '<div style="display:flex;border-bottom:1px solid #e5e7eb;">'
+    + '<div style="flex:1;padding:16px;text-align:center;border-right:1px solid #e5e7eb;">'
+    + '<div style="font-size:32px;font-weight:800;color:#166534;">' + totalPDR + '</div>'
+    + '<div style="font-size:11px;color:#6b7280;">PDR confirmés</div></div>'
+    + '<div style="flex:1;padding:16px;text-align:center;">'
+    + '<div style="font-size:32px;font-weight:800;color:#1e3a5f;">' + totalOT + '</div>'
+    + '<div style="font-size:11px;color:#6b7280;">OT réalisés</div></div>'
+    + '</div>'
+
+    // Section PDR
+    + '<div style="padding:20px 24px;">'
+    + '<h2 style="margin:0 0 12px;font-size:13px;font-weight:700;color:#166534;border-left:4px solid #166534;padding-left:8px;">'
+    + 'PDR CONFIRMÉS — Dispo=OUI &middot; Col V &notin; TCLO/CLOT/LANC &middot; Col K ne commence pas par SOPL</h2>'
+    + '<table style="width:100%;border-collapse:collapse;font-size:12px;">'
+    + '<thead><tr style="background:#166534;color:#fff;">'
+    + th('Ordre OT') + th('Description') + th('Objet technique') + th('Poste') + th('PDR') + th('Observation')
+    + '</tr></thead><tbody>' + lignesPDR() + '</tbody></table></div>'
+
+    + '<div style="height:1px;background:#e5e7eb;margin:0 24px;"></div>'
+
+    // Section OT
+    + '<div style="padding:20px 24px;">'
+    + '<h2 style="margin:0 0 12px;font-size:13px;font-weight:700;color:#1e3a5f;border-left:4px solid #1e3a5f;padding-left:8px;">'
+    + 'OT RÉALISÉS — Liste de mise à profit &amp; Plan de charge &middot; Col V &notin; TCLO/CLOT/LANC</h2>'
+    + '<table style="width:100%;border-collapse:collapse;font-size:12px;">'
+    + '<thead><tr style="background:#1e3a5f;color:#fff;">'
+    + th('Ordre OT') + th('Description') + th('Objet technique') + th('Poste') + th('Observation')
+    + '</tr></thead><tbody>' + lignesOT() + '</tbody></table></div>'
+
+    // Pied de page
+    + '<div style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:12px 24px;font-size:10px;color:#9ca3af;text-align:center;">'
+    + 'Rapport généré automatiquement chaque jour à 8h00 — Maintenance Analytics · OCP Daoui</div>'
+    + '</div></body></html>';
+}
+
+function th(label) {
+  return '<th style="padding:7px 9px;text-align:left;border:1px solid rgba(255,255,255,.3);">' + label + '</th>';
+}
+function td(val, extra) {
+  return '<td style="padding:6px 9px;border:1px solid #e5e7eb;' + (extra || '') + '">' + htmlEsc(val) + '</td>';
+}
+function htmlEsc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // ── Génération PDF natif via DocumentApp ──────────────────────────────────────
