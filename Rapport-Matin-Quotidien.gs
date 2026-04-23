@@ -1,19 +1,15 @@
 /**
  * Rapport-Matin-Quotidien.gs
  * ─────────────────────────────────────────────────────────────────────────────
- * Envoie chaque jour à 8h un email récapitulatif contenant :
- *   • La liste des PDR confirmés (Disponibilité = "OUI")
- *   • La liste des OT réalisés (Réalisation = "Fait")
- *   … qu'ils apparaissent dans la liste de mise à profit ou dans le plan de charge
+ * Envoie chaque jour à 8h un email avec le rapport en PIÈCE JOINTE PDF :
+ *   • PDR confirmés  : Dispo = "OUI"  AND  Col V ∉ {TCLO, CLOT}  AND  Col K ne commence pas par "SOPL"
+ *   • OT réalisés    : Réalisation = "Fait"  AND  Col V ∉ {TCLO, CLOT}
  *
  * INSTALLATION :
- *   1. Copiez ce fichier dans votre projet Google Apps Script
- *   2. Renseignez l'adresse email du destinataire dans DESTINATAIRE_RAPPORT
- *   3. Exécutez une seule fois la fonction  configurerDeclencheurMatin()
- *      → Elle crée le trigger quotidien à 8h automatiquement
- *
- * NOTE : La fonction sendEmailOCP() est définie dans google_apps_script.js
- *        et est accessible ici car tous les fichiers .gs partagent le même projet.
+ *   1. Copiez ce fichier dans le même projet Google Apps Script que google_apps_script.js
+ *   2. Vérifiez que RM_SHEET_ID correspond bien à votre feuille "Travaux hebdomadaire"
+ *   3. Modifiez DESTINATAIRE_RAPPORT si besoin
+ *   4. Exécutez UNE SEULE FOIS configurerDeclencheurMatin() pour créer le trigger quotidien
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -22,27 +18,35 @@
 const RM_SHEET_ID   = '1C9bYkPsoYg81ARgolVDlZRwsMZk4Seff6aC7vfxoVeE';
 const RM_SHEET_NAME = 'Travaux hebdomadaire';
 
-// Email du destinataire du rapport (modifiez si besoin)
 const DESTINATAIRE_RAPPORT = 'm.elamraoui@ocpgroup.ma';
 
-// Colonnes (index 0-basé, conformément au schéma de la feuille)
+// Colonnes (index 0-basé)
 const COL_ORDRE       = 0;   // A  – Numéro OT
 const COL_DESC        = 3;   // D  – Description
 const COL_OBJET       = 5;   // F  – Objet technique
 const COL_POSTE       = 8;   // I  – Poste de travail
-const COL_STATUT_UTIL = 10;  // K  – Statut utilisateur (CRPR …)
+const COL_STATUT_UTIL = 10;  // K  – Statut utilisateur (ex : CRPR, SOPL…)
 const COL_REALISATION = 14;  // O  – Réalisation : "Fait" | "NFait"
 const COL_PDR         = 18;  // S  – Désignation PDR
 const COL_DISPO       = 19;  // T  – Disponibilité : "OUI" | "NON" | vide
 const COL_OBS         = 20;  // U  – Observation
-const COL_STATUT_SYS  = 21;  // V  – Statut système SAP (contient "créé" si actif)
+const COL_STATUT_SYS  = 21;  // V  – Statut système ABR (TCLO, CLOT, créé…)
+
+// ── Helpers de filtrage ───────────────────────────────────────────────────────
+
+/** Retourne true si le statut système ABR exclut la ligne (TCLO ou CLOT) */
+function estStatutSysExclu(row) {
+  const s = String(row[COL_STATUT_SYS] || '').toUpperCase();
+  return s.includes('TCLO') || s.includes('CLOT');
+}
+
+/** Retourne true si le statut utilisateur commence par SOPL */
+function estStatutUtilSOPL(row) {
+  return String(row[COL_STATUT_UTIL] || '').trim().toUpperCase().startsWith('SOPL');
+}
 
 // ── Fonction principale ───────────────────────────────────────────────────────
 
-/**
- * Point d'entrée du rapport matinal.
- * Appelé automatiquement par le trigger quotidien à 8h.
- */
 function envoyerRapportMatin() {
   try {
     const ss    = SpreadsheetApp.openById(RM_SHEET_ID);
@@ -59,58 +63,176 @@ function envoyerRapportMatin() {
       return;
     }
 
-    const rows = data.slice(1); // Ignore la ligne d'en-tête
+    const rows = data.slice(1);
 
-    // ── Filtrage PDR confirmés ─────────────────────────────────────────────
-    // PDR confirmé = PDR renseigné ET Disponibilité = "OUI"
+    // ── PDR confirmés ──────────────────────────────────────────────────────
+    // Règle : Dispo = "OUI"  ET  Col V ∉ {TCLO, CLOT}  ET  Col K ne commence pas par "SOPL"
     const pdrConfirmes = rows
       .filter(row => {
-        const pdr    = String(row[COL_PDR]   || '').trim();
-        const dispo  = String(row[COL_DISPO] || '').trim().toUpperCase();
-        return pdr && dispo === 'OUI';
+        const pdr   = String(row[COL_PDR]   || '').trim();
+        const dispo = String(row[COL_DISPO] || '').trim().toUpperCase();
+        return pdr && dispo === 'OUI' && !estStatutSysExclu(row) && !estStatutUtilSOPL(row);
       })
       .map(row => ({
-        ordre : String(row[COL_ORDRE]  || '').trim(),
-        desc  : String(row[COL_DESC]   || '').trim(),
-        objet : String(row[COL_OBJET]  || '').trim(),
-        poste : String(row[COL_POSTE]  || '').trim(),
-        pdr   : String(row[COL_PDR]    || '').trim(),
-        obs   : String(row[COL_OBS]    || '').trim(),
+        ordre      : String(row[COL_ORDRE]       || '').trim(),
+        desc       : String(row[COL_DESC]        || '').trim(),
+        objet      : String(row[COL_OBJET]       || '').trim(),
+        poste      : String(row[COL_POSTE]       || '').trim(),
+        statutUtil : String(row[COL_STATUT_UTIL] || '').trim(),
+        pdr        : String(row[COL_PDR]         || '').trim(),
+        obs        : String(row[COL_OBS]         || '').trim(),
       }));
 
-    // ── Filtrage OT réalisés ───────────────────────────────────────────────
-    // OT réalisé = Réalisation = "Fait" (liste de mise à profit + plan de charge)
+    // ── OT réalisés ────────────────────────────────────────────────────────
+    // Règle : Réalisation = "Fait"  ET  Col V ∉ {TCLO, CLOT}
     const otRealises = rows
       .filter(row => {
         const real = String(row[COL_REALISATION] || '').trim();
-        return real === 'Fait';
+        return real === 'Fait' && !estStatutSysExclu(row);
       })
       .map(row => ({
-        ordre : String(row[COL_ORDRE]  || '').trim(),
-        desc  : String(row[COL_DESC]   || '').trim(),
-        objet : String(row[COL_OBJET]  || '').trim(),
-        poste : String(row[COL_POSTE]  || '').trim(),
-        obs   : String(row[COL_OBS]    || '').trim(),
+        ordre      : String(row[COL_ORDRE]       || '').trim(),
+        desc       : String(row[COL_DESC]        || '').trim(),
+        objet      : String(row[COL_OBJET]       || '').trim(),
+        poste      : String(row[COL_POSTE]       || '').trim(),
+        statutUtil : String(row[COL_STATUT_UTIL] || '').trim(),
+        obs        : String(row[COL_OBS]         || '').trim(),
       }));
 
-    // ── Construction du mail ───────────────────────────────────────────────
     const today   = new Date();
     const dateStr = Utilities.formatDate(today, Session.getScriptTimeZone(), "EEEE dd MMMM yyyy");
-    const subject = '📋 Rapport Matin — ' + capitaliserPremiereMot(dateStr);
-    const body    = construireHtmlRapport(dateStr, pdrConfirmes, otRealises);
+    const subject = 'Rapport Matin — ' + capitaliserPremiere(dateStr);
 
-    // ── Envoi ──────────────────────────────────────────────────────────────
-    sendEmailOCP(DESTINATAIRE_RAPPORT, subject, '', { htmlBody: body });
-    Logger.log('[Rapport Matin] Email envoyé à ' + DESTINATAIRE_RAPPORT +
-               ' | PDR confirmés : ' + pdrConfirmes.length +
-               ' | OT réalisés : ' + otRealises.length);
+    // ── Génération du PDF ──────────────────────────────────────────────────
+    const htmlContent = construireHtmlRapport(dateStr, pdrConfirmes, otRealises);
+    const nomFichier  = 'Rapport-Matin-' + Utilities.formatDate(today, Session.getScriptTimeZone(), 'yyyy-MM-dd') + '.pdf';
+    const pdfBlob     = genererPdfDepuisHtml(htmlContent, nomFichier);
+
+    // ── Envoi avec pièce jointe ────────────────────────────────────────────
+    const corpsMail = '<p>Bonjour,</p>'
+      + '<p>Veuillez trouver ci-joint le rapport matin du <strong>' + capitaliserPremiere(dateStr) + '</strong>.</p>'
+      + '<ul>'
+      + '<li><strong>' + pdrConfirmes.length + '</strong> PDR confirmé(s)</li>'
+      + '<li><strong>' + otRealises.length + '</strong> OT réalisé(s)</li>'
+      + '</ul>'
+      + '<p style="color:#6b7280;font-size:12px;">Maintenance Analytics · OCP Daoui</p>';
+
+    envoyerEmailAvecPDF(DESTINATAIRE_RAPPORT, subject, corpsMail, pdfBlob);
+
+    Logger.log('[Rapport Matin] Email envoyé | PDR confirmés : ' + pdrConfirmes.length
+               + ' | OT réalisés : ' + otRealises.length);
 
   } catch (err) {
-    Logger.log('[Rapport Matin] ERREUR : ' + err.toString());
+    Logger.log('[Rapport Matin] ERREUR : ' + err.toString() + '\n' + err.stack);
   }
 }
 
-// ── Construction du HTML ──────────────────────────────────────────────────────
+// ── Génération PDF via DriveApp ───────────────────────────────────────────────
+
+/**
+ * Convertit un contenu HTML en blob PDF en passant par Google Drive.
+ * Le fichier temporaire est supprimé immédiatement après conversion.
+ */
+function genererPdfDepuisHtml(htmlContent, nomFichier) {
+  const htmlBlob = Utilities.newBlob(htmlContent, MimeType.HTML, 'tmp_rapport.html');
+  const tempFile = DriveApp.createFile(htmlBlob);
+  const pdfBlob  = tempFile.getAs(MimeType.PDF);
+  pdfBlob.setName(nomFichier);
+  tempFile.setTrashed(true);
+  return pdfBlob;
+}
+
+// ── Envoi EWS avec pièce jointe PDF (MIME multipart) ─────────────────────────
+
+/**
+ * Envoie un email via OCP Exchange (EWS) avec un PDF en pièce jointe.
+ * Utilise la méthode MimeContent de l'API EWS pour un support natif des attachements.
+ */
+function envoyerEmailAvecPDF(to, subject, htmlBody, pdfBlob) {
+  const props       = PropertiesService.getScriptProperties();
+  const OCP_EMAIL   = props.getProperty('OCP_EMAIL')   || 'm.elamraoui@ocpgroup.ma';
+  const OCP_PASS    = props.getProperty('OCP_PASSWORD') || '';
+  const EWS_URL     = 'https://owa.ocpgroup.ma/EWS/Exchange.asmx';
+
+  if (!OCP_PASS) throw new Error('OCP_PASSWORD non défini dans les propriétés du script.');
+
+  const boundary  = 'boundary_' + Utilities.getUuid().replace(/-/g, '');
+  const subjectB64 = Utilities.base64Encode(subject, Utilities.Charset.UTF_8);
+  const htmlB64   = chunkBase64(Utilities.base64Encode(htmlBody,        Utilities.Charset.UTF_8));
+  const pdfB64    = chunkBase64(Utilities.base64Encode(pdfBlob.getBytes()));
+  const pdfName   = pdfBlob.getName();
+
+  // Construction du message MIME multipart/mixed
+  const mimeLines = [
+    'From: ' + OCP_EMAIL,
+    'To: ' + to,
+    'Subject: =?UTF-8?B?' + subjectB64 + '?=',
+    'MIME-Version: 1.0',
+    'Content-Type: multipart/mixed; boundary="' + boundary + '"',
+    '',
+    '--' + boundary,
+    'Content-Type: text/html; charset=UTF-8',
+    'Content-Transfer-Encoding: base64',
+    '',
+    htmlB64,
+    '',
+    '--' + boundary,
+    'Content-Type: application/pdf',
+    'Content-Transfer-Encoding: base64',
+    'Content-Disposition: attachment; filename="' + pdfName + '"',
+    '',
+    pdfB64,
+    '',
+    '--' + boundary + '--',
+  ];
+
+  const mimeRaw   = mimeLines.join('\r\n');
+  const mimeB64   = Utilities.base64Encode(mimeRaw, Utilities.Charset.UTF_8);
+
+  const soap = '<?xml version="1.0" encoding="utf-8"?>'
+    + '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'
+    + ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"'
+    + ' xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages">'
+    + '<soap:Body>'
+    + '<m:CreateItem MessageDisposition="SendAndSaveCopy">'
+    + '<m:Items>'
+    + '<t:Message>'
+    + '<t:MimeContent CharacterSet="UTF-8">' + mimeB64 + '</t:MimeContent>'
+    + '</t:Message>'
+    + '</m:Items>'
+    + '</m:CreateItem>'
+    + '</soap:Body>'
+    + '</soap:Envelope>';
+
+  const resp = UrlFetchApp.fetch(EWS_URL, {
+    method          : 'POST',
+    contentType     : 'text/xml; charset=utf-8',
+    headers         : {
+      'Authorization' : 'Basic ' + Utilities.base64Encode(OCP_EMAIL + ':' + OCP_PASS),
+      'SOAPAction'    : 'http://schemas.microsoft.com/exchange/services/2006/messages/CreateItem',
+    },
+    payload         : soap,
+    muteHttpExceptions: true,
+  });
+
+  const code = resp.getResponseCode();
+  if (code !== 200) {
+    throw new Error('EWS HTTP ' + code + ' : ' + resp.getContentText().substring(0, 600));
+  }
+
+  const xml = resp.getContentText();
+  if (xml.indexOf('ResponseClass="Error"') !== -1) {
+    const msg = xml.match(/<m:MessageText>(.*?)<\/m:MessageText>/);
+    throw new Error('EWS erreur : ' + (msg ? msg[1] : xml.substring(0, 400)));
+  }
+}
+
+/** Découpe une chaîne base64 en lignes de 76 caractères (standard MIME) */
+function chunkBase64(b64) {
+  return (b64.match(/.{1,76}/g) || []).join('\r\n');
+}
+
+// ── Construction du HTML (utilisé pour le PDF) ────────────────────────────────
 
 function construireHtmlRapport(dateStr, pdrConfirmes, otRealises) {
   const totalPDR = pdrConfirmes.length;
@@ -119,173 +241,128 @@ function construireHtmlRapport(dateStr, pdrConfirmes, otRealises) {
   // ── Tableau PDR confirmés
   let tablePDR = '';
   if (totalPDR === 0) {
-    tablePDR = '<p style="color:#6b7280;font-style:italic;margin:8px 0;">Aucun PDR confirmé pour le moment.</p>';
+    tablePDR = '<p style="color:#6b7280;font-style:italic;margin:8px 0 0;">Aucun PDR confirmé.</p>';
   } else {
-    tablePDR = `
-    <table style="width:100%;border-collapse:collapse;font-size:13px;">
-      <thead>
-        <tr style="background:#166534;color:#fff;">
-          <th style="padding:8px 10px;text-align:left;border:1px solid #d1fae5;">Ordre OT</th>
-          <th style="padding:8px 10px;text-align:left;border:1px solid #d1fae5;">Description</th>
-          <th style="padding:8px 10px;text-align:left;border:1px solid #d1fae5;">Objet technique</th>
-          <th style="padding:8px 10px;text-align:left;border:1px solid #d1fae5;">Poste</th>
-          <th style="padding:8px 10px;text-align:left;border:1px solid #d1fae5;">PDR</th>
-          <th style="padding:8px 10px;text-align:left;border:1px solid #d1fae5;">Observation</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${pdrConfirmes.map((r, i) => `
-        <tr style="background:${i % 2 === 0 ? '#f0fdf4' : '#ffffff'};">
-          <td style="padding:7px 10px;border:1px solid #d1fae5;font-weight:600;color:#166534;">${esc(r.ordre)}</td>
-          <td style="padding:7px 10px;border:1px solid #d1fae5;">${esc(r.desc)}</td>
-          <td style="padding:7px 10px;border:1px solid #d1fae5;">${esc(r.objet)}</td>
-          <td style="padding:7px 10px;border:1px solid #d1fae5;">${badgePoste(r.poste)}</td>
-          <td style="padding:7px 10px;border:1px solid #d1fae5;font-weight:600;">${esc(r.pdr)}</td>
-          <td style="padding:7px 10px;border:1px solid #d1fae5;color:#6b7280;">${esc(r.obs) || '—'}</td>
-        </tr>`).join('')}
-      </tbody>
-    </table>`;
+    const lignesPDR = pdrConfirmes.map((r, i) =>
+      '<tr style="background:' + (i % 2 === 0 ? '#f0fdf4' : '#ffffff') + ';">'
+      + '<td style="' + tdStyle + 'font-weight:600;color:#166534;">' + esc(r.ordre)      + '</td>'
+      + '<td style="' + tdStyle + '">'                                + esc(r.desc)       + '</td>'
+      + '<td style="' + tdStyle + '">'                                + esc(r.objet)      + '</td>'
+      + '<td style="' + tdStyle + '">'                                + badgePoste(r.poste) + '</td>'
+      + '<td style="' + tdStyle + 'font-weight:600;">'               + esc(r.pdr)        + '</td>'
+      + '<td style="' + tdStyle + 'color:#6b7280;">'                 + (esc(r.obs) || '—') + '</td>'
+      + '</tr>'
+    ).join('');
+
+    tablePDR = '<table style="width:100%;border-collapse:collapse;font-size:12px;">'
+      + '<thead><tr style="background:#166534;color:#fff;">'
+      + thStyle('Ordre OT') + thStyle('Description') + thStyle('Objet technique')
+      + thStyle('Poste') + thStyle('PDR') + thStyle('Observation')
+      + '</tr></thead><tbody>' + lignesPDR + '</tbody></table>';
   }
 
   // ── Tableau OT réalisés
   let tableOT = '';
   if (totalOT === 0) {
-    tableOT = '<p style="color:#6b7280;font-style:italic;margin:8px 0;">Aucun OT réalisé pour le moment.</p>';
+    tableOT = '<p style="color:#6b7280;font-style:italic;margin:8px 0 0;">Aucun OT réalisé.</p>';
   } else {
-    tableOT = `
-    <table style="width:100%;border-collapse:collapse;font-size:13px;">
-      <thead>
-        <tr style="background:#1e3a5f;color:#fff;">
-          <th style="padding:8px 10px;text-align:left;border:1px solid #bfdbfe;">Ordre OT</th>
-          <th style="padding:8px 10px;text-align:left;border:1px solid #bfdbfe;">Description</th>
-          <th style="padding:8px 10px;text-align:left;border:1px solid #bfdbfe;">Objet technique</th>
-          <th style="padding:8px 10px;text-align:left;border:1px solid #bfdbfe;">Poste</th>
-          <th style="padding:8px 10px;text-align:left;border:1px solid #bfdbfe;">Observation</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${otRealises.map((r, i) => `
-        <tr style="background:${i % 2 === 0 ? '#eff6ff' : '#ffffff'};">
-          <td style="padding:7px 10px;border:1px solid #bfdbfe;font-weight:600;color:#1e3a5f;">${esc(r.ordre)}</td>
-          <td style="padding:7px 10px;border:1px solid #bfdbfe;">${esc(r.desc)}</td>
-          <td style="padding:7px 10px;border:1px solid #bfdbfe;">${esc(r.objet)}</td>
-          <td style="padding:7px 10px;border:1px solid #bfdbfe;">${badgePoste(r.poste)}</td>
-          <td style="padding:7px 10px;border:1px solid #bfdbfe;color:#6b7280;">${esc(r.obs) || '—'}</td>
-        </tr>`).join('')}
-      </tbody>
-    </table>`;
+    const lignesOT = otRealises.map((r, i) =>
+      '<tr style="background:' + (i % 2 === 0 ? '#eff6ff' : '#ffffff') + ';">'
+      + '<td style="' + tdStyle + 'font-weight:600;color:#1e3a5f;">' + esc(r.ordre)        + '</td>'
+      + '<td style="' + tdStyle + '">'                                + esc(r.desc)         + '</td>'
+      + '<td style="' + tdStyle + '">'                                + esc(r.objet)        + '</td>'
+      + '<td style="' + tdStyle + '">'                                + badgePoste(r.poste)  + '</td>'
+      + '<td style="' + tdStyle + 'color:#6b7280;">'                 + (esc(r.obs) || '—')  + '</td>'
+      + '</tr>'
+    ).join('');
+
+    tableOT = '<table style="width:100%;border-collapse:collapse;font-size:12px;">'
+      + '<thead><tr style="background:#1e3a5f;color:#fff;">'
+      + thStyleBlue('Ordre OT') + thStyleBlue('Description') + thStyleBlue('Objet technique')
+      + thStyleBlue('Poste') + thStyleBlue('Observation')
+      + '</tr></thead><tbody>' + lignesOT + '</tbody></table>';
   }
 
-  return `
-<!DOCTYPE html>
-<html lang="fr">
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#f3f4f6;font-family:'Segoe UI',Arial,sans-serif;">
-<div style="max-width:820px;margin:24px auto;background:#fff;border-radius:10px;
-            box-shadow:0 2px 12px rgba(0,0,0,.10);overflow:hidden;">
+  return '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">'
+    + '<style>body{margin:0;padding:0;background:#f3f4f6;font-family:Arial,sans-serif;}'
+    + 'h2{margin:0 0 14px;font-size:15px;} .section{padding:22px 28px;}'
+    + '</style></head><body>'
+    + '<div style="max-width:820px;margin:20px auto;background:#fff;border-radius:8px;'
+    + 'box-shadow:0 2px 10px rgba(0,0,0,.10);overflow:hidden;">'
 
-  <!-- En-tête -->
-  <div style="background:linear-gradient(135deg,#1e3a5f 0%,#166534 100%);
-              padding:28px 32px;color:#fff;">
-    <div style="font-size:22px;font-weight:700;letter-spacing:.5px;">
-      📋 Rapport Matin — Maintenance Daoui
-    </div>
-    <div style="font-size:14px;margin-top:6px;opacity:.85;">
-      ${capitaliserPremiereMot(dateStr)}
-    </div>
-  </div>
+    // En-tête
+    + '<div style="background:linear-gradient(135deg,#1e3a5f 0%,#166534 100%);padding:26px 28px;color:#fff;">'
+    + '<div style="font-size:20px;font-weight:700;">Rapport Matin — Maintenance Daoui</div>'
+    + '<div style="font-size:13px;margin-top:5px;opacity:.85;">' + capitaliserPremiere(dateStr) + '</div>'
+    + '</div>'
 
-  <!-- Résumé -->
-  <div style="display:flex;gap:0;border-bottom:1px solid #e5e7eb;">
-    <div style="flex:1;padding:20px 28px;border-right:1px solid #e5e7eb;text-align:center;">
-      <div style="font-size:36px;font-weight:800;color:#166534;">${totalPDR}</div>
-      <div style="font-size:13px;color:#6b7280;margin-top:4px;">PDR confirmés</div>
-    </div>
-    <div style="flex:1;padding:20px 28px;text-align:center;">
-      <div style="font-size:36px;font-weight:800;color:#1e3a5f;">${totalOT}</div>
-      <div style="font-size:13px;color:#6b7280;margin-top:4px;">OT réalisés</div>
-    </div>
-  </div>
+    // Compteurs
+    + '<div style="display:flex;border-bottom:1px solid #e5e7eb;">'
+    + '<div style="flex:1;padding:18px 28px;border-right:1px solid #e5e7eb;text-align:center;">'
+    + '<div style="font-size:34px;font-weight:800;color:#166534;">' + totalPDR + '</div>'
+    + '<div style="font-size:12px;color:#6b7280;margin-top:3px;">PDR confirmés</div></div>'
+    + '<div style="flex:1;padding:18px 28px;text-align:center;">'
+    + '<div style="font-size:34px;font-weight:800;color:#1e3a5f;">' + totalOT + '</div>'
+    + '<div style="font-size:12px;color:#6b7280;margin-top:3px;">OT réalisés</div></div>'
+    + '</div>'
 
-  <!-- Section PDR confirmés -->
-  <div style="padding:24px 28px;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-      <div style="width:4px;height:22px;background:#166534;border-radius:2px;"></div>
-      <h2 style="margin:0;font-size:16px;font-weight:700;color:#166534;">
-        PDR Confirmés
-        <span style="font-size:12px;font-weight:400;color:#6b7280;margin-left:8px;">
-          — Disponibilité = OUI
-        </span>
-      </h2>
-    </div>
-    ${tablePDR}
-  </div>
+    // Section PDR
+    + '<div class="section">'
+    + '<h2 style="color:#166534;border-left:4px solid #166534;padding-left:10px;">'
+    + 'PDR Confirmés <span style="font-size:11px;font-weight:400;color:#6b7280;">— Dispo = OUI · Col V ∉ TCLO/CLOT · Col K ne commence pas par SOPL</span></h2>'
+    + tablePDR + '</div>'
 
-  <!-- Séparateur -->
-  <div style="height:1px;background:#e5e7eb;margin:0 28px;"></div>
+    + '<div style="height:1px;background:#e5e7eb;margin:0 28px;"></div>'
 
-  <!-- Section OT réalisés -->
-  <div style="padding:24px 28px;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-      <div style="width:4px;height:22px;background:#1e3a5f;border-radius:2px;"></div>
-      <h2 style="margin:0;font-size:16px;font-weight:700;color:#1e3a5f;">
-        OT Réalisés
-        <span style="font-size:12px;font-weight:400;color:#6b7280;margin-left:8px;">
-          — Liste de mise à profit &amp; Plan de charge
-        </span>
-      </h2>
-    </div>
-    ${tableOT}
-  </div>
+    // Section OT
+    + '<div class="section">'
+    + '<h2 style="color:#1e3a5f;border-left:4px solid #1e3a5f;padding-left:10px;">'
+    + 'OT Réalisés <span style="font-size:11px;font-weight:400;color:#6b7280;">— Liste de mise à profit &amp; Plan de charge · Col V ∉ TCLO/CLOT</span></h2>'
+    + tableOT + '</div>'
 
-  <!-- Pied de page -->
-  <div style="background:#f9fafb;border-top:1px solid #e5e7eb;
-              padding:16px 28px;font-size:11px;color:#9ca3af;text-align:center;">
-    Ce rapport est généré automatiquement chaque jour à 8h00 — Maintenance Analytics · OCP Daoui
-  </div>
-</div>
-</body>
-</html>`;
+    // Pied de page
+    + '<div style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:14px 28px;'
+    + 'font-size:10px;color:#9ca3af;text-align:center;">'
+    + 'Rapport généré automatiquement chaque jour à 8h00 — Maintenance Analytics · OCP Daoui</div>'
+    + '</div></body></html>';
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Micro-helpers HTML ────────────────────────────────────────────────────────
 
-/** Échappe les caractères HTML pour éviter les injections dans le tableau */
+const tdStyle     = 'padding:6px 9px;border:1px solid #d1fae5;';
+const tdStyleBlue = 'padding:6px 9px;border:1px solid #bfdbfe;';
+
+function thStyle(label) {
+  return '<th style="padding:8px 9px;text-align:left;border:1px solid #d1fae5;">' + label + '</th>';
+}
+function thStyleBlue(label) {
+  return '<th style="padding:8px 9px;text-align:left;border:1px solid #bfdbfe;">' + label + '</th>';
+}
+
 function esc(str) {
-  return String(str || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-/** Badge coloré par poste de travail */
 function badgePoste(poste) {
-  const colors = {
-    '421-MEC'  : { bg: '#fef3c7', text: '#92400e', border: '#fcd34d' },
-    '421-CHAU' : { bg: '#fef3c7', text: '#92400e', border: '#fcd34d' },
-    '421-INST' : { bg: '#e0f2fe', text: '#075985', border: '#7dd3fc' },
-    '423-ELEC' : { bg: '#f3e8ff', text: '#6b21a8', border: '#c084fc' },
-    '423-REG'  : { bg: '#fce7f3', text: '#9d174d', border: '#f9a8d4' },
+  const map = {
+    '421-MEC'  : 'background:#fef3c7;color:#92400e;border:1px solid #fcd34d;',
+    '421-CHAU' : 'background:#fef3c7;color:#92400e;border:1px solid #fcd34d;',
+    '421-INST' : 'background:#e0f2fe;color:#075985;border:1px solid #7dd3fc;',
+    '423-ELEC' : 'background:#f3e8ff;color:#6b21a8;border:1px solid #c084fc;',
+    '423-REG'  : 'background:#fce7f3;color:#9d174d;border:1px solid #f9a8d4;',
   };
-  const c = colors[poste] || { bg: '#f3f4f6', text: '#374151', border: '#d1d5db' };
-  return `<span style="display:inline-block;padding:2px 8px;border-radius:999px;
-                        font-size:11px;font-weight:600;
-                        background:${c.bg};color:${c.text};border:1px solid ${c.border};">
-            ${esc(poste)}
-          </span>`;
+  const style = map[poste] || 'background:#f3f4f6;color:#374151;border:1px solid #d1d5db;';
+  return '<span style="display:inline-block;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:600;' + style + '">' + esc(poste) + '</span>';
 }
 
-/** Met la première lettre en majuscule */
-function capitaliserPremiereMot(str) {
-  if (!str) return str;
-  return str.charAt(0).toUpperCase() + str.slice(1);
+function capitaliserPremiere(str) {
+  return str ? str.charAt(0).toUpperCase() + str.slice(1) : str;
 }
 
-// ── Envoi instantané ─────────────────────────────────────────────────────────
+// ── Envoi instantané ──────────────────────────────────────────────────────────
 
 /**
- * Envoie immédiatement le rapport sans attendre le trigger de 8h.
- * Utile pour tester ou pour forcer un envoi manuel depuis l'éditeur Apps Script.
+ * Envoie immédiatement le rapport (test ou envoi manuel).
  * → Sélectionnez cette fonction dans le menu déroulant et cliquez "Exécuter".
  */
 function envoyerRapportMaintenant() {
@@ -293,22 +370,19 @@ function envoyerRapportMaintenant() {
   envoyerRapportMatin();
 }
 
-// ── Trigger (à exécuter une seule fois manuellement) ──────────────────────────
+// ── Trigger quotidien à 8h ────────────────────────────────────────────────────
 
 /**
- * Crée un trigger quotidien à 8h pour envoyerRapportMatin().
- * ⚠️ Exécutez cette fonction UNE SEULE FOIS depuis l'éditeur Apps Script.
- *    Elle supprime les anciens triggers du même nom avant d'en créer un nouveau.
+ * Crée le trigger quotidien à 8h.
+ * ⚠️ À exécuter UNE SEULE FOIS depuis l'éditeur Apps Script.
  */
 function configurerDeclencheurMatin() {
-  // Supprime les triggers existants pour éviter les doublons
   ScriptApp.getProjectTriggers().forEach(function(trigger) {
     if (trigger.getHandlerFunction() === 'envoyerRapportMatin') {
       ScriptApp.deleteTrigger(trigger);
     }
   });
 
-  // Crée le trigger quotidien entre 8h et 9h (GAS arrondit à l'heure)
   ScriptApp.newTrigger('envoyerRapportMatin')
     .timeBased()
     .everyDays(1)
@@ -316,5 +390,5 @@ function configurerDeclencheurMatin() {
     .inTimezone('Africa/Casablanca')
     .create();
 
-  Logger.log('✅ Trigger quotidien configuré : envoyerRapportMatin() à 8h (Africa/Casablanca)');
+  Logger.log('Trigger quotidien configuré : envoyerRapportMatin() a 8h (Africa/Casablanca)');
 }
