@@ -100,7 +100,7 @@ function envoyerRapportMatin() {
     const body    = construireHtmlRapport(dateStr, pdrConfirmes, otRealises);
 
     // ── Envoi ──────────────────────────────────────────────────────────────
-    sendEmailOCP(DESTINATAIRE_RAPPORT, subject, body);
+    sendEmailOCP(DESTINATAIRE_RAPPORT, subject, '', { htmlBody: body });
     Logger.log('[Rapport Matin] Email envoyé à ' + DESTINATAIRE_RAPPORT +
                ' | PDR confirmés : ' + pdrConfirmes.length +
                ' | OT réalisés : ' + otRealises.length);
