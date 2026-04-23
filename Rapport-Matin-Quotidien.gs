@@ -359,6 +359,18 @@ function capitaliserPremiere(str) {
   return str ? str.charAt(0).toUpperCase() + str.slice(1) : str;
 }
 
+// ── Autorisation Drive (à exécuter une seule fois) ───────────────────────────
+
+/**
+ * Déclenche la demande d'autorisation Google Drive.
+ * → Exécutez cette fonction UNE SEULE FOIS, acceptez la permission,
+ *   puis relancez envoyerRapportMaintenant().
+ */
+function autoriserDrive() {
+  DriveApp.getRootFolder();
+  Logger.log('Autorisation Drive accordée.');
+}
+
 // ── Envoi instantané ──────────────────────────────────────────────────────────
 
 /**
