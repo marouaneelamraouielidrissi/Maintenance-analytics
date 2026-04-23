@@ -281,6 +281,18 @@ function capitaliserPremiereMot(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+// ── Envoi instantané ─────────────────────────────────────────────────────────
+
+/**
+ * Envoie immédiatement le rapport sans attendre le trigger de 8h.
+ * Utile pour tester ou pour forcer un envoi manuel depuis l'éditeur Apps Script.
+ * → Sélectionnez cette fonction dans le menu déroulant et cliquez "Exécuter".
+ */
+function envoyerRapportMaintenant() {
+  Logger.log('[Rapport Matin] Envoi instantané déclenché manuellement.');
+  envoyerRapportMatin();
+}
+
 // ── Trigger (à exécuter une seule fois manuellement) ──────────────────────────
 
 /**
