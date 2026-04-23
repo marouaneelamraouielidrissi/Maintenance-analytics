@@ -268,7 +268,10 @@ function genererPdfDocApp(dateStr, pdrConfirmes, otRealises, nomFichier) {
   return pdfBlob;
 }
 
-// ── Envoi EWS avec pièce jointe PDF (MIME multipart) ─────────────────────────
+// ── Envoi EWS avec pièce jointe PDF (3 étapes : Create → Attach → Send) ───────
+//
+// Remplace l'approche MimeContent qui dépassait le quota de bande passante.
+// Le PDF est attaché dans un appel séparé, ce qui évite le double encodage base64.
 
 function envoyerEmailAvecPDF(to, subject, htmlBody, pdfBlob) {
   const props     = PropertiesService.getScriptProperties();
@@ -278,66 +281,105 @@ function envoyerEmailAvecPDF(to, subject, htmlBody, pdfBlob) {
 
   if (!OCP_PASS) throw new Error('OCP_PASSWORD non défini dans les propriétés du script.');
 
-  const boundary   = 'boundary_rm_' + Utilities.getUuid().replace(/-/g, '');
-  const subjB64    = Utilities.base64Encode(subject,          Utilities.Charset.UTF_8);
-  const htmlB64    = chunk76(Utilities.base64Encode(htmlBody, Utilities.Charset.UTF_8));
-  const pdfB64     = chunk76(Utilities.base64Encode(pdfBlob.getBytes()));
-  const pdfName    = pdfBlob.getName();
+  const auth = { Authorization: 'Basic ' + Utilities.base64Encode(OCP_EMAIL + ':' + OCP_PASS) };
 
-  const mime = [
-    'From: '    + OCP_EMAIL,
-    'To: '      + to,
-    'Subject: =?UTF-8?B?' + subjB64 + '?=',
-    'MIME-Version: 1.0',
-    'Content-Type: multipart/mixed; boundary="' + boundary + '"',
-    '',
-    '--' + boundary,
-    'Content-Type: text/html; charset=UTF-8',
-    'Content-Transfer-Encoding: base64',
-    '',
-    htmlB64,
-    '',
-    '--' + boundary,
-    'Content-Type: application/pdf',
-    'Content-Transfer-Encoding: base64',
-    'Content-Disposition: attachment; filename="' + pdfName + '"',
-    '',
-    pdfB64,
-    '',
-    '--' + boundary + '--',
-  ].join('\r\n');
+  // ── Étape 1 : créer le brouillon (SaveOnly) ────────────────────────────────
+  const xmlTo      = xmlEsc(to);
+  const xmlSubject = xmlEsc(subject);
+  const xmlBody    = xmlEsc(htmlBody);
 
-  const soap = '<?xml version="1.0" encoding="utf-8"?>'
+  const soap1 = ewsEnvelope(
+    '<m:CreateItem MessageDisposition="SaveOnly">'
+    + '<m:Items><t:Message>'
+    + '<t:Subject>'  + xmlSubject + '</t:Subject>'
+    + '<t:Body BodyType="HTML">' + xmlBody + '</t:Body>'
+    + '<t:ToRecipients>'
+    + '<t:Mailbox><t:EmailAddress>' + xmlTo + '</t:EmailAddress></t:Mailbox>'
+    + '</t:ToRecipients>'
+    + '</t:Message></m:Items>'
+    + '</m:CreateItem>'
+  );
+
+  const resp1 = ewsFetch(EWS_URL, auth, 'CreateItem', soap1);
+  const idMatch  = resp1.match(/ItemId Id="([^"]+)"/);
+  const ckMatch  = resp1.match(/ItemId Id="[^"]+" ChangeKey="([^"]+)"/);
+  if (!idMatch) throw new Error('EWS CreateItem : ItemId introuvable.\n' + resp1.substring(0, 400));
+
+  const itemId    = idMatch[1];
+  const changeKey = ckMatch ? ckMatch[1] : '';
+
+  // ── Étape 2 : attacher le PDF ──────────────────────────────────────────────
+  const pdfB64 = Utilities.base64Encode(pdfBlob.getBytes());
+  const pdfName = xmlEsc(pdfBlob.getName());
+
+  const soap2 = ewsEnvelope(
+    '<m:CreateAttachment>'
+    + '<m:ParentItemId Id="' + itemId + '" ChangeKey="' + changeKey + '"/>'
+    + '<m:Attachments>'
+    + '<t:FileAttachment>'
+    + '<t:Name>' + pdfName + '</t:Name>'
+    + '<t:ContentType>application/pdf</t:ContentType>'
+    + '<t:IsInline>false</t:IsInline>'
+    + '<t:Content>' + pdfB64 + '</t:Content>'
+    + '</t:FileAttachment>'
+    + '</m:Attachments>'
+    + '</m:CreateAttachment>'
+  );
+
+  const resp2 = ewsFetch(EWS_URL, auth, 'CreateAttachment', soap2);
+  const rootIdMatch  = resp2.match(/RootItemId Id="([^"]+)"/);
+  const rootCkMatch  = resp2.match(/RootItemId Id="[^"]+" ChangeKey="([^"]+)"/);
+  if (!rootIdMatch) throw new Error('EWS CreateAttachment : RootItemId introuvable.\n' + resp2.substring(0, 400));
+
+  const rootId  = rootIdMatch[1];
+  const rootCk  = rootCkMatch ? rootCkMatch[1] : '';
+
+  // ── Étape 3 : envoyer le brouillon ────────────────────────────────────────
+  const soap3 = ewsEnvelope(
+    '<m:SendItem SaveItemToFolder="true">'
+    + '<m:ItemIds>'
+    + '<t:ItemId Id="' + rootId + '" ChangeKey="' + rootCk + '"/>'
+    + '</m:ItemIds>'
+    + '</m:SendItem>'
+  );
+
+  ewsFetch(EWS_URL, auth, 'SendItem', soap3);
+}
+
+// ── Helpers EWS ───────────────────────────────────────────────────────────────
+
+function ewsEnvelope(body) {
+  return '<?xml version="1.0" encoding="utf-8"?>'
     + '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"'
     + ' xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types"'
     + ' xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages">'
-    + '<soap:Body>'
-    + '<m:CreateItem MessageDisposition="SendAndSaveCopy">'
-    + '<m:Items><t:Message>'
-    + '<t:MimeContent CharacterSet="UTF-8">'
-    + Utilities.base64Encode(mime, Utilities.Charset.UTF_8)
-    + '</t:MimeContent>'
-    + '</t:Message></m:Items>'
-    + '</m:CreateItem>'
-    + '</soap:Body></soap:Envelope>';
+    + '<soap:Body>' + body + '</soap:Body>'
+    + '</soap:Envelope>';
+}
 
-  const resp = UrlFetchApp.fetch(EWS_URL, {
+function ewsFetch(url, authHeaders, action, soap) {
+  const ns   = 'http://schemas.microsoft.com/exchange/services/2006/messages/';
+  const resp = UrlFetchApp.fetch(url, {
     method            : 'POST',
     contentType       : 'text/xml; charset=utf-8',
-    headers           : {
-      'Authorization' : 'Basic ' + Utilities.base64Encode(OCP_EMAIL + ':' + OCP_PASS),
-      'SOAPAction'    : 'http://schemas.microsoft.com/exchange/services/2006/messages/CreateItem',
-    },
+    headers           : Object.assign({ SOAPAction: ns + action }, authHeaders),
     payload           : soap,
     muteHttpExceptions: true,
   });
-
   const code = resp.getResponseCode();
-  if (code !== 200) throw new Error('EWS HTTP ' + code + ' : ' + resp.getContentText().substring(0, 500));
-  if (resp.getContentText().indexOf('ResponseClass="Error"') !== -1) {
-    const m = resp.getContentText().match(/<m:MessageText>(.*?)<\/m:MessageText>/);
-    throw new Error('EWS erreur : ' + (m ? m[1] : resp.getContentText().substring(0, 300)));
+  const text = resp.getContentText();
+  if (code !== 200) throw new Error('EWS ' + action + ' HTTP ' + code + ' : ' + text.substring(0, 400));
+  if (text.indexOf('ResponseClass="Error"') !== -1) {
+    const m = text.match(/<m:MessageText>(.*?)<\/m:MessageText>/);
+    throw new Error('EWS ' + action + ' erreur : ' + (m ? m[1] : text.substring(0, 300)));
   }
+  return text;
+}
+
+function xmlEsc(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function chunk76(b64) { return (b64.match(/.{1,76}/g) || []).join('\r\n'); }
