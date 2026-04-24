@@ -225,6 +225,118 @@ function envoyerRappelPDR() {
 }
 
 // ============================================================
+//  TEST — envoie tous les mails de rappel PDR uniquement
+//  à m.elamraoui@ocpgroup.ma (sans toucher aux vrais destinataires)
+//  → Sélectionnez cette fonction et cliquez "Exécuter"
+// ============================================================
+function testerRappelPDR() {
+
+  var TEST_EMAIL = 'm.elamraoui@ocpgroup.ma';
+
+  var travSS    = SpreadsheetApp.openById('1C9bYkPsoYg81ARgolVDlZRwsMZk4Seff6aC7vfxoVeE');
+  var travSheet = travSS.getSheetByName('Travaux hebdomadaire');
+  var travData  = travSheet.getDataRange().getValues();
+
+  var COL_ORDRE = 0, COL_DESC = 3, COL_OBJET = 5, COL_POSTE = 8;
+  var COL_STATUT_UTIL = 10, COL_PDR = 18, COL_DISPO = 19, COL_OBS = 20, COL_STATUT_SYS = 21;
+
+  var PDR_BUREAU_KEYWORDS = ['reducteur', 'pompe'];
+
+  function pdrContientMotBureau(pdr) {
+    var n = pdr.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    return PDR_BUREAU_KEYWORDS.some(function(k) { return n.indexOf(k) >= 0; });
+  }
+
+  function getFiltered(postes) {
+    var result = [];
+    for (var i = 1; i < travData.length; i++) {
+      var row = travData[i];
+      var rowPoste = String(row[COL_POSTE] || '').trim().toUpperCase();
+      if (postes.indexOf(rowPoste) < 0) continue;
+      var statSys  = String(row[COL_STATUT_SYS]  || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      var statUtil = String(row[COL_STATUT_UTIL]  || '').trim().toUpperCase();
+      if (statSys.indexOf('cree') < 0)  continue;
+      if (statUtil.indexOf('CRPR') < 0) continue;
+      var pdr  = String(row[COL_PDR]  || '').trim(); if (!pdr)  continue;
+      var dispo = String(row[COL_DISPO] || '').trim(); if (dispo) continue;
+      var obs   = String(row[COL_OBS]   || '').trim(); if (obs)   continue;
+      result.push({
+        ordre : String(row[COL_ORDRE] || '').trim(),
+        desc  : String(row[COL_DESC]  || '').trim(),
+        objet : String(row[COL_OBJET] || '').trim(),
+        pdr   : pdr,
+        poste : String(row[COL_POSTE] || '').trim()
+      });
+    }
+    return result;
+  }
+
+  function buildHtmlTest(label, pendingList) {
+    var rows = pendingList.length === 0
+      ? '<tr><td colspan="5" style="padding:12px;text-align:center;color:#9ca3af;font-style:italic;">Aucune PDR en attente</td></tr>'
+      : pendingList.map(function(item, k) {
+          var bg = k % 2 === 0 ? '#ffffff' : '#f8fafc';
+          return '<tr style="background:' + bg + ';border-bottom:1px solid #e5e7eb;">'
+            + '<td style="padding:8px 12px;font-weight:600;color:#1e40af;">' + item.ordre + '</td>'
+            + '<td style="padding:8px 12px;">' + (item.objet || '-') + '</td>'
+            + '<td style="padding:8px 12px;">' + (item.desc  || '-') + '</td>'
+            + '<td style="padding:8px 12px;color:#b45309;">' + item.pdr + '</td>'
+            + '<td style="padding:8px 12px;font-weight:600;color:#1e3a5f;">' + item.poste + '</td>'
+            + '</tr>';
+        }).join('');
+
+    return '<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;color:#374151;background:#f9fafb;margin:0;padding:0;">'
+      + '<div style="max-width:760px;margin:30px auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">'
+      + '<div style="background:#b45309;padding:16px 28px;">'
+      + '<p style="margin:0;color:#fff;font-size:12px;font-weight:600;">[TEST] Email qui serait envoyé à : ' + label + '</p>'
+      + '</div>'
+      + '<div style="background:#1e3a5f;padding:20px 28px;">'
+      + '<h2 style="margin:0;color:#fff;font-size:17px;">PDR en attente de confirmation</h2>'
+      + '<p style="margin:4px 0 0;color:#93c5fd;font-size:13px;">' + label + ' — ' + pendingList.length + ' PDR</p>'
+      + '</div>'
+      + '<div style="padding:24px 28px;">'
+      + '<p style="margin:0 0 18px;">Bonjour Marouane,</p>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:13px;">'
+      + '<thead><tr style="background:#1e3a5f;color:#fff;">'
+      + '<th style="padding:9px 12px;text-align:left;">N° OT</th>'
+      + '<th style="padding:9px 12px;text-align:left;">Objet technique</th>'
+      + '<th style="padding:9px 12px;text-align:left;">Description</th>'
+      + '<th style="padding:9px 12px;text-align:left;">PDR demandée</th>'
+      + '<th style="padding:9px 12px;text-align:left;">Poste</th>'
+      + '</tr></thead><tbody>' + rows + '</tbody></table>'
+      + '</div>'
+      + '<div style="background:#f8fafc;padding:14px 28px;border-top:1px solid #e5e7eb;">'
+      + '<p style="margin:0;font-size:11px;color:#9ca3af;">Email de test — Maintenance Analytics | Bureau de methode Daoui</p>'
+      + '</div></div></body></html>';
+  }
+
+  function sendTest(pending, label) {
+    var subj = '[TEST] Rappel PDR — ' + label + ' (' + pending.length + ' PDR)';
+    var html = buildHtmlTest(label, pending);
+    sendEmailOCP(TEST_EMAIL, subj, '', { htmlBody: html, name: 'Bureau de methode Daoui - Section Planification' });
+    Logger.log('[TEST] Mail envoyé → ' + TEST_EMAIL + ' | ' + label + ' | ' + pending.length + ' PDR');
+  }
+
+  // Mail 1 : Appro mécanique (421-MEC standard + 421-CHAU)
+  var pendingMec = getFiltered(['421-MEC', '421-CHAU']).filter(function(r) { return !pdrContientMotBureau(r.pdr); });
+  sendTest(pendingMec, 'Appro mécanique — 421-MEC + 421-CHAU');
+
+  // Mail 2 : Interchangeable mécanique (421-MEC réducteur/pompe)
+  var pendingBureau = getFiltered(['421-MEC']).filter(function(r) { return pdrContientMotBureau(r.pdr); });
+  sendTest(pendingBureau, 'Interchangeable mécanique — 421-MEC (réducteur/pompe)');
+
+  // Mail 3 : Appro installation (421-INST)
+  var pendingInst = getFiltered(['421-INST']).filter(function(r) { return !pdrContientMotBureau(r.pdr); });
+  sendTest(pendingInst, 'Appro installation — 421-INST');
+
+  // Mail 4 : Appro électrique (423-ELEC + 423-REG)
+  var pendingElec = getFiltered(['423-ELEC', '423-REG']).filter(function(r) { return !pdrContientMotBureau(r.pdr); });
+  sendTest(pendingElec, 'Appro électrique — 423-ELEC + 423-REG');
+
+  Logger.log('[TEST] Terminé — 4 emails envoyés à ' + TEST_EMAIL);
+}
+
+// ============================================================
 //  DIAGNOSTIC — affiche dans les logs les valeurs réelles
 //  des colonnes clés pour comprendre pourquoi aucun PDR n'est trouvé
 // ============================================================
