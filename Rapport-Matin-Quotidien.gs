@@ -58,32 +58,51 @@ function envoyerRapportMatin() {
     const rows = data.slice(1);
 
     // ── PDR confirmés
-    const pdrConfirmes = rows
-      .filter(r =>
-        String(r[COL_PDR]   || '').trim() &&
-        String(r[COL_DISPO] || '').trim().toUpperCase() === 'OUI' &&
-        !rm_statutSysExclu(r) && !rm_statutUtilSOPL(r))
-      .map(r => [
-        String(r[COL_ORDRE]  || '').trim(),
-        String(r[COL_DESC]   || '').trim(),
-        String(r[COL_OBJET]  || '').trim(),
-        String(r[COL_POSTE]  || '').trim(),
-        String(r[COL_PDR]    || '').trim(),
-        String(r[COL_OBS]    || '').trim() || '—',
+    // Un OT peut avoir plusieurs lignes PDR : seule la 1ère ligne a Ordre/Desc/Objet/Poste.
+    // On reporte ces valeurs sur les lignes suivantes du même OT quand elles sont vides.
+    const pdrConfirmes = [];
+    let dernierOrdre = '', dernierDesc = '', dernierObjet = '', dernierPoste = '';
+    rows.forEach(function(r) {
+      const pdr   = String(r[COL_PDR]   || '').trim();
+      const dispo = String(r[COL_DISPO] || '').trim().toUpperCase();
+      if (!pdr || dispo !== 'OUI' || rm_statutSysExclu(r) || rm_statutUtilSOPL(r)) return;
+
+      const ordre = String(r[COL_ORDRE] || '').trim();
+      const desc  = String(r[COL_DESC]  || '').trim();
+      const objet = String(r[COL_OBJET] || '').trim();
+      const poste = String(r[COL_POSTE] || '').trim();
+
+      // Si la ligne a un Ordre renseigné, on met à jour les valeurs de référence
+      if (ordre) { dernierOrdre = ordre; dernierDesc = desc; dernierObjet = objet; dernierPoste = poste; }
+
+      pdrConfirmes.push([
+        dernierOrdre,
+        dernierDesc,
+        dernierObjet,
+        dernierPoste,
+        pdr,
+        String(r[COL_OBS] || '').trim() || '—',
       ]);
+    });
 
     // ── OT réalisés
-    const otRealises = rows
-      .filter(r =>
-        String(r[COL_REALISATION] || '').trim() === 'Fait' &&
-        !rm_statutSysExclu(r))
-      .map(r => [
-        String(r[COL_ORDRE]  || '').trim(),
-        String(r[COL_DESC]   || '').trim(),
-        String(r[COL_OBJET]  || '').trim(),
-        String(r[COL_POSTE]  || '').trim(),
-        String(r[COL_OBS]    || '').trim() || '—',
+    // On dédoublonne par Ordre OT : une seule ligne par OT même si plusieurs lignes existent.
+    const vusOT = {};
+    const otRealises = [];
+    rows.forEach(function(r) {
+      const real  = String(r[COL_REALISATION] || '').trim();
+      const ordre = String(r[COL_ORDRE]       || '').trim();
+      if (real !== 'Fait' || rm_statutSysExclu(r)) return;
+      if (!ordre || vusOT[ordre]) return;
+      vusOT[ordre] = true;
+      otRealises.push([
+        ordre,
+        String(r[COL_DESC]  || '').trim(),
+        String(r[COL_OBJET] || '').trim(),
+        String(r[COL_POSTE] || '').trim(),
+        String(r[COL_OBS]   || '').trim() || '—',
       ]);
+    });
 
     const today   = new Date();
     const tz      = Session.getScriptTimeZone();
