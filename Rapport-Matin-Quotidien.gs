@@ -58,28 +58,39 @@ function envoyerRapportMatin() {
     const rows = data.slice(1);
 
     // ── PDR confirmés
-    // Un OT peut avoir plusieurs lignes PDR : seule la 1ère ligne a Ordre/Desc/Objet/Poste.
-    // On reporte ces valeurs sur les lignes suivantes du même OT quand elles sont vides.
+    // Logique : on parcourt les lignes en suivant le OT parent (ligne avec Ordre non vide).
+    // Les filtres Col V et Col K sont appliqués sur la ligne PARENT uniquement.
+    // Les sous-lignes PDR héritent de la validité de leur parent.
+    // Ainsi un OT avec ColV=LANC est exclu même si ses sous-lignes PDR ont ColV vide.
     const pdrConfirmes = [];
-    let dernierOrdre = '', dernierDesc = '', dernierObjet = '', dernierPoste = '';
+    let otCourant = null; // { ordre, desc, objet, poste, valide }
+
     rows.forEach(function(r) {
+      const ordre = String(r[COL_ORDRE] || '').trim();
+
+      // Nouvelle ligne parent (Ordre renseigné) → on évalue sa validité
+      if (ordre) {
+        otCourant = {
+          ordre  : ordre,
+          desc   : String(r[COL_DESC]  || '').trim(),
+          objet  : String(r[COL_OBJET] || '').trim(),
+          poste  : String(r[COL_POSTE] || '').trim(),
+          valide : !rm_statutSysExclu(r) && !rm_statutUtilSOPL(r),
+        };
+      }
+
+      // Conditions PDR
       const pdr   = String(r[COL_PDR]   || '').trim();
       const dispo = String(r[COL_DISPO] || '').trim().toUpperCase();
-      if (!pdr || dispo !== 'OUI' || rm_statutSysExclu(r) || rm_statutUtilSOPL(r)) return;
 
-      const ordre = String(r[COL_ORDRE] || '').trim();
-      const desc  = String(r[COL_DESC]  || '').trim();
-      const objet = String(r[COL_OBJET] || '').trim();
-      const poste = String(r[COL_POSTE] || '').trim();
-
-      // Si la ligne a un Ordre renseigné, on met à jour les valeurs de référence
-      if (ordre) { dernierOrdre = ordre; dernierDesc = desc; dernierObjet = objet; dernierPoste = poste; }
+      if (!pdr || dispo !== 'OUI') return;           // PDR absent ou non confirmé
+      if (!otCourant || !otCourant.valide) return;   // OT parent exclu (LANC/CLOT/TCLO/SOPL)
 
       pdrConfirmes.push([
-        dernierOrdre,
-        dernierDesc,
-        dernierObjet,
-        dernierPoste,
+        otCourant.ordre,
+        otCourant.desc,
+        otCourant.objet,
+        otCourant.poste,
         pdr,
         String(r[COL_OBS] || '').trim() || '—',
       ]);
