@@ -6,8 +6,8 @@
  * puis exportées en PDF via l'URL d'export natif de Sheets.
  *
  * Filtres :
- *   PDR confirmés : Dispo="OUI"  ET  Col V ∉ {TCLO,CLOT,LANC}  ET  Col K ne commence pas par "SOPL"
- *   OT réalisés   : Réalisation="Fait"  ET  Col V ∉ {TCLO,CLOT,LANC}
+ *   PDR confirmés : Dispo="OUI"  ET  Col V = vide  ET  Col V ∉ {TCLO,CLOT,LANC}  ET  Col K ne commence pas par "SOPL"
+ *   OT réalisés   : Réalisation="Fait"  ET  Col V = vide  ET  Col V ∉ {TCLO,CLOT,LANC}
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -36,8 +36,11 @@ const COL_STATUT_SYS  = 21;  // V – Statut système ABR
 // ── Helpers de filtrage ───────────────────────────────────────────────────────
 
 function rm_statutSysExclu(row) {
-  const s = String(row[COL_STATUT_SYS] || '').toUpperCase();
-  return s.includes('TCLO') || s.includes('CLOT') || s.includes('LANC');
+  const s = String(row[COL_STATUT_SYS] || '').trim();
+  // Exclure si Col V non vide OU si Col V contient TCLO / CLOT / LANC
+  if (s !== '') return true;
+  const u = s.toUpperCase();
+  return u.includes('TCLO') || u.includes('CLOT') || u.includes('LANC');
 }
 
 function rm_statutUtilSOPL(row) {
