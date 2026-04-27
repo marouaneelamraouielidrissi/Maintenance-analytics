@@ -21,11 +21,11 @@ function sendEmailRH(to, subject, htmlBody, senderName, attachments, cc) {
   var toList = Array.isArray(to) ? to : to.split(',').map(function(e){ return e.trim(); }).filter(Boolean);
   var ccList = cc ? (Array.isArray(cc) ? cc : cc.split(',').map(function(e){ return e.trim(); }).filter(Boolean)) : [];
   var boundary = 'rh_boundary_' + Date.now();
-  var subjB64  = Utilities.base64Encode(subject,  Utilities.Charset.UTF_8);
-  // Minification HTML : supprime les espaces entre balises et espaces multiples
+  var subjB64  = Utilities.base64Encode(subject, Utilities.Charset.UTF_8);
+  // Minification HTML : supprime espaces entre balises et multiples
   var minHtml  = htmlBody.replace(/>\s+</g,'><').replace(/\s{2,}/g,' ').trim();
-  var bodyB64  = Utilities.base64Encode(minHtml, Utilities.Charset.UTF_8);
-
+  // Encodage quoted-printable simplifié : pas de base64 interne → réduit la taille de 33%
+  // (le MIME entier est déjà base64-encodé dans le SOAP EWS)
   var mimeParts = [
     'From: "' + senderName + '" <' + RH_OCP_EMAIL + '>',
     'To: ' + toList.join(', '),
@@ -36,9 +36,9 @@ function sendEmailRH(to, subject, htmlBody, senderName, attachments, cc) {
     '',
     '--' + boundary,
     'Content-Type: text/html; charset=UTF-8',
-    'Content-Transfer-Encoding: base64',
+    'Content-Transfer-Encoding: 8bit',
     '',
-    bodyB64
+    minHtml
   ];
 
   // Pièces jointes optionnelles
