@@ -24,6 +24,7 @@ function sendEmailRH(to, subject, htmlBody, senderName, attachments, cc) {
   var subjB64  = Utilities.base64Encode(subject, Utilities.Charset.UTF_8);
   // Minification HTML : supprime espaces entre balises et multiples
   var minHtml  = htmlBody.replace(/>\s+</g,'><').replace(/\s{2,}/g,' ').trim();
+  Logger.log('📏 HTML size: ' + Math.round(minHtml.length/1024) + ' KB (' + minHtml.length + ' chars)');
   // Encodage quoted-printable simplifié : pas de base64 interne → réduit la taille de 33%
   // (le MIME entier est déjà base64-encodé dans le SOAP EWS)
   var mimeParts = [
@@ -615,28 +616,24 @@ function rhMakeColHtml(labels, values, color) {
   return html;
 }
 
-// Graphique barres en HTML pur — compatible Outlook, valeurs affichées
+// Graphique barres compact — 1 seule table, pas de tables imbriquées
 function rhMakeBarHtml(labels, values, color) {
   if (!labels.length) return '';
   var maxVal = Math.max.apply(null, values) || 1;
   var col = color || '#3b82f6';
-  var html = '<table cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;">';
+  var html = '<table cellpadding="2" cellspacing="0" width="100%">';
   for (var i = 0; i < labels.length; i++) {
-    var pct = Math.round((values[i] / maxVal) * 100);
-    var remain = 100 - pct;
+    var w = Math.max(4, Math.round((values[i] / maxVal) * 75));
     html += '<tr>'
-      + '<td width="110" style="font-size:11px;font-weight:600;color:#374151;padding:5px 8px 5px 0;white-space:nowrap;vertical-align:middle;">' + labels[i] + '</td>'
-      + '<td style="padding:5px 6px 5px 0;vertical-align:middle;">'
-      +   '<table cellpadding="0" cellspacing="0" width="100%"><tr>'
-      +     '<td width="' + pct + '%" style="height:18px;background:' + col + ';font-size:1px;">&nbsp;</td>'
-      +     (remain > 0 ? '<td style="height:18px;background:#f1f5f9;font-size:1px;">&nbsp;</td>' : '')
-      +   '</tr></table>'
-      + '</td>'
-      + '<td width="32" align="right" style="font-size:11px;font-weight:700;color:' + col + ';padding:5px 0;white-space:nowrap;vertical-align:middle;">' + values[i] + '</td>'
+      + '<td width="105" style="font-size:11px;color:#374151;white-space:nowrap;">' + labels[i] + '</td>'
+      + '<td><table cellpadding="0" cellspacing="0" width="100%"><tr>'
+      + '<td width="' + w + '%" bgcolor="' + col + '" height="12" style="font-size:1px;">&nbsp;</td>'
+      + '<td bgcolor="#f1f5f9" height="12" style="font-size:1px;">&nbsp;</td>'
+      + '</tr></table></td>'
+      + '<td width="28" align="right" style="font-size:11px;font-weight:700;color:' + col + ';">' + values[i] + '</td>'
       + '</tr>';
   }
-  html += '</table>';
-  return html;
+  return html + '</table>';
 }
 
 // ── Construction HTML du rapport (compatible Outlook desktop) ─
@@ -695,139 +692,100 @@ function rhBuildHtml(arrets, kpi, avis) {
     return html;
   }
 
-  // ── KPI card (table-based, Outlook-safe) ──
+  // ── KPI card compact ──
   function kpiCard(iconBg,iconFg,val,label,sub,taux,w) {
     w = w || '50%';
-    var tagHtml='';
-    if(taux!==null&&taux!==undefined){
-      var tc=taux>=80?{bg:'#dcfce7',fg:'#166534'}:taux>=50?{bg:'#fef9c3',fg:'#854d0e'}:{bg:'#fee2e2',fg:'#991b1b'};
-      tagHtml='<div style="text-align:right;"><span style="font-size:11px;font-weight:700;padding:2px 8px;background:'+tc.bg+';color:'+tc.fg+';">'+taux.toFixed(1)+'%</span></div>';
-    }
-    return '<td width="'+w+'" valign="top" style="padding:6px;">'
-      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
-      +'<tr><td style="padding:14px 16px;">'
-      +'<table cellpadding="0" cellspacing="0" width="100%"><tr>'
-      +'<td><div style="width:32px;height:32px;background:'+iconBg+';text-align:center;padding-top:8px;font-size:14px;font-weight:700;color:'+iconFg+';">&#9632;</div></td>'
-      +'<td align="right">'+tagHtml+'</td>'
-      +'</tr></table>'
-      +'<div style="font-size:24px;font-weight:700;color:#0f172a;margin:10px 0 3px;line-height:1;">'+val+'</div>'
-      +'<div style="font-size:12px;font-weight:600;color:#475569;">'+label+'</div>'
-      +'<div style="font-size:11px;color:#94a3b8;margin-top:8px;padding-top:8px;border-top:1px solid #f1f5f9;">'+sub+'</div>'
-      +'</td></tr></table>'
-      +'</td>';
+    var tStr = (taux!==null&&taux!==undefined) ? (' <span style="font-size:10px;font-weight:700;color:'+(taux>=80?'#059669':taux>=50?'#d97706':'#dc2626')+';">('+taux.toFixed(1)+'%)</span>') : '';
+    return '<td width="'+w+'" valign="top" style="padding:4px;">'
+      +'<table cellpadding="6" cellspacing="0" width="100%" style="background:#fff;border:1px solid #e2e8f0;">'
+      +'<tr><td style="border-bottom:1px solid #f1f5f9;">'
+      +'<div style="font-size:20px;font-weight:700;color:#0f172a;">'+val+tStr+'</div>'
+      +'<div style="font-size:11px;font-weight:600;color:#475569;margin-top:3px;">'+label+'</div>'
+      +'</td></tr>'
+      +'<tr><td style="font-size:10px;color:#94a3b8;">'+sub+'</td></tr>'
+      +'</table></td>';
   }
 
-  // ── Chart card image (pie) — hauteur fixe 260px ──
+  // ── Chart card image ──
   function chartCard(imgSrc,title,w) {
     w=w||'50%';
-    if(!imgSrc) return '<td width="'+w+'" valign="top" style="padding:6px;">'
-      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
-      +'<tr><td style="padding:20px 16px;text-align:center;">'
-      +'<div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">'+title+'</div>'
-      +'<div style="font-size:12px;color:#cbd5e1;">Aucune donn&#233;e pour cette semaine</div>'
-      +'</td></tr></table></td>';
-    return '<td width="'+w+'" valign="top" style="padding:6px;">'
-      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
-      +'<tr><td style="padding:12px 16px;">'
-      +'<img src="'+imgSrc+'" width="100%" style="display:block;border:0;height:auto;max-width:100%;" alt="'+title+'">'
-      +'</td></tr></table></td>';
+    if(!imgSrc) return '<td width="'+w+'" valign="top" style="padding:4px;"><table cellpadding="8" cellspacing="0" width="100%" style="background:#fff;border:1px solid #e2e8f0;"><tr><td style="font-size:11px;color:#94a3b8;">'+title+' — Aucune donn&#233;e</td></tr></table></td>';
+    return '<td width="'+w+'" valign="top" style="padding:4px;"><table cellpadding="8" cellspacing="0" width="100%" style="background:#fff;border:1px solid #e2e8f0;"><tr><td><img src="'+imgSrc+'" width="100%" style="display:block;border:0;" alt="'+title+'"></td></tr></table></td>';
   }
 
-  // ── Chart card barres HTML — même hauteur fixe 260px ──
+  // ── Chart card barres HTML ──
   function barChartCard(barHtml,title,w) {
     w=w||'50%';
-    if(!barHtml) return '<td width="'+w+'" valign="top" style="padding:6px;">'
-      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
-      +'<tr><td style="padding:20px 16px;text-align:center;">'
-      +'<div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">'+title+'</div>'
-      +'<div style="font-size:12px;color:#cbd5e1;">Aucune donn&#233;e disponible</div>'
-      +'</td></tr></table></td>';
-    return '<td width="'+w+'" valign="top" style="padding:6px;">'
-      +'<table cellpadding="0" cellspacing="0" width="100%" height="260" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
-      +'<tr><td height="260" valign="middle" style="padding:12px 16px;">'
-      +'<div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;">'+title+'</div>'
-      +barHtml
-      +'</td></tr></table></td>';
+    if(!barHtml) return '<td width="'+w+'" valign="top" style="padding:4px;"><table cellpadding="8" cellspacing="0" width="100%" style="background:#fff;border:1px solid #e2e8f0;"><tr><td style="font-size:11px;color:#94a3b8;">'+title+' — Aucune donn&#233;e</td></tr></table></td>';
+    return '<td width="'+w+'" valign="top" style="padding:4px;">'
+      +'<table cellpadding="8" cellspacing="0" width="100%" style="background:#fff;border:1px solid #e2e8f0;">'
+      +'<tr><td style="font-size:11px;font-weight:700;color:#475569;border-bottom:1px solid #f1f5f9;padding-bottom:6px;">'+title+'</td></tr>'
+      +'<tr><td>'+barHtml+'</td></tr>'
+      +'</table></td>';
   }
 
   // ── Sous-section label ──
   function subSection(bg,border,color,label) {
-    return '<table cellpadding="0" cellspacing="0" style="margin:16px 0 10px;">'
-      +'<tr><td style="padding:5px 14px;background:'+bg+';border:1px solid '+border+';border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:'+color+';">'+label+'</td></tr>'
-      +'</table>';
+    return '<p style="margin:12px 0 6px;font-size:10px;font-weight:700;color:'+color+';">'+label+'</p>';
   }
 
   // ── Section label ──
   function secLabel(txt) {
-    return '<table cellpadding="0" cellspacing="0" width="100%" style="margin:24px 0 12px;">'
-      +'<tr><td style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#94a3b8;padding-bottom:8px;border-bottom:1px solid #e2e8f0;">'+txt+'</td></tr>'
-      +'</table>';
+    return '<p style="margin:18px 0 8px;font-size:10px;font-weight:700;color:#94a3b8;border-bottom:1px solid #e2e8f0;padding-bottom:6px;">'+txt+'</p>';
   }
 
-  // ── Postes (table-based) ──
+  // ── Postes compact ──
   function buildPostes(arr) {
     var list = arr || kpi.postes;
     if(!list.length) return '<p style="color:#94a3b8;font-size:12px;">Aucune donn&#233;e.</p>';
-    var html='<table cellpadding="0" cellspacing="0" width="100%">';
+    var html='<table cellpadding="2" cellspacing="0" width="100%">';
     list.forEach(function(p){
       var c=p.taux>=80?'#059669':p.taux>=50?'#d97706':'#dc2626';
-      var w=Math.min(100,Math.round(p.taux));
-      html+='<tr style="border-bottom:1px solid #f1f5f9;">'
-        +'<td width="130" style="font-size:12px;font-weight:600;color:#0f172a;padding:7px 8px 7px 0;white-space:nowrap;">'+p.nom+'</td>'
-        +'<td style="padding:7px 8px;">'
-        +'<table cellpadding="0" cellspacing="0" width="100%"><tr>'
-        +'<td width="'+w+'%" style="height:8px;background:'+c+';font-size:1px;">&nbsp;</td>'
-        +(w<100?'<td style="height:8px;background:#f1f5f9;font-size:1px;">&nbsp;</td>':'')
+      var w=Math.max(4,Math.round(p.taux*0.75));
+      html+='<tr>'
+        +'<td width="120" style="font-size:11px;font-weight:600;color:#0f172a;white-space:nowrap;">'+p.nom+'</td>'
+        +'<td><table cellpadding="0" cellspacing="0" width="100%"><tr>'
+        +'<td width="'+w+'%" bgcolor="'+c+'" height="10" style="font-size:1px;">&nbsp;</td>'
+        +'<td bgcolor="#f1f5f9" height="10" style="font-size:1px;">&nbsp;</td>'
         +'</tr></table></td>'
-        +'<td width="48" align="right" style="font-size:12px;font-weight:700;color:'+c+';padding:7px 0 7px 8px;white-space:nowrap;">'+p.taux.toFixed(1)+'%</td>'
-        +'<td width="54" align="right" style="font-size:11px;color:#94a3b8;padding:7px 0 7px 8px;white-space:nowrap;">'+p.real+'/'+p.total+'</td>'
+        +'<td width="42" align="right" style="font-size:11px;font-weight:700;color:'+c+';">'+p.taux.toFixed(1)+'%</td>'
+        +'<td width="48" align="right" style="font-size:10px;color:#94a3b8;">'+p.real+'/'+p.total+'</td>'
         +'</tr>';
     });
-    html+='</table>';
-    return html;
+    return html+'</table>';
   }
   function postesCard(title, arr) {
-    return '<td width="50%" valign="top" style="padding:6px;">'
-      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #dde2ea;border-radius:12px;">'
-      +'<tr><td style="padding:14px 18px;">'
-      +'<div style="font-size:12px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;">'+title+'</div>'
-      +buildPostes(arr)
-      +'</td></tr></table></td>';
+    return '<td width="50%" valign="top" style="padding:4px;">'
+      +'<table cellpadding="8" cellspacing="0" width="100%" style="background:#fff;border:1px solid #e2e8f0;">'
+      +'<tr><td style="font-size:11px;font-weight:700;color:#475569;border-bottom:1px solid #f1f5f9;padding-bottom:6px;">'+title+'</td></tr>'
+      +'<tr><td>'+buildPostes(arr)+'</td></tr>'
+      +'</table></td>';
   }
 
   return '<!DOCTYPE html><html><head><meta charset="UTF-8"></head>'
-  +'<body style="margin:0;padding:0;background:#f4f6f9;font-family:Arial,Helvetica,sans-serif;color:#0f172a;">'
+  +'<body style="margin:0;padding:8px;background:#f4f6f9;font-family:Arial,sans-serif;font-size:12px;color:#0f172a;">'
+  +'<table cellpadding="0" cellspacing="0" width="100%" style="max-width:900px;margin:0 auto;">'
 
-  // ── Wrapper centré ──
-  +'<table cellpadding="0" cellspacing="0" width="100%"><tr><td align="center" style="padding:12px 4px 32px;">'
-  +'<table cellpadding="0" cellspacing="0" width="1300" style="max-width:1300px;">'
-
-  // ── Header ──
-  +'<tr><td style="background:#1d4ed8;border-radius:10px 10px 0 0;padding:18px 24px;">'
-  +'<table cellpadding="0" cellspacing="0" width="100%"><tr>'
-  +'<td><div style="color:#ffffff;font-weight:700;font-size:16px;">Rapport de Maintenance</div>'
-  +'<div style="color:#bfdbfe;font-size:11px;margin-top:3px;">Bureau des M&#233;thodes Daoui &middot; OCP Group Khouribga</div></td>'
-  +'<td align="right"><span style="background:#ffffff;color:#1d4ed8;font-weight:700;font-size:12px;padding:5px 14px;border-radius:4px;">S'+s+' &middot; '+d0+' &#8594; '+d1+'</span></td>'
-  +'</tr></table>'
+  // Header
+  +'<tr><td style="background:#1d4ed8;padding:12px 16px;">'
+  +'<b style="color:#fff;font-size:14px;">Rapport de Maintenance &#8212; S'+s+' &middot; '+d0+' &#8594; '+d1+'</b><br>'
+  +'<span style="color:#bfdbfe;font-size:10px;">Bureau des M&#233;thodes Daoui &middot; OCP Group Khouribga</span>'
   +'</td></tr>'
 
-  // ── Contenu ──
-  +'<tr><td style="background:#ffffff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px;padding:20px 18px 32px;">'
+  // Contenu
+  +'<tr><td style="background:#fff;border:1px solid #e2e8f0;padding:14px 16px;">'
 
   // Calendrier
-  +secLabel('Calendrier des arr&#234;ts pr&#233;ventifs &#8212; Semaines du mois (jusqu\'&#224; S'+s+')')
-  +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #dde2ea;border-radius:12px;margin-bottom:12px;">'
-  +'<tr><td style="padding:18px 20px;">'
-  +'<div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:6px;">Arr&#234;ts S'+s+' &middot; '+arrets.rows.length+' enregistr&#233;(s)</div>'
-  +'<div style="font-size:11px;margin-bottom:12px;">'
-  +'<span style="color:#166534;font-weight:700;margin-right:12px;">&#9679; R&#233;alis&#233;</span>'
-  +'<span style="color:#991b1b;font-weight:700;margin-right:12px;">&#9679; Non r&#233;alis&#233;</span>'
+  +secLabel('Calendrier des arr&#234;ts pr&#233;ventifs &#8212; S'+s)
+  +'<div style="margin-bottom:10px;">'
+  +'<span style="color:#166534;font-weight:700;margin-right:10px;">&#9679; R&#233;alis&#233;</span>'
+  +'<span style="color:#991b1b;font-weight:700;margin-right:10px;">&#9679; Non r&#233;alis&#233;</span>'
   +'<span style="color:#9a3412;font-weight:700;">&#9679; Impr&#233;vu</span>'
+  +'<span style="float:right;font-weight:700;">'+arrets.rows.length+' enregistr&#233;(s)</span>'
   +'</div>'
   +buildCal()
-  +'</td></tr></table>'
 
-  // ── KPIs synthèse sous le calendrier (3 cards) ──
+  // KPIs synthèse
   +(function(){
     var nbA=arrets.rows.length;
     var nbR=arrets.rows.filter(function(r){return r.statut==='realise';}).length;
@@ -836,11 +794,11 @@ function rhBuildHtml(arrets, kpi, avis) {
     var scTot=kpi.sys+kpi.cur;
     var sysPct=scTot?parseFloat(((kpi.sys/scTot)*100).toFixed(1)):0;
     var curPct2=scTot?parseFloat(((kpi.cur/scTot)*100).toFixed(1)):0;
-    var sysCurStr='Sys&nbsp;<b>'+sysPct.toFixed(1)+'%</b>&nbsp;/&nbsp;Cur&nbsp;<b>'+curPct2.toFixed(1)+'%</b>';
-    return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:16px;"><tr>'
-      +kpiCard('#ecfdf5','#059669',kpi.tauxRealStr,'Taux r&#233;alisation OT','Mois courant &middot; <b>'+kpi.real.toLocaleString('fr-FR')+'</b> / <b>'+kpi.total.toLocaleString('fr-FR')+'</b>',kpi.tauxReal,'33%')
-      +kpiCard('#eff6ff','#1d4ed8',tAStr,'Taux r&#233;alisation arr&#234;ts','S'+s+' &middot; <b>'+nbR+'</b> r&#233;alis&#233;(s) / <b>'+nbA+'</b>',tA,'33%')
-      +kpiCard('#f5f3ff','#7c3aed',sysCurStr,'Taux syst&#233;matique / curatif','<b>'+kpi.sys.toLocaleString('fr-FR')+'</b> syst. / <b>'+kpi.cur.toLocaleString('fr-FR')+'</b> cur.',null,'33%')
+    var sysCurStr='Sys <b>'+sysPct.toFixed(1)+'%</b> / Cur <b>'+curPct2.toFixed(1)+'%</b>';
+    return '<table cellpadding="0" cellspacing="0" width="100%" style="margin:10px 0;"><tr>'
+      +kpiCard('#ecfdf5','#059669',kpi.tauxRealStr,'Taux r&#233;alisation OT','S'+s+' &middot; '+kpi.real+'/'+kpi.total,kpi.tauxReal,'33%')
+      +kpiCard('#eff6ff','#1d4ed8',tAStr,'Taux r&#233;alisation arr&#234;ts','S'+s+' &middot; '+nbR+'/'+nbA,tA,'33%')
+      +kpiCard('#f5f3ff','#7c3aed',sysCurStr,'Syst&#233;matique / Curatif',kpi.sys+' syst. / '+kpi.cur+' cur.',null,'33%')
       +'</tr></table>';
   })()
 
@@ -919,21 +877,15 @@ function rhBuildHtml(arrets, kpi, avis) {
   })() : '')
 
   // Signature
-  +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-top:28px;border-top:1px solid #e2e8f0;">'
-  +'<tr><td style="padding-top:18px;">'
-  +'<p style="color:#64748b;font-size:13px;margin:0 0 8px;">Cordialement,</p>'
-  +'<div style="font-family:Georgia,serif;font-size:14px;color:#002060;line-height:1.7;">'
-  +'<strong>Marouane ELAMRAOUI</strong><br>'
-  +'<span style="color:#c55a11;">M&#233;thode de Maintenance</span><br>'
-  +'<strong>OCP SA - Khouribga</strong><br>'
-  +'<span style="color:#059669;">T&#233;l. :</span> 0661323784 &nbsp;|&nbsp; <span style="color:#059669;">Cisco :</span> 8103388<br>'
+  +'<hr style="margin:20px 0;border:none;border-top:1px solid #e2e8f0;">'
+  +'<p style="font-size:12px;color:#002060;margin:0;">'
+  +'Cordialement,<br><b>Marouane ELAMRAOUI</b> &mdash; M&#233;thode de Maintenance &mdash; OCP SA Khouribga<br>'
+  +'T&#233;l. 0661323784 &nbsp;|&nbsp; Cisco 8103388 &nbsp;|&nbsp; '
   +'<a href="mailto:m.elamraoui@ocpgroup.ma" style="color:#002060;">m.elamraoui@ocpgroup.ma</a>'
-  +'</div>'
-  +'</td></tr></table>'
+  +'</p>'
 
-  +'</td></tr>'        // fin contenu
-  +'</table>'          // fin table 900px
-  +'</td></tr></table>' // fin wrapper centré
+  +'</td></tr>'   // fin contenu
+  +'</table>'     // fin table
   +'</body></html>';
 }
 
