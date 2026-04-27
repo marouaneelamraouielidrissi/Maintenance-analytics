@@ -22,7 +22,9 @@ function sendEmailRH(to, subject, htmlBody, senderName, attachments, cc) {
   var ccList = cc ? (Array.isArray(cc) ? cc : cc.split(',').map(function(e){ return e.trim(); }).filter(Boolean)) : [];
   var boundary = 'rh_boundary_' + Date.now();
   var subjB64  = Utilities.base64Encode(subject,  Utilities.Charset.UTF_8);
-  var bodyB64  = Utilities.base64Encode(htmlBody,  Utilities.Charset.UTF_8);
+  // Minification HTML : supprime les espaces entre balises et espaces multiples
+  var minHtml  = htmlBody.replace(/>\s+</g,'><').replace(/\s{2,}/g,' ').trim();
+  var bodyB64  = Utilities.base64Encode(minHtml, Utilities.Charset.UTF_8);
 
   var mimeParts = [
     'From: "' + senderName + '" <' + RH_OCP_EMAIL + '>',
@@ -461,7 +463,7 @@ function rhGetAvis(mo, yr) {
       txConv: total ? parseFloat(((avecOT/total)*100).toFixed(1)) : 0,
       bySecteur:toArr(bySecteur,8), byPoste:toArr(byPoste,6),
       openByPoste:toArr(openByPoste,6), byInstall:toArrAll(byInstall),
-      byAuteur:toArr(byAuteur,10),
+      byAuteur:toArr(byAuteur,10), byInstallTop:toArr(byInstall,20),
       byPosteRaw:byPoste, openByPosteRaw:openByPoste
     };
   } catch(e) { Logger.log('rhGetAvis error: '+e.message); return null; }
@@ -471,7 +473,7 @@ function rhGetAvis(mo, yr) {
 function rhChartFetch_(chartStr, w, h) {
   var payload = JSON.stringify({
     chart: chartStr, width: w, height: h,
-    backgroundColor: 'white', format: 'png', devicePixelRatio: 3
+    backgroundColor: 'white', format: 'png', devicePixelRatio: 1
   });
   // /chart/create retourne une URL permanente au lieu de base64 (meilleure compatibilité email)
   var resp = UrlFetchApp.fetch('https://quickchart.io/chart/create', {
@@ -889,10 +891,11 @@ function rhBuildHtml(arrets, kpi, avis) {
     })()
     // Graphique ligne 3 : Avis par installation
     +(function(){
-      var imgInst=avis.byInstall.length?rhMakeBarImgV(
-        avis.byInstall.map(function(x){return x.label;}),
-        avis.byInstall.map(function(x){return x.count;}),
-        '#0891b2','Avis par installation'):'';
+      var instData=avis.byInstallTop||avis.byInstall||[];
+      var imgInst=instData.length?rhMakeBarImgV(
+        instData.map(function(x){return x.label;}),
+        instData.map(function(x){return x.count;}),
+        '#0891b2','Avis par installation (top 20)'):'';
       return imgInst?'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
         +chartCard(imgInst,'Avis par installation','100%')
         +'</tr></table>':'';
