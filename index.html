@@ -3296,6 +3296,40 @@ td { padding: 9px 14px; vertical-align: middle; }
       </div>
     </div>
 
+    <!-- Volume OT par secteur -->
+    <div class="section-label">Volume OT par corps de métier</div>
+    <div class="chart-grid-2 no-break">
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <div><div class="chart-card-title">Volume OT — Manutention</div><div class="chart-card-sub">Obj. technique commence par KL03-MA — mois sélectionné</div></div>
+        </div>
+        <div style="height:190px;"><canvas id="chart-poste-manut"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <div><div class="chart-card-title">Volume OT — Laverie</div><div class="chart-card-sub">Obj. technique différent de KL03-MA — mois sélectionné</div></div>
+        </div>
+        <div style="height:190px;"><canvas id="chart-poste-lav"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Réalisation par poste -->
+    <div class="section-label">Taux de réalisation par corps de métier</div>
+    <div class="chart-grid-2 no-break">
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <div><div class="chart-card-title">Taux de réalisation — Manutention</div><div class="chart-card-sub">Obj. technique commence par KL03-MA · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
+        </div>
+        <div id="realisation-poste-manut-list"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <div><div class="chart-card-title">Taux de réalisation — Laverie</div><div class="chart-card-sub">Obj. technique différent de KL03-MA · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
+        </div>
+        <div id="realisation-poste-lav-list"></div>
+      </div>
+    </div>
+
     <!-- Modal KPIs Favoris -->
     <!-- KPIs du mois — même page que calendrier -->
     <div class="section-label">Indicateurs clés du mois</div>
@@ -3438,46 +3472,7 @@ td { padding: 9px 14px; vertical-align: middle; }
   </div>
   <!-- ═══════ END PAGE 1 : Banner + Calendrier + Arrêts + KPIs ═══════ -->
 
-  <!-- ═══════ REPORT PAGE 2 : Répartition + Réalisation par poste + Évolution ═══════ -->
-  <div class="report-page">
-
-    <!-- Volume OT par secteur -->
-    <div class="section-label">Volume OT par corps de métier</div>
-    <div class="chart-grid-2 no-break">
-      <div class="chart-card">
-        <div class="chart-card-hdr">
-          <div><div class="chart-card-title">Volume OT — Manutention</div><div class="chart-card-sub">Obj. technique commence par KL03-MA — mois sélectionné</div></div>
-        </div>
-        <div style="height:190px;"><canvas id="chart-poste-manut"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-card-hdr">
-          <div><div class="chart-card-title">Volume OT — Laverie</div><div class="chart-card-sub">Obj. technique différent de KL03-MA — mois sélectionné</div></div>
-        </div>
-        <div style="height:190px;"><canvas id="chart-poste-lav"></canvas></div>
-      </div>
-    </div>
-
-    <!-- Réalisation par poste -->
-    <div class="section-label">Taux de réalisation par corps de métier</div>
-    <div class="chart-grid-2 no-break">
-      <div class="chart-card">
-        <div class="chart-card-hdr">
-          <div><div class="chart-card-title">Taux de réalisation — Manutention</div><div class="chart-card-sub">Obj. technique commence par KL03-MA · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
-        </div>
-        <div id="realisation-poste-manut-list"></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-card-hdr">
-          <div><div class="chart-card-title">Taux de réalisation — Laverie</div><div class="chart-card-sub">Obj. technique différent de KL03-MA · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
-        </div>
-        <div id="realisation-poste-lav-list"></div>
-      </div>
-    </div>
-  </div>
-  <!-- ═══════ END PAGE 2 : Répartition + Réalisation par poste ═══════ -->
-
-  <!-- ═══════ REPORT PAGE 3 : Évolution + Équipements ═══════ -->
+  <!-- ═══════ REPORT PAGE 2 : Évolution + Équipements ═══════ -->
   <div class="report-page">
 
     <!-- Évolution : 2 graphiques côte à côte -->
@@ -3695,6 +3690,23 @@ td { padding: 9px 14px; vertical-align: middle; }
       </div>
     </div>
 
+    <!-- Taux de réalisation par corps de métier — année -->
+    <div class="section-label">Taux de réalisation par corps de métier — année</div>
+    <div class="chart-grid-2 no-break">
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <div><div class="chart-card-title">Taux de réalisation — Manutention</div><div class="chart-card-sub">Obj. technique commence par KL03-MA · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
+        </div>
+        <div id="ann-realisation-poste-manut-list"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <div><div class="chart-card-title">Taux de réalisation — Laverie</div><div class="chart-card-sub">Obj. technique différent de KL03-MA · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
+        </div>
+        <div id="ann-realisation-poste-lav-list"></div>
+      </div>
+    </div>
+
     <!-- Taux de réalisation mensuel sur l'année -->
     <div class="section-label">Taux de réalisation mois par mois</div>
     <div class="chart-card no-break">
@@ -3718,25 +3730,6 @@ td { padding: 9px 14px; vertical-align: middle; }
       <div style="height:220px;"><canvas id="ann-chart-arrets-evolution"></canvas></div>
     </div>
     </div><!-- /report-page ann-2 -->
-
-    <!-- REPORT PAGE ANN-3: Réalisation par corps de métier annuelle -->
-    <div class="report-page">
-    <div class="section-label">Taux de réalisation par corps de métier — année</div>
-    <div class="chart-grid-2 no-break">
-      <div class="chart-card">
-        <div class="chart-card-hdr">
-          <div><div class="chart-card-title">Taux de réalisation — Manutention</div><div class="chart-card-sub">Obj. technique commence par KL03-MA · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
-        </div>
-        <div id="ann-realisation-poste-manut-list"></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-card-hdr">
-          <div><div class="chart-card-title">Taux de réalisation — Laverie</div><div class="chart-card-sub">Obj. technique différent de KL03-MA · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
-        </div>
-        <div id="ann-realisation-poste-lav-list"></div>
-      </div>
-    </div>
-    </div><!-- /report-page ann-3 -->
 
   </div>
   <!-- ═══════ FIN VUE ANNUELLE ═══════ -->
