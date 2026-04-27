@@ -795,7 +795,15 @@ function rhBuildHtml(arrets, kpi, avis) {
       +'</tr></table>';
   })()
 
-  // ── Graphiques OT (type d'ordre + corps de métier) ──
+  // Taux de réalisation par corps de métier (remonté sous les 3 KPIs)
+  +secLabel('Taux de r&#233;alisation par corps de m&#233;tier')
+  +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #dde2ea;border-radius:12px;margin-bottom:14px;">'
+  +'<tr><td style="padding:18px 20px;">'
+  +'<div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:12px;">'+kpi.mois+'</div>'
+  +buildPostes()
+  +'</td></tr></table>'
+
+  // ── Graphiques OT (type d'ordre + volume corps de métier) ──
   +(function(){
     var typeD=kpi.typeData.slice(0,6);
     var postesD=kpi.postes.slice(0,7);
@@ -817,42 +825,19 @@ function rhBuildHtml(arrets, kpi, avis) {
   // KPIs détaillés
   +secLabel('Indicateurs cl&#233;s du mois &#8212; '+kpi.mois)
 
-  // Global – 6 KPIs en une seule ligne
-  +subSection('#eff6ff','#bfdbfe','#1d4ed8','&#9632; Global')
-  +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-  +kpiCard('#eff6ff','#1d4ed8',kpi.total.toLocaleString('fr-FR'),'Total OT planifi&#233;s','Ordres de travail du mois',null,'16%')
-  +kpiCard('#ecfdf5','#059669',kpi.real.toLocaleString('fr-FR'),'OT R&#233;alis&#233;s','Taux : <b>'+kpi.tauxRealStr+'</b>',kpi.tauxReal,'16%')
-  +kpiCard('#fffbeb','#d97706',kpi.lanc.toLocaleString('fr-FR'),'OT Lanc&#233;s','En cours : <b>'+kpi.lancPct+'</b>',null,'16%')
-  +kpiCard('#fef2f2','#dc2626',kpi.crpr.toLocaleString('fr-FR'),'Non lanc&#233;s (CRPR)','En attente de planification',null,'16%')
-  +kpiCard('#f1f5f9','#475569',kpi.backlog.toLocaleString('fr-FR'),'Backlog','En attente de planification',null,'16%')
-  +kpiCard('#fffbeb','#d97706',kpi.sys+'/'+kpi.cur,'Pr&#233;ventif / Correctif',kpi.sysPct+' / '+kpi.curPct,null,'20%')
-  +'</tr></table>'
-
-  // Préventif + Correctif – 4 KPIs en une seule ligne
+  // Préventif + Correctif – taux de réalisation uniquement
   +subSection('#e0e7ff','#a5b4fc','#3730a3','&#9632; Pr&#233;ventif &nbsp;&nbsp;&#9632; Correctif')
   +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-  +kpiCard('#f5f3ff','#7c3aed',kpi.sys.toLocaleString('fr-FR'),'OT Pr&#233;ventif','ZCON + ZEST + ZETL : <b>'+kpi.sysPct+'</b>',null,'25%')
-  +kpiCard('#ecfdf5','#059669',kpi.tauxPrevStr,'Taux r&#233;alisation','CONF+TCLO+CLOT / ZCON+ZEST+ZETL',kpi.tauxPrev,'25%')
-  +kpiCard('#fef2f2','#dc2626',kpi.cur.toLocaleString('fr-FR'),'OT Correctif (ZCOR)','Part : <b>'+kpi.curPct+'</b>',null,'25%')
-  +kpiCard('#fef2f2','#dc2626',kpi.tauxCorStr,'Taux r&#233;alisation','CONF+TCLO+CLOT / total ZCOR',kpi.tauxCor,'25%')
+  +kpiCard('#ecfdf5','#059669',kpi.tauxPrevStr,'Taux r&#233;alisation Pr&#233;ventif','CONF+TCLO+CLOT / ZCON+ZEST+ZETL',kpi.tauxPrev,'50%')
+  +kpiCard('#fef2f2','#dc2626',kpi.tauxCorStr,'Taux r&#233;alisation Correctif','CONF+TCLO+CLOT / total ZCOR',kpi.tauxCor,'50%')
   +'</tr></table>'
 
-  // Préparation
+  // Préparation – Taux caractérisation + Taux confirmation PDR uniquement
   +subSection('#fff7ed','#fdba74','#c2410c','&#9632; Pr&#233;paration')
   +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-  +kpiCard('#f0fdf4','#15803d',kpi.tauxCaractStr,'Taux caract&#233;risation','<b>'+kpi.caract.toLocaleString('fr-FR')+'</b> / <b>'+(kpi.caract+kpi.nonCaract).toLocaleString('fr-FR')+'</b> &middot; excl. SOPL',kpi.tauxCaract,'25%')
-  +kpiCard('#fff7ed','#c2410c',kpi.tauxPdrConfStr,'Taux confirmation PDR','<b>'+kpi.pdrConf.toLocaleString('fr-FR')+'</b> confirm&#233;s sur <b>'+kpi.pdrTotal.toLocaleString('fr-FR')+'</b> OTs avec PDR',kpi.tauxPdrConf,'25%')
-  +kpiCard('#eff6ff','#1d4ed8',(kpi.otAttente||0).toLocaleString('fr-FR'),'OT en attente confirmation PDR','Statut utilis. CRPR ATPD / CRPR AVPD',null,'25%')
-  +kpiCard('#fdf4ff','#7c3aed',kpi.tempsMoyenStr||'—','Temps moyen de pr&#233;paration','Moy. (aujourd\'hui &minus; date cr&#233;ation) &middot; statut syst. <b>cr&#233;&#233;</b>',null,'25%')
+  +kpiCard('#f0fdf4','#15803d',kpi.tauxCaractStr,'Taux caract&#233;risation','<b>'+kpi.caract.toLocaleString('fr-FR')+'</b> / <b>'+(kpi.caract+kpi.nonCaract).toLocaleString('fr-FR')+'</b> &middot; excl. SOPL',kpi.tauxCaract,'50%')
+  +kpiCard('#fff7ed','#c2410c',kpi.tauxPdrConfStr,'Taux confirmation PDR','<b>'+kpi.pdrConf.toLocaleString('fr-FR')+'</b> confirm&#233;s sur <b>'+kpi.pdrTotal.toLocaleString('fr-FR')+'</b> OTs avec PDR',kpi.tauxPdrConf,'50%')
   +'</tr></table>'
-
-  // Postes
-  +secLabel('Taux de r&#233;alisation par corps de m&#233;tier')
-  +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #dde2ea;border-radius:12px;margin-bottom:14px;">'
-  +'<tr><td style="padding:18px 20px;">'
-  +'<div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:12px;">'+kpi.mois+'</div>'
-  +buildPostes()
-  +'</td></tr></table>'
 
   // ── Section Avis ──
   +(avis ? (
@@ -860,7 +845,7 @@ function rhBuildHtml(arrets, kpi, avis) {
     // KPIs Avis
     +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:12px;"><tr>'
     +kpiCard('#fdf4ff','#7c3aed',avis.total.toLocaleString('fr-FR'),'Total Avis','Avis de type ZC',null,'33%')
-    +kpiCard('#ecfdf5','#059669',avis.avecOT.toLocaleString('fr-FR'),'Convertis en OT','Taux : <b>'+avis.txConv.toFixed(1)+'%</b>',avis.txConv,'33%')
+    +kpiCard('#ecfdf5','#059669',avis.total?parseFloat(((avis.ouverts/avis.total)*100).toFixed(1)).toFixed(1)+'%':'&#8212;','Taux d\'approbation','<b>'+avis.ouverts.toLocaleString('fr-FR')+'</b> ouverts / <b>'+avis.total.toLocaleString('fr-FR')+'</b> total',avis.total?parseFloat(((avis.ouverts/avis.total)*100).toFixed(1)):0,'33%')
     +kpiCard('#fef2f2','#dc2626',avis.ouverts.toLocaleString('fr-FR'),'Avis Ouverts','AOUV + AENC',null,'33%')
     +'</tr></table>'
     // Graphiques Avis ligne 1 : Répartition par secteur + Corps de Métier
