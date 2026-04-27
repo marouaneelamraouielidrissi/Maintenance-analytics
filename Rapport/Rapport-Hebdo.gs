@@ -383,17 +383,18 @@ function rhGetAvis(mo, yr) {
       return -1;
     }
 
-    var cCree  = ci(['cree le','cre le','date creation','date de creation','creee le','date creat','date']);
-    var cOrdre = ci(['ordre de travail','n ordre','no ordre','numero ordre','order','ordre']);
-    var cStatA = ci(['statut abr','stat abr','statut']);
-    var cPoste = ci(['poste trav','poste de travail','corps de metier','poste']);
-    var cInst  = ci(['installation']);
-    var cSect  = ci(['secteur']);
+    var cCree   = ci(['cree le','cre le','date creation','date de creation','creee le','date creat','date']);
+    var cOrdre  = ci(['ordre de travail','n ordre','no ordre','numero ordre','order','ordre']);
+    var cStatA  = ci(['statut abr','stat abr','statut']);
+    var cPoste  = ci(['poste trav','poste de travail','corps de metier','poste']);
+    var cInst   = ci(['installation']);
+    var cSect   = ci(['secteur']);
+    var cAuteur = ci(['auteur (id)','auteur id','auteur']);
 
     Logger.log('rhGetAvis cols → cree='+cCree+' ordre='+cOrdre+' statut='+cStatA+' poste='+cPoste+' install='+cInst+' sect='+cSect);
 
     var total=0, avecOT=0, ouverts=0;
-    var bySecteur={}, byPoste={}, openByPoste={}, byInstall={};
+    var bySecteur={}, byPoste={}, openByPoste={}, byInstall={}, byAuteur={};
     var allInstallSet = {};
 
     // Premier passage : collecter toutes les installations (sans filtre date)
@@ -436,6 +437,8 @@ function rhGetAvis(mo, yr) {
       if (sect)  bySecteur[sect] = (bySecteur[sect] || 0) + 1;
       if (poste) { byPoste[poste] = (byPoste[poste] || 0) + 1; if (isOpen) openByPoste[poste] = (openByPoste[poste] || 0) + 1; }
       if (inst)  byInstall[inst]  = (byInstall[inst]  || 0) + 1;
+      var auteur = cAuteur >= 0 ? r[cAuteur].toString().trim() : '';
+      if (auteur) byAuteur[auteur] = (byAuteur[auteur] || 0) + 1;
     }
 
     // Ajouter les installations avec 0 avis dans la période
@@ -457,7 +460,9 @@ function rhGetAvis(mo, yr) {
       total:total, avecOT:avecOT, ouverts:ouverts,
       txConv: total ? parseFloat(((avecOT/total)*100).toFixed(1)) : 0,
       bySecteur:toArr(bySecteur,8), byPoste:toArr(byPoste,6),
-      openByPoste:toArr(openByPoste,6), byInstall:toArrAll(byInstall)
+      openByPoste:toArr(openByPoste,6), byInstall:toArrAll(byInstall),
+      byAuteur:toArr(byAuteur,10),
+      byPosteRaw:byPoste, openByPosteRaw:openByPoste
     };
   } catch(e) { Logger.log('rhGetAvis error: '+e.message); return null; }
 }
@@ -840,45 +845,65 @@ function rhBuildHtml(arrets, kpi, avis) {
   +'</tr></table>'
 
   // ── Section Avis ──
-  +(avis ? (
-    secLabel('Analyse des Avis (ZC) &#8212; '+kpi.mois)
-    // KPIs Avis
-    +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:12px;"><tr>'
-    +kpiCard('#fdf4ff','#7c3aed',avis.total.toLocaleString('fr-FR'),'Total Avis','Avis de type ZC',null,'33%')
-    +kpiCard('#ecfdf5','#059669',avis.total?parseFloat(((avis.ouverts/avis.total)*100).toFixed(1)).toFixed(1)+'%':'&#8212;','Taux d\'approbation','<b>'+avis.ouverts.toLocaleString('fr-FR')+'</b> ouverts / <b>'+avis.total.toLocaleString('fr-FR')+'</b> total',avis.total?parseFloat(((avis.ouverts/avis.total)*100).toFixed(1)):0,'33%')
-    +kpiCard('#fef2f2','#dc2626',avis.ouverts.toLocaleString('fr-FR'),'Avis Ouverts','AOUV + AENC',null,'33%')
+  +(avis ? (function(){
+    // Helpers taux d'approbation par poste
+    function tApprStr(p)  { var t=avis.byPosteRaw[p]||0,o=avis.openByPosteRaw[p]||0; return t?parseFloat(((o/t)*100).toFixed(1)).toFixed(1)+'%':'&#8212;'; }
+    function tApprNum(p)  { var t=avis.byPosteRaw[p]||0,o=avis.openByPosteRaw[p]||0; return t?parseFloat(((o/t)*100).toFixed(1)):0; }
+    function tApprSub(p)  { var t=avis.byPosteRaw[p]||0,o=avis.openByPosteRaw[p]||0; return '<b>'+o+'</b> ouverts / <b>'+t+'</b> total'; }
+    return secLabel('Analyse des Avis (ZC) &#8212; '+kpi.mois)
+    // Ligne 1 : Total + Taux global
+    +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
+    +kpiCard('#fdf4ff','#7c3aed',avis.total.toLocaleString('fr-FR'),'Total Avis','Avis de type ZC',null,'50%')
+    +kpiCard('#ecfdf5','#059669',avis.total?parseFloat(((avis.ouverts/avis.total)*100).toFixed(1)).toFixed(1)+'%':'&#8212;','Taux d\'approbation','<b>'+avis.ouverts.toLocaleString('fr-FR')+'</b> ouverts / <b>'+avis.total.toLocaleString('fr-FR')+'</b> total',avis.total?parseFloat(((avis.ouverts/avis.total)*100).toFixed(1)):0,'50%')
     +'</tr></table>'
-    // Graphiques Avis ligne 1 : Répartition par secteur + Corps de Métier
+    // Ligne 2 : 4 taux d'approbation par corps de métier
+    +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:12px;"><tr>'
+    +kpiCard('#ecfdf5','#059669',tApprStr('423-ELEC'),'Taux approbation &#201;lectrique',tApprSub('423-ELEC'),tApprNum('423-ELEC'),'25%')
+    +kpiCard('#ecfdf5','#059669',tApprStr('423-REG'), 'Taux approbation R&#233;gulation', tApprSub('423-REG'), tApprNum('423-REG'), '25%')
+    +kpiCard('#ecfdf5','#059669',tApprStr('421-MEC'), 'Taux approbation M&#233;canique',  tApprSub('421-MEC'), tApprNum('421-MEC'), '25%')
+    +kpiCard('#ecfdf5','#059669',tApprStr('421-INST'),'Taux approbation Installation',   tApprSub('421-INST'),tApprNum('421-INST'),'25%')
+    +'</tr></table>'
+    // Graphiques ligne 1 : Avis par secteur + Avis par corps de métier
     +(function(){
       var imgSect=avis.bySecteur.length?rhMakePieImg(
         avis.bySecteur.map(function(x){return x.label;}),
         avis.bySecteur.map(function(x){return x.count;}),
-        'R\u00e9partition par secteur'):'';
+        'Avis par secteur'):'';
       var imgPoste=avis.byPoste.length?rhMakeBarImg(
         avis.byPoste.map(function(x){return x.label;}),
         avis.byPoste.map(function(x){return x.count;}),
-        '#7c3aed','Corps de M\u00e9tier (Poste trav.)'):'';
+        '#7c3aed','Avis par corps de m\u00e9tier'):'';
       return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-        +chartCard(imgSect,'R&#233;partition par secteur')
-        +chartCard(imgPoste,'Corps de M&#233;tier (Poste trav.)')
+        +chartCard(imgSect,'Avis par secteur')
+        +chartCard(imgPoste,'Avis par corps de m&#233;tier')
         +'</tr></table>';
     })()
-    // Graphiques Avis ligne 2 : Non Clôturés + Par installation
+    // Graphiques ligne 2 : Non clôturés + Avis créé par collaborateur
     +(function(){
       var imgOpen=avis.openByPoste.length?rhMakeBarImg(
         avis.openByPoste.map(function(x){return x.label;}),
         avis.openByPoste.map(function(x){return x.count;}),
         '#dc2626','Avis non cl\u00f4tur\u00e9s par corps de m\u00e9tier'):'';
+      var imgAuteur=avis.byAuteur&&avis.byAuteur.length?rhMakeBarImg(
+        avis.byAuteur.map(function(x){return x.label;}),
+        avis.byAuteur.map(function(x){return x.count;}),
+        '#0891b2','Avis cr\u00e9\u00e9 par collaborateur'):'';
+      return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
+        +chartCard(imgOpen,'Avis non cl&#244;tur&#233;s par corps de m&#233;tier')
+        +chartCard(imgAuteur,'Avis cr&#233;&#233; par collaborateur')
+        +'</tr></table>';
+    })()
+    // Graphique ligne 3 : Avis par installation
+    +(function(){
       var imgInst=avis.byInstall.length?rhMakeBarImgV(
         avis.byInstall.map(function(x){return x.label;}),
         avis.byInstall.map(function(x){return x.count;}),
         '#0891b2','Avis par installation'):'';
-      return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
-        +chartCard(imgOpen,'Avis non cl&#244;tur&#233;s par corps de m&#233;tier')
-        +chartCard(imgInst,'Avis par installation')
-        +'</tr></table>';
-    })()
-  ) : '')
+      return imgInst?'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
+        +chartCard(imgInst,'Avis par installation','100%')
+        +'</tr></table>':'';
+    })();
+  })() : '')
 
   // Signature
   +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-top:28px;border-top:1px solid #e2e8f0;">'
