@@ -832,8 +832,8 @@ function rhBuildHtml(arrets, kpi, avis) {
   // ── Graphiques OT (type d'ordre + volume par secteur) ──
   +(function(){
     var typeD=kpi.typeData.slice(0,6);
-    var manutD=(kpi.postesManut||[]).slice(0,8);
-    var lavD=(kpi.postesLav||[]).slice(0,8);
+    var manutD=(kpi.postesManut||[]).slice().sort(function(a,b){return b.total-a.total;}).slice(0,8);
+    var lavD=(kpi.postesLav||[]).slice().sort(function(a,b){return b.total-a.total;}).slice(0,8);
     Logger.log('rhBuildHtml charts: manutD='+manutD.length+' lavD='+lavD.length+' typeD='+typeD.length);
     var imgManut=manutD.length?rhMakeBarImg(
       manutD.map(function(x){return x.nom;}),
