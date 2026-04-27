@@ -1058,6 +1058,22 @@ function supprimerPlanificationInterface(triggerId) {
   }
 }
 
+// ── Envoi instantané à m.elamraoui@ocpgroup.ma ───────────────
+function envoyerInstantane() {
+  var now    = new Date();
+  var mo     = now.getMonth(), yr = now.getFullYear();
+  var arrets = rhGetArrets();
+  var kpi    = rhGetKpi(mo, yr);
+  var prep   = rhGetPreparation(mo, yr);
+  if (prep) { kpi.pdrTotal=prep.pdrTotal; kpi.pdrConf=prep.pdrConf; kpi.tauxPdrConf=prep.tauxPdrConf; kpi.tauxPdrConfStr=prep.tauxPdrConfStr; kpi.otAttente=prep.otAttente; kpi.tempsMoyenStr=prep.tempsMoyenStr; }
+  var avis   = rhGetAvis(mo, yr);
+  var html   = rhBuildHtml(arrets, kpi, avis);
+  var MOIS   = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  var sujet  = 'Rapport Hebdomadaire de Planification — S' + arrets.sem + ' · ' + MOIS[mo] + ' ' + yr;
+  sendEmailRH('m.elamraoui@ocpgroup.ma', sujet, html, 'Bureau Méthode Daoui - Planification');
+  Logger.log('✅ Rapport envoyé instantanément à : m.elamraoui@ocpgroup.ma');
+}
+
 // ── Fonction de test ──────────────────────────────────────────
 function testerRapportHebdo() {
   var now    = new Date();
