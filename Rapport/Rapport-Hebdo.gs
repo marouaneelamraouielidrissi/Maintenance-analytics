@@ -791,7 +791,7 @@ function rhBuildHtml(arrets, kpi, avis) {
     return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:16px;"><tr>'
       +kpiCard('#ecfdf5','#059669',kpi.tauxRealStr,'Taux r&#233;alisation OT','Mois courant &middot; <b>'+kpi.real.toLocaleString('fr-FR')+'</b> / <b>'+kpi.total.toLocaleString('fr-FR')+'</b>',kpi.tauxReal,'33%')
       +kpiCard('#eff6ff','#1d4ed8',tAStr,'Taux r&#233;alisation arr&#234;ts','S'+s+' &middot; <b>'+nbR+'</b> r&#233;alis&#233;(s) / <b>'+nbA+'</b>',tA,'33%')
-      +kpiCard('#f5f3ff','#7c3aed',kpi.sys+'/'+kpi.cur,'Taux syst&#233;matique / curatif',sysCurStr,null,'33%')
+      +kpiCard('#f5f3ff','#7c3aed',sysCurStr,'Taux syst&#233;matique / curatif','<b>'+kpi.sys.toLocaleString('fr-FR')+'</b> syst. / <b>'+kpi.cur.toLocaleString('fr-FR')+'</b> cur.',null,'33%')
       +'</tr></table>';
   })()
 
