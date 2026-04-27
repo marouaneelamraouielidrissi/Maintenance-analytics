@@ -834,11 +834,6 @@ function rhBuildHtml(arrets, kpi, avis) {
     var typeD=kpi.typeData.slice(0,6);
     var manutD=(kpi.postesManut||[]).slice(0,8);
     var lavD=(kpi.postesLav||[]).slice(0,8);
-    var TYPE_LBL={'ZEST':'Syst\u00e9matique','ZCOR':'Curatif','ZCON':'Conditionnel','ZETL':'Etalonnage'};
-    var imgType=typeD.length?rhMakePieImg(
-      typeD.map(function(x){return TYPE_LBL[x.type]||x.type;}),
-      typeD.map(function(x){return x.count;}),
-      'R\u00e9partition par type d\'ordre'):'';
     Logger.log('rhBuildHtml charts: manutD='+manutD.length+' lavD='+lavD.length+' typeD='+typeD.length);
     var imgManut=manutD.length?rhMakeBarImg(
       manutD.map(function(x){return x.nom;}),
@@ -848,10 +843,7 @@ function rhBuildHtml(arrets, kpi, avis) {
       lavD.map(function(x){return x.nom;}),
       lavD.map(function(x){return x.total;}),
       '#10b981','Volume OT par corps de m\u00e9tier - Laverie'):'';
-    return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-      +chartCard(imgType,'R&#233;partition par type d\'ordre','100%')
-      +'</tr></table>'
-      +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
+    return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
       +chartCard(imgManut,'Volume OT par corps de m&#233;tier &#8212; Manutention')
       +chartCard(imgLav,'Volume OT par corps de m&#233;tier &#8212; Laverie')
       +'</tr></table>';
