@@ -2884,6 +2884,7 @@ td { padding: 9px 14px; vertical-align: middle; }
   <div class="ctrl-group">
     <div class="mode-toggle">
       <button class="mode-btn active" id="btn-mode-month" onclick="setMode('month')">Mensuel</button>
+      <button class="mode-btn" id="btn-mode-week" onclick="setMode('week')">Hebdomadaire</button>
       <button class="mode-btn" id="btn-mode-year" onclick="setMode('year')">Annuel</button>
     </div>
     <div class="mode-toggle" style="margin-left:6px;">
@@ -2895,6 +2896,7 @@ td { padding: 9px 14px; vertical-align: middle; }
     <select id="month-select" onchange="generateReport()"></select>
     <select id="year-select" onchange="generateReport()"></select>
     <select id="year-only-select" style="display:none;" onchange="generateReport()"></select>
+    <input type="week" id="week-select" style="display:none;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13px;background:var(--white);color:var(--text);outline:none;" onchange="generateReport()">
   </div>
 </div>
 
@@ -4011,11 +4013,12 @@ function setSecteur(s) {
 function setMode(mode) {
   currentMode = mode;
   document.getElementById('btn-mode-month').classList.toggle('active', mode==='month');
+  document.getElementById('btn-mode-week').classList.toggle('active', mode==='week');
   document.getElementById('btn-mode-year').classList.toggle('active', mode==='year');
-  document.getElementById('month-select').style.display  = mode==='month'?'':'none';
-  document.getElementById('year-select').style.display   = mode==='month'?'':'none';
-  document.getElementById('year-only-select').style.display = mode==='year'?'':'none';
-  // Relancer automatiquement le rapport si les données sont déjà chargées
+  document.getElementById('month-select').style.display      = mode==='month'?'':'none';
+  document.getElementById('year-select').style.display       = mode==='month'?'':'none';
+  document.getElementById('year-only-select').style.display  = mode==='year'?'':'none';
+  document.getElementById('week-select').style.display       = mode==='week'?'':'none';
   if (allData && allData.length > 0) {
     if (mode === 'year') generateAnnualReport();
     else generateReport();
@@ -4183,6 +4186,11 @@ function processData(raw, sourceName) {
   const yoSel = document.getElementById('year-only-select');
   yoSel.innerHTML = years.map(y=>`<option value="${y}">${y}</option>`).join('');
   if (years.length) yoSel.value = years[0];
+  // Sélecteur semaine (mode hebdomadaire) — semaine courante par défaut
+  const wSel = document.getElementById('week-select');
+  const curWNum  = getISOWeek(now);
+  const curWYear = getISOWeekYear(now);
+  wSel.value = `${curWYear}-W${String(curWNum).padStart(2,'0')}`;
   document.getElementById('file-name-display').textContent = sourceName;
   document.getElementById('row-count').textContent = allData.length.toLocaleString('fr-FR');
   document.getElementById('screen-upload').style.display = 'none';
@@ -4206,7 +4214,14 @@ const ALL_KPIS_DEF = [
       const base = getBaseData();
       const yr = currentMode === 'year' ? parseInt(document.getElementById('year-only-select')?.value) : parseInt(document.getElementById('year-select')?.value);
       const mo = currentMode === 'month' ? parseInt(document.getElementById('month-select')?.value) : null;
-      const f = currentMode === 'year' ? base.filter(r=>r.debut&&r.debut.getFullYear()===yr) : base.filter(r=>r.debut&&r.debut.getFullYear()===yr&&r.debut.getMonth()===mo);
+      let f;
+      if (currentMode === 'week') {
+        const wv=document.getElementById('week-select')?.value||''; if(!wv) return null;
+        const [wy,wk]=wv.split('-W').map(Number);
+        f=base.filter(r=>r.debut&&getISOWeek(r.debut)===wk&&getISOWeekYear(r.debut)===wy);
+      } else {
+        f = currentMode === 'year' ? base.filter(r=>r.debut&&r.debut.getFullYear()===yr) : base.filter(r=>r.debut&&r.debut.getFullYear()===yr&&r.debut.getMonth()===mo);
+      }
       if (!f.length) return null;
       const real = f.filter(isRealise).length;
       return { value: pctN(real, f.length).toFixed(1)+'%', sub: `${real} / ${f.length} OT` };
@@ -4254,7 +4269,14 @@ const ALL_KPIS_DEF = [
       const base = getBaseData();
       const yr = currentMode === 'year' ? parseInt(document.getElementById('year-only-select')?.value) : parseInt(document.getElementById('year-select')?.value);
       const mo = currentMode === 'month' ? parseInt(document.getElementById('month-select')?.value) : null;
-      const f = currentMode === 'year' ? base.filter(r=>r.debut&&r.debut.getFullYear()===yr) : base.filter(r=>r.debut&&r.debut.getFullYear()===yr&&r.debut.getMonth()===mo);
+      let f;
+      if (currentMode === 'week') {
+        const wv=document.getElementById('week-select')?.value||''; if(!wv) return null;
+        const [wy,wk]=wv.split('-W').map(Number);
+        f=base.filter(r=>r.debut&&getISOWeek(r.debut)===wk&&getISOWeekYear(r.debut)===wy);
+      } else {
+        f = currentMode === 'year' ? base.filter(r=>r.debut&&r.debut.getFullYear()===yr) : base.filter(r=>r.debut&&r.debut.getFullYear()===yr&&r.debut.getMonth()===mo);
+      }
       if (!f.length) return null;
       const sys = f.filter(isSys).length, cur = f.filter(isCur).length;
       return { value: pctN(sys,f.length).toFixed(0)+'% / '+pctN(cur,f.length).toFixed(0)+'%', sub: `${sys} syst. · ${cur} curat.` };
@@ -4578,6 +4600,7 @@ function destroyCharts(){ Object.values(charts).forEach(c=>c.destroy()); charts=
 
 function generateReport() {
   if (currentMode === 'year') { generateAnnualReport(); return; }
+  if (currentMode === 'week') { generateWeeklyReport(); return; }
 
   const mo = parseInt(document.getElementById('month-select').value);
   const yr = parseInt(document.getElementById('year-select').value);
@@ -6265,6 +6288,192 @@ function getISOWeek(date) {
   d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
   return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+
+function getISOWeekYear(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  return d.getUTCFullYear();
+}
+
+function getWeekMonday(isoYear, isoWeek) {
+  const jan4 = new Date(isoYear, 0, 4);
+  const jan4day = jan4.getDay() || 7;
+  const monday = new Date(jan4);
+  monday.setDate(jan4.getDate() - (jan4day - 1) + (isoWeek - 1) * 7);
+  return monday;
+}
+
+function generateWeeklyReport() {
+  const wVal = document.getElementById('week-select').value;
+  if (!wVal) return;
+  const [wyStr, wkStr] = wVal.split('-W');
+  const wYear = parseInt(wyStr), wNum = parseInt(wkStr);
+
+  const weekStart = getWeekMonday(wYear, wNum);
+  const weekEnd   = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6);
+  const fmtD = d => d.toLocaleDateString('fr-FR', {day:'2-digit', month:'2-digit'});
+  const weekLabel = `S${wNum} · ${fmtD(weekStart)} → ${fmtD(weekEnd)}`;
+
+  const filtered = getBaseData().filter(r =>
+    r.debut && getISOWeek(r.debut) === wNum && getISOWeekYear(r.debut) === wYear
+  );
+  const total     = filtered.length;
+  const EXCLUDED_POSTES = ['425-INCD','426-EXP','428-EXP','421-GRAI','425-BDM'];
+
+  const realise   = filtered.filter(isRealise).length;
+  const lancOnly  = filtered.filter(r=>r.statutSys.includes('LANC')&&!r.statutSys.includes('CONF')&&!r.statutSys.includes('TCLO')).length;
+  const crpr      = filtered.filter(r=>r.statutUtil==='CRPR').length;
+  const sysOTs    = filtered.filter(isSys);
+  const curOTs    = filtered.filter(isCur);
+  const sysCount  = sysOTs.length;
+  const curCount  = curOTs.length;
+  const tauxReal  = pctN(realise, total);
+  const tauxPrev  = pctN(sysOTs.filter(isRealise).length, sysCount);
+  const tauxCor   = pctN(curOTs.filter(isRealise).length, curCount);
+  const prevPct   = pct(sysCount, total);
+  const corPct    = pct(curCount, total);
+  const ratioPrevCor = total ? pctN(sysCount,total).toFixed(1)+'% / '+pctN(curCount,total).toFixed(1)+'%' : '—';
+  const backlogOT  = filtered.filter(r=>r.statutUtil.includes('ATPL')&&r.statutSys.includes('LANC')).length;
+  const backlogPct = total>0 ? ((backlogOT/total)*100).toFixed(1) : 0;
+  const backlog    = total>0 ? backlogOT.toLocaleString('fr-FR')+' OT ('+backlogPct+'%)' : '—';
+  const caractOTs  = filtered.filter(r=>r.statutUtil!=='SOPL');
+  const caractNb   = caractOTs.filter(r=>r.statutUtil.length===9).length;
+  const nonCaractNb= caractOTs.filter(r=>r.statutUtil.length===4).length;
+  const caractBase = caractNb+nonCaractNb;
+  const tauxCaract = caractBase>0 ? (caractNb/caractBase*100).toFixed(1)+'%' : '—';
+
+  updatePdrKpiFromTravHebdo(weekStart.getMonth(), wYear, false);
+
+  set('kpi-total',        total.toLocaleString('fr-FR'));
+  set('kpi-realise',      realise.toLocaleString('fr-FR'));
+  set('kpi-realise-pct',  pct(realise,total));
+  set('kpi-lanc',         lancOnly.toLocaleString('fr-FR'));
+  set('kpi-lanc-pct',     pct(lancOnly,total));
+  set('kpi-retard',       crpr.toLocaleString('fr-FR'));
+  set('kpi-crpr-pct',     pct(crpr,total));
+  set('kpi-sys',          sysCount.toLocaleString('fr-FR'));
+  set('kpi-sys-pct',      pct(sysCount,total));
+  set('kpi-curatif-total',curCount.toLocaleString('fr-FR'));
+  set('kpi-curatif-pct',  pct(curCount,total));
+  set('kpi-taux-prev',    tauxPrev.toFixed(1)+'%');
+  set('kpi-taux-cor',     Math.round(tauxCor)+'%');
+  set('kpi-ratio-pc',     ratioPrevCor);
+  set('kpi-ratio-pc-prev',prevPct);
+  set('kpi-ratio-pc-cor', corPct);
+  set('kpi-backlog',      backlog);
+  set('kpi-caract',       tauxCaract);
+  set('kpi-caract-nb',    caractNb.toLocaleString('fr-FR')+' / '+caractBase.toLocaleString('fr-FR'));
+
+  const tPrevTag = document.getElementById('kpi-taux-prev-tag');
+  if(tPrevTag){ tPrevTag.textContent=tauxPrev.toFixed(1)+'%'; tPrevTag.className='kpi-tag '+(tauxPrev>=80?'up':tauxPrev>=50?'neu':'down'); }
+  const tCorTag = document.getElementById('kpi-taux-cor-tag');
+  if(tCorTag){ tCorTag.textContent=Math.round(tauxCor)+'%'; tCorTag.className='kpi-tag '+(tauxCor>=80?'up':tauxCor>=50?'neu':'down'); }
+  const tEl = document.getElementById('kpi-realise-trend');
+  tEl.textContent = tauxReal.toFixed(1)+'%';
+  tEl.className   = 'kpi-tag '+(tauxReal>=80?'up':tauxReal>=50?'neu':'down');
+
+  // Arrêts de la semaine
+  const arrSem   = ARRETS_DATA.filter(r=>{ const d=new Date(r.date); return getISOWeek(d)===wNum&&getISOWeekYear(d)===wYear; });
+  const arrReal  = arrSem.filter(r=>r.statut==='realise'||r.statut==='imprevu').length;
+  const tauxArrReal = arrSem.length ? (arrReal/arrSem.length*100).toFixed(1)+'%' : '—%';
+
+  set('banner-realisation', tauxReal.toFixed(1)+'%');
+  set('banner-arrets-real', tauxArrReal);
+  set('banner-sys-ratio',   pct(sysCount,total));
+  set('rpt-badge',          weekLabel);
+  set('rpt-date',           new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'}));
+  set('rpt-file',           document.getElementById('file-name-display').textContent);
+  set('rpt-total-ot',       total.toLocaleString('fr-FR'));
+
+  document.getElementById('annual-section').style.display  = 'none';
+  document.getElementById('monthly-section').style.display = 'block';
+
+  destroyCharts();
+  renderCalendar();
+
+  // Chart type donut
+  const tC={}, tCol={ZCOR:'#dc2626',ZCON:'#059669',ZEST:'#d97706',ZETL:'#7c3aed'};
+  filtered.forEach(r=>{tC[r.type]=(tC[r.type]||0)+1;});
+  buildDonut('chart-type', Object.keys(tC), Object.values(tC), Object.keys(tC).map(t=>tCol[t]||'#94a3b8'));
+
+  // Chart poste
+  const pC={};
+  filtered.filter(r=>!EXCLUDED_POSTES.includes(r.poste)).forEach(r=>{if(r.poste)pC[r.poste]=(pC[r.poste]||0)+1;});
+  const pS=Object.entries(pC).sort((a,b)=>b[1]-a[1]);
+  buildHBar('chart-poste', pS.map(e=>e[0]), pS.map(e=>e[1]));
+
+  // Chart journalier (jours de la semaine)
+  const DAYS_FR=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  const dC=Array(7).fill(0);
+  filtered.forEach(r=>{if(r.debut){const dow=(r.debut.getDay()+6)%7; dC[dow]++;}});
+  buildLine('chart-daily', DAYS_FR, dC);
+
+  // Équipements
+  const equipGlobal={};
+  filtered.filter(r=>r.objet).forEach(r=>{equipGlobal[r.objet]=(equipGlobal[r.objet]||0)+1;});
+  const equipSorted=Object.entries(equipGlobal).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const equipMax=equipSorted[0]?.[1]||1;
+  document.getElementById('equip-global-sub').textContent=`Top 5 sur ${Object.keys(equipGlobal).length} équipements distincts — semaine sélectionnée`;
+  document.getElementById('equip-global-list').innerHTML=equipSorted.map(([equip,count],i)=>{
+    const pctW=(count/equipMax*100).toFixed(1);
+    const rank=i+1;
+    const rankCol=rank===1?'#f59e0b':rank===2?'#94a3b8':rank===3?'#b45309':'#1d4ed8';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border2);">
+      <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:${rankCol};min-width:24px;text-align:right;">#${rank}</span>
+      <span style="font-size:12.5px;font-weight:600;color:var(--text);min-width:180px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${equip}">${equip}</span>
+      <div style="flex:1;height:9px;background:var(--bg);border-radius:5px;overflow:hidden;border:1px solid var(--border2);">
+        <div style="width:${pctW}%;height:100%;background:rgba(29,78,216,0.7);border-radius:5px;"></div>
+      </div>
+      <span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--blue);min-width:32px;text-align:right;">${count}</span>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--muted);min-width:40px;text-align:right;">${pctW}%</span>
+    </div>`;
+  }).join('');
+
+  // Réalisation par poste
+  const posteList=[...new Set(filtered.filter(r=>!EXCLUDED_POSTES.includes(r.poste)).map(r=>r.poste).filter(Boolean))].sort();
+  const realData=posteList.map(p=>{
+    const ots=filtered.filter(r=>r.poste===p), done=ots.filter(isRealise).length;
+    return {poste:p,total:ots.length,done,taux:pctN(done,ots.length)};
+  }).sort((a,b)=>b.taux-a.taux);
+  document.getElementById('realisation-poste-list').innerHTML=realData.map(d=>{
+    const col=d.taux>=80?'#059669':d.taux>=50?'#d97706':'#dc2626';
+    return `<div class="real-row">
+      <span class="real-poste">${d.poste}</span>
+      <div class="real-bar-wrap"><div class="real-bar-fill" style="width:${d.taux}%;background:${col};"></div></div>
+      <span class="real-pct" style="color:${col};">${Math.round(d.taux)}%</span>
+      <span class="real-counts">${d.done} / ${d.total}</span>
+    </div>`;
+  }).join('');
+
+  // Évolution sur les 10 dernières semaines
+  const wKeys=[], wLbls=[];
+  for(let i=9;i>=0;i--){
+    const ref=new Date(weekStart); ref.setDate(ref.getDate()-i*7);
+    const wn=getISOWeek(ref), wy=getISOWeekYear(ref);
+    wKeys.push({wn,wy});
+    wLbls.push(`S${wn}`);
+  }
+  const getWGrp=({wn,wy})=>getBaseData().filter(r=>r.debut&&getISOWeek(r.debut)===wn&&getISOWeekYear(r.debut)===wy);
+  buildVBar('chart-realisation-mois', wLbls, wKeys.map(k=>{const g=getWGrp(k);return g.length?pctN(g.filter(isRealise).length,g.length):0;}));
+  buildLineMulti('chart-sys-cur', wLbls, [
+    {label:'Systématique',data:wKeys.map(k=>{const g=getWGrp(k);return g.length?pctN(g.filter(isSys).length,g.length):0;}),borderColor:'#1d4ed8',backgroundColor:'rgba(29,78,216,0.07)',fill:true},
+    {label:'Curatif',     data:wKeys.map(k=>{const g=getWGrp(k);return g.length?pctN(g.filter(isCur).length,g.length):0;}),borderColor:'#dc2626',backgroundColor:'rgba(220,38,38,0.07)',fill:true}
+  ]);
+  // Arrêts : taux de réalisation par semaine (10 dernières semaines)
+  const arrWData = wKeys.map(({wn,wy})=>{
+    const g=ARRETS_DATA.filter(r=>{const d=new Date(r.date);return getISOWeek(d)===wn&&getISOWeekYear(d)===wy;});
+    return g.length?pctN(g.filter(r=>r.statut==='realise'||r.statut==='imprevu').length,g.length):null;
+  });
+  const badgeEl=document.getElementById('cal-chart-badge');
+  if(badgeEl) badgeEl.textContent=`Arrêts · 10 dernières semaines`;
+  if(charts['chart-arrets-real']){charts['chart-arrets-real'].destroy();delete charts['chart-arrets-real'];}
+  const cvs=document.getElementById('chart-arrets-real');
+  if(cvs) charts['chart-arrets-real']=new Chart(cvs,{type:'bar',data:{labels:wLbls,datasets:[{label:'Taux réalisation arrêts (%)',data:arrWData.map(v=>v??0),backgroundColor:'rgba(5,150,105,0.7)',borderRadius:4}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'}}}}});
+
+  buildAvisCharts();
+  renderKpiFavoris();
+  renderKpiStars();
 }
 
 function pdcSetStatus(type, msg) {
