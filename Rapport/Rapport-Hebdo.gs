@@ -751,10 +751,11 @@ function rhBuildHtml(arrets, kpi, avis) {
   }
 
   // ── Postes (table-based) ──
-  function buildPostes() {
-    if(!kpi.postes.length) return '<p style="color:#94a3b8;font-size:12px;">Aucune donn&#233;e.</p>';
+  function buildPostes(arr) {
+    var list = arr || kpi.postes;
+    if(!list.length) return '<p style="color:#94a3b8;font-size:12px;">Aucune donn&#233;e.</p>';
     var html='<table cellpadding="0" cellspacing="0" width="100%">';
-    kpi.postes.forEach(function(p){
+    list.forEach(function(p){
       var c=p.taux>=80?'#059669':p.taux>=50?'#d97706':'#dc2626';
       var w=Math.min(100,Math.round(p.taux));
       html+='<tr style="border-bottom:1px solid #f1f5f9;">'
@@ -770,6 +771,14 @@ function rhBuildHtml(arrets, kpi, avis) {
     });
     html+='</table>';
     return html;
+  }
+  function postesCard(title, arr) {
+    return '<td width="50%" valign="top" style="padding:6px;">'
+      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #dde2ea;border-radius:12px;">'
+      +'<tr><td style="padding:14px 18px;">'
+      +'<div style="font-size:12px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;">'+title+'</div>'
+      +buildPostes(arr)
+      +'</td></tr></table></td>';
   }
 
   return '<!DOCTYPE html><html><head><meta charset="UTF-8"></head>'
@@ -821,13 +830,12 @@ function rhBuildHtml(arrets, kpi, avis) {
       +'</tr></table>';
   })()
 
-  // Taux de réalisation par corps de métier (remonté sous les 3 KPIs)
+  // Taux de réalisation par corps de métier — Manutention + Laverie côte à côte
   +secLabel('Taux de r&#233;alisation par corps de m&#233;tier')
-  +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #dde2ea;border-radius:12px;margin-bottom:14px;">'
-  +'<tr><td style="padding:18px 20px;">'
-  +'<div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:12px;">'+kpi.mois+'</div>'
-  +buildPostes()
-  +'</td></tr></table>'
+  +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:14px;"><tr>'
+  +postesCard('&#9632; Manutention', kpi.postesManut)
+  +postesCard('&#9632; Laverie', kpi.postesLav)
+  +'</tr></table>'
 
   // ── Graphiques OT (type d'ordre + volume par secteur) ──
   +(function(){
