@@ -763,8 +763,9 @@ function rhBuildHtml(arrets, kpi, avis) {
   }
 
   return '<!DOCTYPE html><html><head><meta charset="UTF-8"></head>'
-  +'<body style="margin:0;padding:8px;background:#f4f6f9;font-family:Arial,sans-serif;font-size:12px;color:#0f172a;">'
-  +'<table cellpadding="0" cellspacing="0" width="100%" style="max-width:900px;margin:0 auto;">'
+  +'<body style="margin:0;padding:20px;background:#f4f6f9;font-family:Arial,sans-serif;font-size:12px;color:#0f172a;">'
+  +'<table cellpadding="0" cellspacing="0" width="100%"><tr><td align="center">'
+  +'<table cellpadding="0" cellspacing="0" width="900" style="max-width:900px;">'
 
   // Header
   +'<tr><td style="background:#1d4ed8;padding:12px 16px;">'
@@ -884,8 +885,9 @@ function rhBuildHtml(arrets, kpi, avis) {
   +'<a href="mailto:m.elamraoui@ocpgroup.ma" style="color:#002060;">m.elamraoui@ocpgroup.ma</a>'
   +'</p>'
 
-  +'</td></tr>'   // fin contenu
-  +'</table>'     // fin table
+  +'</td></tr>'         // fin contenu
+  +'</table>'           // fin table 900px
+  +'</td></tr></table>' // fin wrapper centré
   +'</body></html>';
 }
 
