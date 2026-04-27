@@ -207,13 +207,14 @@ function rhGetKpi(mo, yr) {
         if (hdrs[j].toString().trim().toLowerCase()===names[i].toLowerCase()) return j;
     return -1;
   }
-  var cDeb  = ci(['début au plus tôt','debut au plus tot','date début','date debut']);
-  var cStat = ci(['statut système','statut systeme','statut sys']);
-  var cUtil = ci(['statut utilis.','statut util','statut utilis']);
-  var cType = ci(["type d'ordre",'type ordre','type']);
-  var cPost = ci(['poste de travail','poste travail','poste']);
+  var cDeb     = ci(['début au plus tôt','debut au plus tot','date début','date debut']);
+  var cStat    = ci(['statut système','statut systeme','statut sys']);
+  var cUtil    = ci(['statut utilis.','statut util','statut utilis']);
+  var cType    = ci(["type d'ordre",'type ordre','type']);
+  var cPost    = ci(['poste de travail','poste travail','poste']);
+  var cObjTech = ci(['objet technique','obj technique','objet tech','objet']); if(cObjTech<0) cObjTech=5;
   var total=0,real=0,lanc=0,crpr=0,sys=0,cur=0,sysR=0,curR=0,backlog=0,caract=0,nonCaract=0;
-  var posteMap={}, typeMap={};
+  var posteMap={}, posteMapManut={}, posteMapLav={}, typeMap={};
 
   for (var i=1;i<data.length;i++) {
     var r=data[i], rawD=cDeb>=0?r[cDeb]:null, d;
@@ -224,6 +225,8 @@ function rhGetKpi(mo, yr) {
     if (isNaN(d)||d.getFullYear()!==yr||d.getMonth()!==mo) continue;
     total++;
     var ss_=cStat>=0?r[cStat].toString():'', su=cUtil>=0?r[cUtil].toString():'', tp=cType>=0?r[cType].toString():'', pt=cPost>=0?r[cPost].toString().trim():'';
+    var objTech=(r[cObjTech]||'').toString().trim().toUpperCase();
+    var isManut=objTech.indexOf('KL03-MA')===0;
     var isR=ss_.includes('CONF')||ss_.includes('TCLO')||ss_.includes('CLOT');
     if(isR) real++;
     if(ss_.includes('LANC')&&!ss_.includes('CONF')&&!ss_.includes('TCLO')) lanc++;
@@ -234,14 +237,21 @@ function rhGetKpi(mo, yr) {
     if(isSys){sys++;if(isR)sysR++;}
     if(isCur){cur++;if(isR)curR++;}
     if(tp) typeMap[tp]=(typeMap[tp]||0)+1;
-    if(pt){if(!posteMap[pt])posteMap[pt]={total:0,real:0};posteMap[pt].total++;if(isR)posteMap[pt].real++;}
+    if(pt){
+      if(!posteMap[pt])posteMap[pt]={total:0,real:0};posteMap[pt].total++;if(isR)posteMap[pt].real++;
+      var pmSplit=isManut?posteMapManut:posteMapLav;
+      if(!pmSplit[pt])pmSplit[pt]={total:0,real:0};pmSplit[pt].total++;if(isR)pmSplit[pt].real++;
+    }
   }
 
   function p(n,t){return t?parseFloat(((n/t)*100).toFixed(1)):0;}
   function ps(n,t){return t?p(n,t).toFixed(1)+'%':'—';}
 
   var EXCL_POSTES=['421-GRAI','425-INCD'];
-  var postes=Object.keys(posteMap).filter(function(k){return EXCL_POSTES.indexOf(k)<0;}).map(function(k){return{nom:k,total:posteMap[k].total,real:posteMap[k].real,taux:p(posteMap[k].real,posteMap[k].total)};}).sort(function(a,b){return b.taux-a.taux;}).slice(0,10);
+  function mkPostes(map){ return Object.keys(map).filter(function(k){return EXCL_POSTES.indexOf(k)<0;}).map(function(k){return{nom:k,total:map[k].total,real:map[k].real,taux:p(map[k].real,map[k].total)};}).sort(function(a,b){return b.taux-a.taux;}).slice(0,10); }
+  var postes=mkPostes(posteMap);
+  var postesManut=mkPostes(posteMapManut);
+  var postesLav=mkPostes(posteMapLav);
 
   var MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
   return {
@@ -254,7 +264,7 @@ function rhGetKpi(mo, yr) {
     cur:cur, curPct:ps(cur,total),
     tauxPrev:p(sysR,sys), tauxPrevStr:ps(sysR,sys),
     tauxCor:p(curR,cur),  tauxCorStr:ps(curR,cur),
-    postes:postes,
+    postes:postes, postesManut:postesManut, postesLav:postesLav,
     caract:caract, nonCaract:nonCaract,
     tauxCaract:p(caract,caract+nonCaract), tauxCaractStr:ps(caract,caract+nonCaract),
     pdrTotal:0, pdrConf:0,
@@ -810,22 +820,30 @@ function rhBuildHtml(arrets, kpi, avis) {
   +buildPostes()
   +'</td></tr></table>'
 
-  // ── Graphiques OT (type d'ordre + volume corps de métier) ──
+  // ── Graphiques OT (type d'ordre + volume par secteur) ──
   +(function(){
     var typeD=kpi.typeData.slice(0,6);
-    var postesD=kpi.postes.slice(0,7);
+    var manutD=(kpi.postesManut||[]).slice(0,8);
+    var lavD=(kpi.postesLav||[]).slice(0,8);
     var TYPE_LBL={'ZEST':'Syst\u00e9matique','ZCOR':'Curatif','ZCON':'Conditionnel','ZETL':'Etalonnage'};
     var imgType=typeD.length?rhMakePieImg(
       typeD.map(function(x){return TYPE_LBL[x.type]||x.type;}),
       typeD.map(function(x){return x.count;}),
       'R\u00e9partition par type d\'ordre'):'';
-    var imgPoste=postesD.length?rhMakeBarImg(
-      postesD.map(function(x){return x.nom;}),
-      postesD.map(function(x){return x.total;}),
-      '#3b82f6','Volume OT par corps de m\u00e9tier'):'';
-    return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
-      +chartCard(imgType,'R&#233;partition par type d\'ordre')
-      +chartCard(imgPoste,'Volume OT par corps de m&#233;tier')
+    var imgManut=manutD.length?rhMakeBarImg(
+      manutD.map(function(x){return x.nom;}),
+      manutD.map(function(x){return x.total;}),
+      '#3b82f6','Volume OT par corps de m\u00e9tier - Manutention'):'';
+    var imgLav=lavD.length?rhMakeBarImg(
+      lavD.map(function(x){return x.nom;}),
+      lavD.map(function(x){return x.total;}),
+      '#10b981','Volume OT par corps de m\u00e9tier - Laverie'):'';
+    return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
+      +chartCard(imgType,'R&#233;partition par type d\'ordre','100%')
+      +'</tr></table>'
+      +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
+      +chartCard(imgManut,'Volume OT par corps de m&#233;tier &#8212; Manutention')
+      +chartCard(imgLav,'Volume OT par corps de m&#233;tier &#8212; Laverie')
       +'</tr></table>';
   })()
 
