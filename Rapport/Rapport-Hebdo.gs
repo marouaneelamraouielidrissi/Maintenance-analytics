@@ -412,12 +412,18 @@ function rhGetAvis(d0, d1) {
     var bySecteur={}, byPoste={}, openByPoste={}, byInstall={}, byAuteur={};
     var allInstallSet = {};
 
-    // Premier passage : collecter toutes les installations (sans filtre date)
+    // Premier passage : ALL rows — collecter installations + avis non clôturés (sans filtre date)
     for (var j = 1; j < data.length; j++) {
       var rj = data[j];
       if (!rj.some(function(v){ return v !== null && v !== undefined && v !== ''; })) continue;
       var instAll = cInst >= 0 ? rj[cInst].toString().trim() : '';
       if (instAll) allInstallSet[instAll] = true;
+      // Avis non clôturés : tous statuts AOUV/AENC sans filtre date
+      var statJ = cStatA >= 0 ? rj[cStatA].toString().trim().toUpperCase() : '';
+      var posteJ = cPoste >= 0 ? rj[cPoste].toString().trim() : '';
+      if ((statJ === 'AOUV' || statJ === 'AENC') && posteJ) {
+        openByPoste[posteJ] = (openByPoste[posteJ] || 0) + 1;
+      }
     }
 
     for (var i = 1; i < data.length; i++) {
@@ -451,7 +457,7 @@ function rhGetAvis(d0, d1) {
       var isOpen = statA === 'AOUV' || statA === 'AENC';
       if (isOpen) ouverts++;
       if (sect)  bySecteur[sect] = (bySecteur[sect] || 0) + 1;
-      if (poste) { byPoste[poste] = (byPoste[poste] || 0) + 1; if (isOpen) openByPoste[poste] = (openByPoste[poste] || 0) + 1; }
+      if (poste) { byPoste[poste] = (byPoste[poste] || 0) + 1; }
       if (inst)  byInstall[inst]  = (byInstall[inst]  || 0) + 1;
       var auteur = cAuteur >= 0 ? r[cAuteur].toString().trim() : '';
       if (auteur) byAuteur[auteur] = (byAuteur[auteur] || 0) + 1;
@@ -716,7 +722,12 @@ function rhBuildHtml(arrets, kpi, avis) {
   // ── Chart card image (pie) — hauteur fixe 260px ──
   function chartCard(imgSrc,title,w) {
     w=w||'50%';
-    if(!imgSrc) return '<td width="'+w+'" valign="top" style="padding:6px;"></td>';
+    if(!imgSrc) return '<td width="'+w+'" valign="top" style="padding:6px;">'
+      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
+      +'<tr><td style="padding:20px 16px;text-align:center;">'
+      +'<div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">'+title+'</div>'
+      +'<div style="font-size:12px;color:#cbd5e1;">Aucune donn&#233;e pour cette semaine</div>'
+      +'</td></tr></table></td>';
     return '<td width="'+w+'" valign="top" style="padding:6px;">'
       +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
       +'<tr><td style="padding:12px 16px;">'
