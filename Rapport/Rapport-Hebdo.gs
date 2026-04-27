@@ -239,7 +239,7 @@ function rhGetKpi(mo, yr) {
   function ps(n,t){return t?p(n,t).toFixed(1)+'%':'—';}
 
   var EXCL_POSTES=['421-GRAI','425-INCD'];
-  var postes=Object.keys(posteMap).filter(function(k){return EXCL_POSTES.indexOf(k)<0;}).map(function(k){return{nom:k,total:posteMap[k].total,real:posteMap[k].real,taux:p(posteMap[k].real,posteMap[k].total)};}).sort(function(a,b){return b.total-a.total;}).slice(0,10);
+  var postes=Object.keys(posteMap).filter(function(k){return EXCL_POSTES.indexOf(k)<0;}).map(function(k){return{nom:k,total:posteMap[k].total,real:posteMap[k].real,taux:p(posteMap[k].real,posteMap[k].total)};}).sort(function(a,b){return b.taux-a.taux;}).slice(0,10);
 
   var MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
   return {
@@ -837,12 +837,6 @@ function rhBuildHtml(arrets, kpi, avis) {
   +kpiCard('#fef2f2','#dc2626',kpi.tauxCorStr,'Taux r&#233;alisation Correctif','CONF+TCLO+CLOT / total ZCOR',kpi.tauxCor,'50%')
   +'</tr></table>'
 
-  // Préparation – Taux caractérisation + Taux confirmation PDR uniquement
-  +subSection('#fff7ed','#fdba74','#c2410c','&#9632; Pr&#233;paration')
-  +'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-  +kpiCard('#f0fdf4','#15803d',kpi.tauxCaractStr,'Taux caract&#233;risation','<b>'+kpi.caract.toLocaleString('fr-FR')+'</b> / <b>'+(kpi.caract+kpi.nonCaract).toLocaleString('fr-FR')+'</b> &middot; excl. SOPL',kpi.tauxCaract,'50%')
-  +kpiCard('#fff7ed','#c2410c',kpi.tauxPdrConfStr,'Taux confirmation PDR','<b>'+kpi.pdrConf.toLocaleString('fr-FR')+'</b> confirm&#233;s sur <b>'+kpi.pdrTotal.toLocaleString('fr-FR')+'</b> OTs avec PDR',kpi.tauxPdrConf,'50%')
-  +'</tr></table>'
 
   // ── Section Avis ──
   +(avis ? (function(){
@@ -863,33 +857,33 @@ function rhBuildHtml(arrets, kpi, avis) {
     +kpiCard('#ecfdf5','#059669',tApprStr('421-MEC'), 'Taux approbation M&#233;canique',  tApprSub('421-MEC'), tApprNum('421-MEC'), '25%')
     +kpiCard('#ecfdf5','#059669',tApprStr('421-INST'),'Taux approbation Installation',   tApprSub('421-INST'),tApprNum('421-INST'),'25%')
     +'</tr></table>'
-    // Graphiques ligne 1 : Avis par secteur + Avis par corps de métier
+    // Graphiques ligne 1 : Avis par secteur + Avis non clôturés par corps de métier
     +(function(){
       var imgSect=avis.bySecteur.length?rhMakePieImg(
         avis.bySecteur.map(function(x){return x.label;}),
         avis.bySecteur.map(function(x){return x.count;}),
         'Avis par secteur'):'';
-      var imgPoste=avis.byPoste.length?rhMakeBarImg(
-        avis.byPoste.map(function(x){return x.label;}),
-        avis.byPoste.map(function(x){return x.count;}),
-        '#7c3aed','Avis par corps de m\u00e9tier'):'';
-      return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-        +chartCard(imgSect,'Avis par secteur')
-        +chartCard(imgPoste,'Avis par corps de m&#233;tier')
-        +'</tr></table>';
-    })()
-    // Graphiques ligne 2 : Non clôturés + Avis créé par collaborateur
-    +(function(){
       var imgOpen=avis.openByPoste.length?rhMakeBarImg(
         avis.openByPoste.map(function(x){return x.label;}),
         avis.openByPoste.map(function(x){return x.count;}),
         '#dc2626','Avis non cl\u00f4tur\u00e9s par corps de m\u00e9tier'):'';
+      return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
+        +chartCard(imgSect,'Avis par secteur')
+        +chartCard(imgOpen,'Avis non cl&#244;tur&#233;s par corps de m&#233;tier')
+        +'</tr></table>';
+    })()
+    // Graphiques ligne 2 : Avis par corps de métier + Avis créé par collaborateur
+    +(function(){
+      var imgPoste=avis.byPoste.length?rhMakeBarImg(
+        avis.byPoste.map(function(x){return x.label;}),
+        avis.byPoste.map(function(x){return x.count;}),
+        '#7c3aed','Avis par corps de m\u00e9tier'):'';
       var imgAuteur=avis.byAuteur&&avis.byAuteur.length?rhMakeBarImg(
         avis.byAuteur.map(function(x){return x.label;}),
         avis.byAuteur.map(function(x){return x.count;}),
         '#0891b2','Avis cr\u00e9\u00e9 par collaborateur'):'';
       return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-        +chartCard(imgOpen,'Avis non cl&#244;tur&#233;s par corps de m&#233;tier')
+        +chartCard(imgPoste,'Avis par corps de m&#233;tier')
         +chartCard(imgAuteur,'Avis cr&#233;&#233; par collaborateur')
         +'</tr></table>';
     })()
