@@ -212,7 +212,7 @@ function rhGetKpi(mo, yr) {
   var cUtil    = ci(['statut utilis.','statut util','statut utilis']);
   var cType    = ci(["type d'ordre",'type ordre','type']);
   var cPost    = ci(['poste de travail','poste travail','poste']);
-  var cObjTech = ci(['objet technique','obj technique','objet tech','objet','object technique','equipement','equipment','poste technique']); if(cObjTech<0) cObjTech=5;
+  var cObjTech = ci(['obj. technique','objet technique','obj technique','objet tech','objet','object technique','equipement','equipment','poste technique']); if(cObjTech<0) cObjTech=5;
   Logger.log('rhGetKpi: cObjTech='+cObjTech+' header='+(hdrs[cObjTech]||'?')+' | headers='+JSON.stringify(hdrs.slice(0,10)));
   var total=0,real=0,lanc=0,crpr=0,sys=0,cur=0,sysR=0,curR=0,backlog=0,caract=0,nonCaract=0;
   var posteMap={}, posteMapManut={}, posteMapLav={}, typeMap={};
