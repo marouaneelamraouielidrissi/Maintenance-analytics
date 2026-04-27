@@ -3441,20 +3441,20 @@ td { padding: 9px 14px; vertical-align: middle; }
   <!-- ═══════ REPORT PAGE 2 : Répartition + Réalisation par poste + Évolution ═══════ -->
   <div class="report-page">
 
-    <!-- Répartition -->
-    <div class="section-label">Répartition des ordres de travail</div>
+    <!-- Volume OT par secteur -->
+    <div class="section-label">Volume OT par corps de métier</div>
     <div class="chart-grid-2 no-break">
-      <div class="chart-card" id="card-type-ordre">
+      <div class="chart-card">
         <div class="chart-card-hdr">
-          <div><div class="chart-card-title">Répartition par type d'ordre</div><div class="chart-card-sub">ZCOR · ZCON · ZEST · ZETL — mois sélectionné</div></div>
+          <div><div class="chart-card-title">Volume OT — Manutention</div><div class="chart-card-sub">Obj. technique commence par KL03-MA — mois sélectionné</div></div>
         </div>
-        <div style="height:190px;"><canvas id="chart-type"></canvas></div>
+        <div style="height:190px;"><canvas id="chart-poste-manut"></canvas></div>
       </div>
       <div class="chart-card">
         <div class="chart-card-hdr">
-          <div><div class="chart-card-title">Volume OT par corps de métier</div><div class="chart-card-sub">Nombre d'ordres — mois sélectionné</div></div>
+          <div><div class="chart-card-title">Volume OT — Laverie</div><div class="chart-card-sub">Obj. technique différent de KL03-MA — mois sélectionné</div></div>
         </div>
-        <div style="height:190px;"><canvas id="chart-poste"></canvas></div>
+        <div style="height:190px;"><canvas id="chart-poste-lav"></canvas></div>
       </div>
     </div>
 
@@ -3679,19 +3679,19 @@ td { padding: 9px 14px; vertical-align: middle; }
 
     <!-- REPORT PAGE ANN-2: Répartition + Réalisation mensuelle + Arrêts -->
     <div class="report-page">
-    <div class="section-label">Répartition des ordres de travail — année</div>
+    <div class="section-label">Volume OT par corps de métier — année</div>
     <div class="chart-grid-2 no-break">
       <div class="chart-card">
         <div class="chart-card-hdr">
-          <div><div class="chart-card-title">Répartition par type d'ordre</div><div class="chart-card-sub">ZCOR · ZCON · ZEST · ZETL — année sélectionnée</div></div>
+          <div><div class="chart-card-title">Volume OT — Manutention</div><div class="chart-card-sub">Obj. technique commence par KL03-MA — année sélectionnée</div></div>
         </div>
-        <div style="height:200px;"><canvas id="ann-chart-type"></canvas></div>
+        <div style="height:200px;"><canvas id="ann-chart-poste-manut"></canvas></div>
       </div>
       <div class="chart-card">
         <div class="chart-card-hdr">
-          <div><div class="chart-card-title">Volume OT par corps de métier</div><div class="chart-card-sub">Nombre d'ordres — année sélectionnée</div></div>
+          <div><div class="chart-card-title">Volume OT — Laverie</div><div class="chart-card-sub">Obj. technique différent de KL03-MA — année sélectionnée</div></div>
         </div>
-        <div style="height:200px;"><canvas id="ann-chart-poste"></canvas></div>
+        <div style="height:200px;"><canvas id="ann-chart-poste-lav"></canvas></div>
       </div>
     </div>
 
@@ -4614,6 +4614,14 @@ function set(id,v)    { const el=document.getElementById(id); if(el) el.textCont
 function parseFR(s)   { const[d,m,y]=s.split('/'); return new Date(`${y}-${m}-${d}`); }
 function destroyCharts(){ Object.values(charts).forEach(c=>c.destroy()); charts={}; }
 
+function buildPosteChart(canvasId, data) {
+  const EXCL_P = ['425-INCD','426-EXP','428-EXP','421-GRAI','425-BDM'];
+  const pC={};
+  data.filter(r=>!EXCL_P.includes(r.poste)).forEach(r=>{if(r.poste)pC[r.poste]=(pC[r.poste]||0)+1;});
+  const pS=Object.entries(pC).sort((a,b)=>b[1]-a[1]);
+  buildHBar(canvasId, pS.map(e=>e[0]), pS.map(e=>e[1]));
+}
+
 function buildRealisationHtml(filteredData) {
   const EXCL = ['425-INCD','426-EXP','428-EXP','421-GRAI','425-BDM'];
   const posteList = [...new Set(filteredData.filter(r=>!EXCL.includes(r.poste)).map(r=>r.poste).filter(Boolean))].sort();
@@ -4724,17 +4732,9 @@ function generateReport() {
   // Calendrier automatique
   renderCalendar();
 
-  // Chart 1 — Type
-  const tC={}, tCol={ZCOR:'#dc2626',ZCON:'#059669',ZEST:'#d97706',ZETL:'#7c3aed'};
-  filtered.forEach(r=>{tC[r.type]=(tC[r.type]||0)+1;});
-  buildDonut('chart-type', Object.keys(tC), Object.values(tC), Object.keys(tC).map(t=>tCol[t]||'#94a3b8'));
-
-  // Chart 2 — Poste (exclusion des postes non comptabilisés)
-  const EXCLUDED_POSTES = ['425-INCD','426-EXP','428-EXP','421-GRAI','425-BDM'];
-  const pC={};
-  filtered.filter(r=>!EXCLUDED_POSTES.includes(r.poste)).forEach(r=>{if(r.poste)pC[r.poste]=(pC[r.poste]||0)+1;});
-  const pS=Object.entries(pC).sort((a,b)=>b[1]-a[1]);
-  buildHBar('chart-poste', pS.map(e=>e[0]), pS.map(e=>e[1]));
+  // Chart — Volume OT Manutention / Laverie
+  buildPosteChart('chart-poste-manut', filtered.filter(r=>r.secteur==='manutention'));
+  buildPosteChart('chart-poste-lav',   filtered.filter(r=>r.secteur==='laverie'));
 
   // Chart 3 — Daily
   const dC={};
@@ -4877,16 +4877,9 @@ function generateAnnualReport() {
 
   destroyCharts();
 
-  // Donut type annuel
-  const tC={}, tCol={ZCOR:'#dc2626',ZCON:'#059669',ZEST:'#d97706',ZETL:'#7c3aed'};
-  filtered.forEach(r=>{tC[r.type]=(tC[r.type]||0)+1;});
-  buildDonut('ann-chart-type', Object.keys(tC), Object.values(tC), Object.keys(tC).map(t=>tCol[t]||'#94a3b8'));
-
-  // Barres horizontales corps de métier annuel
-  const pC={};
-  filtered.filter(r=>!EXCLUDED_POSTES.includes(r.poste)).forEach(r=>{if(r.poste)pC[r.poste]=(pC[r.poste]||0)+1;});
-  const pS=Object.entries(pC).sort((a,b)=>b[1]-a[1]);
-  buildHBar('ann-chart-poste', pS.map(e=>e[0]), pS.map(e=>e[1]));
+  // Volume OT Manutention / Laverie — annuel
+  buildPosteChart('ann-chart-poste-manut', filtered.filter(r=>r.secteur==='manutention'));
+  buildPosteChart('ann-chart-poste-lav',   filtered.filter(r=>r.secteur==='laverie'));
 
   // Taux de réalisation par mois de l'année (barres verticales)
   const moKeys = Array.from({length:12},(_,i)=>`${yr}-${String(i+1).padStart(2,'0')}`);
@@ -6036,24 +6029,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
       </div>
     </div>
   </div>
-  <div class="section-lbl">Répartition des ordres de travail</div>
+  <div class="section-lbl">Volume OT par corps de métier</div>
   <div class="grid2" style="gap:8px;">
     <div class="card">
-      <div class="chart-title">Répartition par type d'ordre</div>
-      <div class="chart-sub">${typeItems.map(i=>i.label).join(' · ')} — ${periodLabel}</div>
-      <div class="donut-wrap" style="height:100px;">
-        ${buildDonutSVG(typeItems)}
-        <div>
-          ${typeItems.map(i=>`<div class="legend-item" style="margin-bottom:3px;"><span class="legend-dot" style="background:${i.c};"></span> ${i.label} — ${i.v} (${total?((i.v/total)*100).toFixed(1):0}%)</div>`).join('')}
-        </div>
-      </div>
+      <div class="chart-title">Volume OT — Manutention</div>
+      <div class="chart-sub">Obj. technique commence par KL03-MA — ${periodLabel}</div>
+      <div style="margin-top:8px;">${(()=>{const m={};filtered.filter(r=>r.secteur==='manutention'&&r.poste&&!['425-INCD','426-EXP','428-EXP','421-GRAI','425-BDM'].includes(r.poste)).forEach(r=>{m[r.poste]=(m[r.poste]||0)+1;});const s=Object.entries(m).sort((a,b)=>b[1]-a[1]);const mx=s[0]?.[1]||1;return s.slice(0,6).map(([p,v])=>`<div class="bar-row"><span class="bar-label">${p}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/mx*100).toFixed(1)}%;background:rgba(29,78,216,0.75);"></div></div><span class="bar-cnt">${v}</span></div>`).join('');})()}</div>
     </div>
     <div class="card">
-      <div class="chart-title">Volume OT par corps de métier</div>
-      <div class="chart-sub">Nombre d'ordres — ${periodLabel}</div>
-      <div style="margin-top:8px;">
-        ${pS.slice(0,6).map(([p,v])=>`<div class="bar-row"><span class="bar-label">${p}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/pMax*100).toFixed(1)}%;background:rgba(29,78,216,0.75);"></div></div><span class="bar-cnt">${v}</span></div>`).join('')}
-      </div>
+      <div class="chart-title">Volume OT — Laverie</div>
+      <div class="chart-sub">Obj. technique différent de KL03-MA — ${periodLabel}</div>
+      <div style="margin-top:8px;">${(()=>{const m={};filtered.filter(r=>r.secteur==='laverie'&&r.poste&&!['425-INCD','426-EXP','428-EXP','421-GRAI','425-BDM'].includes(r.poste)).forEach(r=>{m[r.poste]=(m[r.poste]||0)+1;});const s=Object.entries(m).sort((a,b)=>b[1]-a[1]);const mx=s[0]?.[1]||1;return s.slice(0,6).map(([p,v])=>`<div class="bar-row"><span class="bar-label">${p}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/mx*100).toFixed(1)}%;background:rgba(16,185,129,0.75);"></div></div><span class="bar-cnt">${v}</span></div>`).join('');})()}</div>
     </div>
   </div>
   <div class="page-num">2 / ${totalPages}</div>
@@ -6404,16 +6390,9 @@ function generateWeeklyReport() {
   destroyCharts();
   renderCalendar();
 
-  // Chart type donut
-  const tC={}, tCol={ZCOR:'#dc2626',ZCON:'#059669',ZEST:'#d97706',ZETL:'#7c3aed'};
-  filtered.forEach(r=>{tC[r.type]=(tC[r.type]||0)+1;});
-  buildDonut('chart-type', Object.keys(tC), Object.values(tC), Object.keys(tC).map(t=>tCol[t]||'#94a3b8'));
-
-  // Chart poste
-  const pC={};
-  filtered.filter(r=>!EXCLUDED_POSTES.includes(r.poste)).forEach(r=>{if(r.poste)pC[r.poste]=(pC[r.poste]||0)+1;});
-  const pS=Object.entries(pC).sort((a,b)=>b[1]-a[1]);
-  buildHBar('chart-poste', pS.map(e=>e[0]), pS.map(e=>e[1]));
+  // Chart — Volume OT Manutention / Laverie (hebdo)
+  buildPosteChart('chart-poste-manut', filtered.filter(r=>r.secteur==='manutention'));
+  buildPosteChart('chart-poste-lav',   filtered.filter(r=>r.secteur==='laverie'));
 
   // Chart journalier (jours de la semaine)
   const DAYS_FR=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
