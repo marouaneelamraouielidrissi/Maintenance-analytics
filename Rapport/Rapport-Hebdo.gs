@@ -782,7 +782,6 @@ function rhBuildHtml(arrets, kpi, avis) {
   +'<span style="color:#166534;font-weight:700;margin-right:8px;">&#9679; R&#233;alis&#233;</span>'
   +'<span style="color:#991b1b;font-weight:700;margin-right:8px;">&#9679; Non r&#233;alis&#233;</span>'
   +'<span style="color:#9a3412;font-weight:700;">&#9679; Impr&#233;vu</span>'
-  +'<span style="float:right;font-weight:700;font-size:10px;">'+arrets.rows.length+' enregistr&#233;(s)</span>'
   +'</div>'
   +buildCal()
 
@@ -852,10 +851,10 @@ function rhBuildHtml(arrets, kpi, avis) {
     +'</tr></table>'
     // Graphiques Avis — HTML purs (zéro appel API)
     +(function(){
-      var sectH=avis.bySecteur.length?rhMakeBarHtml(avis.bySecteur.map(function(x){return x.label;}),avis.bySecteur.map(function(x){return x.count;}),'#6366f1'):'';
+      var sectImg=avis.bySecteur.length?rhMakePieImg(avis.bySecteur.map(function(x){return x.label;}),avis.bySecteur.map(function(x){return x.count;}),'',420,300):'';
       var openH=avis.openByPoste.length?rhMakeBarHtml(avis.openByPoste.map(function(x){return x.label;}),avis.openByPoste.map(function(x){return x.count;}),'#dc2626'):'';
       return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-        +barChartCard(sectH,'Avis par secteur')
+        +chartCard(sectImg,'Avis par secteur')
         +barChartCard(openH,'Avis non cl&#244;tur&#233;s par corps de m&#233;tier')
         +'</tr></table>';
     })()
@@ -868,11 +867,11 @@ function rhBuildHtml(arrets, kpi, avis) {
         +'</tr></table>';
     })()
     +(function(){
-      var instData=(avis.byInstallTop||[]).slice(0,12);
+      var instData=(avis.byInstallTop||[]).slice().reverse();
       if(!instData.length) return '';
       var instH=rhMakeBarHtml(instData.map(function(x){return x.label;}),instData.map(function(x){return x.count;}),'#0891b2');
       return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
-        +barChartCard(instH,'Avis par installation (top 12)','100%')
+        +barChartCard(instH,'Avis par installation','100%')
         +'</tr></table>';
     })();
   })() : '')
