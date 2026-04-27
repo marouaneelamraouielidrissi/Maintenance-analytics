@@ -765,7 +765,7 @@ function rhBuildHtml(arrets, kpi, avis) {
   return '<!DOCTYPE html><html><head><meta charset="UTF-8"></head>'
   +'<body style="margin:0;padding:20px;background:#f4f6f9;font-family:Arial,sans-serif;font-size:12px;color:#0f172a;">'
   +'<table cellpadding="0" cellspacing="0" width="100%"><tr><td align="center">'
-  +'<table cellpadding="0" cellspacing="0" width="900" style="max-width:900px;">'
+  +'<table cellpadding="0" cellspacing="0" width="1100" style="max-width:1100px;">'
 
   // Header
   +'<tr><td style="background:#1d4ed8;padding:12px 16px;">'
@@ -778,11 +778,11 @@ function rhBuildHtml(arrets, kpi, avis) {
 
   // Calendrier
   +secLabel('Calendrier des arr&#234;ts pr&#233;ventifs &#8212; S'+s)
-  +'<div style="margin-bottom:10px;">'
-  +'<span style="color:#166534;font-weight:700;margin-right:10px;">&#9679; R&#233;alis&#233;</span>'
-  +'<span style="color:#991b1b;font-weight:700;margin-right:10px;">&#9679; Non r&#233;alis&#233;</span>'
+  +'<div style="margin-bottom:8px;font-size:9px;">'
+  +'<span style="color:#166534;font-weight:700;margin-right:8px;">&#9679; R&#233;alis&#233;</span>'
+  +'<span style="color:#991b1b;font-weight:700;margin-right:8px;">&#9679; Non r&#233;alis&#233;</span>'
   +'<span style="color:#9a3412;font-weight:700;">&#9679; Impr&#233;vu</span>'
-  +'<span style="float:right;font-weight:700;">'+arrets.rows.length+' enregistr&#233;(s)</span>'
+  +'<span style="float:right;font-weight:700;font-size:10px;">'+arrets.rows.length+' enregistr&#233;(s)</span>'
   +'</div>'
   +buildCal()
 
