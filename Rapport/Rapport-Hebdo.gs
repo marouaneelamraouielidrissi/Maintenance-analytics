@@ -409,27 +409,32 @@ function rhGetAvis(d0, d1) {
     Logger.log('rhGetAvis cols → cree='+cCree+' ordre='+cOrdre+' statut='+cStatA+' poste='+cPoste+' install='+cInst+' sect='+cSect);
 
     var total=0, avecOT=0, ouverts=0;
+    // KPI hebdo (filtré d0→d1) + KPI par poste pour taux approbation
+    var byPosteRawWeek={}, openByPosteRawWeek={};
+    // Charts : toutes données (sans filtre date) pour avoir un volume suffisant
     var bySecteur={}, byPoste={}, openByPoste={}, byInstall={}, byAuteur={};
-    var allInstallSet = {};
 
-    // Premier passage : ALL rows — collecter installations + avis non clôturés (sans filtre date)
+    // ── Passage 1 : TOUTES les lignes (sans filtre date) — pour les charts ──
     for (var j = 1; j < data.length; j++) {
       var rj = data[j];
       if (!rj.some(function(v){ return v !== null && v !== undefined && v !== ''; })) continue;
-      var instAll = cInst >= 0 ? rj[cInst].toString().trim() : '';
-      if (instAll) allInstallSet[instAll] = true;
-      // Avis non clôturés : tous statuts AOUV/AENC sans filtre date
-      var statJ = cStatA >= 0 ? rj[cStatA].toString().trim().toUpperCase() : '';
+      var instJ  = cInst  >= 0 ? rj[cInst ].toString().trim() : '';
+      var statJ  = cStatA >= 0 ? rj[cStatA].toString().trim().toUpperCase() : '';
       var posteJ = cPoste >= 0 ? rj[cPoste].toString().trim() : '';
-      if ((statJ === 'AOUV' || statJ === 'AENC') && posteJ) {
-        openByPoste[posteJ] = (openByPoste[posteJ] || 0) + 1;
-      }
+      var sectJ  = cSect  >= 0 ? rj[cSect ].toString().trim() : '';
+      var autJ   = cAuteur>= 0 ? rj[cAuteur].toString().trim() : '';
+      var isOpenJ = statJ === 'AOUV' || statJ === 'AENC';
+      if (instJ)  byInstall[instJ]  = (byInstall[instJ]  || 0) + 1;
+      if (posteJ) { byPoste[posteJ] = (byPoste[posteJ] || 0) + 1; if (isOpenJ) openByPoste[posteJ] = (openByPoste[posteJ] || 0) + 1; }
+      if (sectJ)  bySecteur[sectJ]  = (bySecteur[sectJ]  || 0) + 1;
+      if (autJ)   byAuteur[autJ]    = (byAuteur[autJ]    || 0) + 1;
     }
 
+    // ── Passage 2 : filtre d0→d1 — pour les KPI chiffrés (total, taux) ──
     for (var i = 1; i < data.length; i++) {
       var r = data[i];
+      if (!r.some(function(v){ return v !== null && v !== undefined && v !== ''; })) continue;
 
-      // Filtre par date (si colonne trouvée)
       if (cCree >= 0) {
         var rawD = r[cCree], d;
         if (rawD instanceof Date)                     d = rawD;
@@ -443,9 +448,6 @@ function rhGetAvis(d0, d1) {
         if (dsA < d0 || dsA > d1) continue;
       }
 
-      // Ignorer les lignes vides
-      if (!r.some(function(v){ return v !== null && v !== undefined && v !== ''; })) continue;
-
       total++;
       var ordre = cOrdre >= 0 ? r[cOrdre].toString().trim() : '';
       var statA = cStatA >= 0 ? r[cStatA].toString().trim().toUpperCase() : '';
@@ -456,17 +458,11 @@ function rhGetAvis(d0, d1) {
       if (ordre) avecOT++;
       var isOpen = statA === 'AOUV' || statA === 'AENC';
       if (isOpen) ouverts++;
-      if (sect)  bySecteur[sect] = (bySecteur[sect] || 0) + 1;
-      if (poste) { byPoste[poste] = (byPoste[poste] || 0) + 1; }
-      if (inst)  byInstall[inst]  = (byInstall[inst]  || 0) + 1;
-      var auteur = cAuteur >= 0 ? r[cAuteur].toString().trim() : '';
-      if (auteur) byAuteur[auteur] = (byAuteur[auteur] || 0) + 1;
+      if (poste) {
+        byPosteRawWeek[poste] = (byPosteRawWeek[poste] || 0) + 1;
+        if (isOpen) openByPosteRawWeek[poste] = (openByPosteRawWeek[poste] || 0) + 1;
+      }
     }
-
-    // Ajouter les installations avec 0 avis dans la période
-    Object.keys(allInstallSet).forEach(function(k) {
-      if (!byInstall[k]) byInstall[k] = 0;
-    });
 
     Logger.log('rhGetAvis résultat: total='+total+' avecOT='+avecOT+' ouverts='+ouverts
       +' | bySecteur='+Object.keys(bySecteur).length
@@ -486,10 +482,12 @@ function rhGetAvis(d0, d1) {
     return {
       total:total, avecOT:avecOT, ouverts:ouverts,
       txConv: total ? parseFloat(((avecOT/total)*100).toFixed(1)) : 0,
+      // Charts : toutes données (volume suffisant)
       bySecteur:toArr(bySecteur,8), byPoste:toArr(byPoste,6),
       openByPoste:toArr(openByPoste,6), byInstall:toArrAll(byInstall),
       byAuteur:toArr(byAuteur,10), byInstallTop:toArr(byInstall,20),
-      byPosteRaw:byPoste, openByPosteRaw:openByPoste
+      // KPI taux d'approbation par corps de métier : données hebdo
+      byPosteRaw:byPosteRawWeek, openByPosteRaw:openByPosteRawWeek
     };
   } catch(e) { Logger.log('rhGetAvis error: '+e.message); return null; }
 }
