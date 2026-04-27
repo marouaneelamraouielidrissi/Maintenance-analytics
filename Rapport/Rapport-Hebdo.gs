@@ -459,7 +459,12 @@ function rhGetAvis(mo, yr) {
       if (!byInstall[k]) byInstall[k] = 0;
     });
 
-    Logger.log('rhGetAvis résultat: total='+total+' avecOT='+avecOT+' ouverts='+ouverts+' allInstalls='+Object.keys(allInstallSet).length);
+    Logger.log('rhGetAvis résultat: total='+total+' avecOT='+avecOT+' ouverts='+ouverts
+      +' | bySecteur='+Object.keys(bySecteur).length
+      +' byInstall='+Object.keys(byInstall).length
+      +' byPoste='+Object.keys(byPoste).length
+      +' byAuteur='+Object.keys(byAuteur).length
+      +' | cSect='+cSect+' cInst='+cInst+' cAuteur='+cAuteur);
 
     function toArr(map, lim) {
       return Object.keys(map).map(function(k){ return {label:k, count:map[k]}; })
@@ -831,6 +836,7 @@ function rhBuildHtml(arrets, kpi, avis) {
       typeD.map(function(x){return TYPE_LBL[x.type]||x.type;}),
       typeD.map(function(x){return x.count;}),
       'R\u00e9partition par type d\'ordre'):'';
+    Logger.log('rhBuildHtml charts: manutD='+manutD.length+' lavD='+lavD.length+' typeD='+typeD.length);
     var imgManut=manutD.length?rhMakeBarImg(
       manutD.map(function(x){return x.nom;}),
       manutD.map(function(x){return x.total;}),
