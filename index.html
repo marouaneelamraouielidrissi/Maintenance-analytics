@@ -3460,11 +3460,19 @@ td { padding: 9px 14px; vertical-align: middle; }
 
     <!-- Réalisation par poste -->
     <div class="section-label">Taux de réalisation par corps de métier</div>
-    <div class="chart-card no-break">
-      <div class="chart-card-hdr">
-        <div><div class="chart-card-title">Taux de réalisation — mois sélectionné</div><div class="chart-card-sub">OT confirmés ou techniquement clos (CONF + TCLO + CLOT) / total · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
+    <div class="chart-grid-2 no-break">
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <div><div class="chart-card-title">Taux de réalisation — Manutention</div><div class="chart-card-sub">Obj. technique commence par KL03-MA · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
+        </div>
+        <div id="realisation-poste-manut-list"></div>
       </div>
-      <div id="realisation-poste-list"></div>
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <div><div class="chart-card-title">Taux de réalisation — Laverie</div><div class="chart-card-sub">Obj. technique différent de KL03-MA · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
+        </div>
+        <div id="realisation-poste-lav-list"></div>
+      </div>
     </div>
   </div>
   <!-- ═══════ END PAGE 2 : Répartition + Réalisation par poste ═══════ -->
@@ -3714,11 +3722,19 @@ td { padding: 9px 14px; vertical-align: middle; }
     <!-- REPORT PAGE ANN-3: Réalisation par corps de métier annuelle -->
     <div class="report-page">
     <div class="section-label">Taux de réalisation par corps de métier — année</div>
-    <div class="chart-card no-break">
-      <div class="chart-card-hdr">
-        <div><div class="chart-card-title">Taux de réalisation — année sélectionnée</div><div class="chart-card-sub">OT confirmés ou techniquement clos (CONF + TCLO + CLOT) / total · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
+    <div class="chart-grid-2 no-break">
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <div><div class="chart-card-title">Taux de réalisation — Manutention</div><div class="chart-card-sub">Obj. technique commence par KL03-MA · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
+        </div>
+        <div id="ann-realisation-poste-manut-list"></div>
       </div>
-      <div id="ann-realisation-poste-list"></div>
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <div><div class="chart-card-title">Taux de réalisation — Laverie</div><div class="chart-card-sub">Obj. technique différent de KL03-MA · <span style="color:var(--green);font-weight:600;">≥ 80% Bon</span> &nbsp;·&nbsp; <span style="color:var(--amber);font-weight:600;">50–79% Moyen</span> &nbsp;·&nbsp; <span style="color:var(--red);font-weight:600;">&lt; 50% Faible</span></div></div>
+        </div>
+        <div id="ann-realisation-poste-lav-list"></div>
+      </div>
     </div>
     </div><!-- /report-page ann-3 -->
 
@@ -4598,6 +4614,25 @@ function set(id,v)    { const el=document.getElementById(id); if(el) el.textCont
 function parseFR(s)   { const[d,m,y]=s.split('/'); return new Date(`${y}-${m}-${d}`); }
 function destroyCharts(){ Object.values(charts).forEach(c=>c.destroy()); charts={}; }
 
+function buildRealisationHtml(filteredData) {
+  const EXCL = ['425-INCD','426-EXP','428-EXP','421-GRAI','425-BDM'];
+  const posteList = [...new Set(filteredData.filter(r=>!EXCL.includes(r.poste)).map(r=>r.poste).filter(Boolean))].sort();
+  const realData  = posteList.map(p=>{
+    const ots=filteredData.filter(r=>r.poste===p), done=ots.filter(isRealise).length;
+    return {poste:p, total:ots.length, done, taux:pctN(done,ots.length)};
+  }).sort((a,b)=>b.taux-a.taux);
+  if (!realData.length) return '<p style="color:var(--muted);font-size:12px;padding:8px 0;">Aucune donn\u00e9e.</p>';
+  return realData.map(d=>{
+    const col=d.taux>=80?'#059669':d.taux>=50?'#d97706':'#dc2626';
+    return `<div class="real-row">
+      <span class="real-poste">${d.poste}</span>
+      <div class="real-bar-wrap"><div class="real-bar-fill" style="width:${d.taux}%;background:${col};"></div></div>
+      <span class="real-pct" style="color:${col};">${Math.round(d.taux)}%</span>
+      <span class="real-counts">${d.done} / ${d.total}</span>
+    </div>`;
+  }).join('');
+}
+
 function generateReport() {
   if (currentMode === 'year') { generateAnnualReport(); return; }
   if (currentMode === 'week') { generateWeeklyReport(); return; }
@@ -4729,21 +4764,9 @@ function generateReport() {
     </div>`;
   }).join('');
 
-  // Réalisation par poste (custom bars) — exclusion des postes non comptabilisés
-  const posteList=[...new Set(filtered.filter(r=>!EXCLUDED_POSTES.includes(r.poste)).map(r=>r.poste).filter(Boolean))].sort();
-  const realData=posteList.map(p=>{
-    const ots=filtered.filter(r=>r.poste===p), done=ots.filter(isRealise).length;
-    return {poste:p,total:ots.length,done,taux:pctN(done,ots.length)};
-  }).sort((a,b)=>b.taux-a.taux);
-  document.getElementById('realisation-poste-list').innerHTML=realData.map(d=>{
-    const col=d.taux>=80?'#059669':d.taux>=50?'#d97706':'#dc2626';
-    return `<div class="real-row">
-      <span class="real-poste">${d.poste}</span>
-      <div class="real-bar-wrap"><div class="real-bar-fill" style="width:${d.taux}%;background:${col};"></div></div>
-      <span class="real-pct" style="color:${col};">${Math.round(d.taux)}%</span>
-      <span class="real-counts">${d.done} / ${d.total}</span>
-    </div>`;
-  }).join('');
+  // Réalisation par poste — Manutention (KL03-MA) / Laverie
+  document.getElementById('realisation-poste-manut-list').innerHTML = buildRealisationHtml(filtered.filter(r=>r.secteur==='manutention'));
+  document.getElementById('realisation-poste-lav-list').innerHTML   = buildRealisationHtml(filtered.filter(r=>r.secteur==='laverie'));
 
   // Charts multi-mois
   const mKeys=[...new Set(getBaseData().filter(r=>r.debut).map(r=>{const d=r.debut;return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}))].sort();
@@ -4874,20 +4897,9 @@ function generateAnnualReport() {
   buildVBar('ann-chart-realisation', moLbls, moData.map(v=>v??0));
 
   // Réalisation par poste annuelle
-  const posteList=[...new Set(filtered.filter(r=>!EXCLUDED_POSTES.includes(r.poste)).map(r=>r.poste).filter(Boolean))].sort();
-  const realData=posteList.map(p=>{
-    const ots=filtered.filter(r=>r.poste===p), done=ots.filter(isRealise).length;
-    return {poste:p,total:ots.length,done,taux:pctN(done,ots.length)};
-  }).sort((a,b)=>b.taux-a.taux);
-  document.getElementById('ann-realisation-poste-list').innerHTML=realData.map(d=>{
-    const col=d.taux>=80?'#059669':d.taux>=50?'#d97706':'#dc2626';
-    return `<div class="real-row">
-      <span class="real-poste">${d.poste}</span>
-      <div class="real-bar-wrap"><div class="real-bar-fill" style="width:${d.taux}%;background:${col};"></div></div>
-      <span class="real-pct" style="color:${col};">${Math.round(d.taux)}%</span>
-      <span class="real-counts">${d.done} / ${d.total}</span>
-    </div>`;
-  }).join('');
+  // Réalisation par poste — Manutention / Laverie (annuel)
+  document.getElementById('ann-realisation-poste-manut-list').innerHTML = buildRealisationHtml(filtered.filter(r=>r.secteur==='manutention'));
+  document.getElementById('ann-realisation-poste-lav-list').innerHTML   = buildRealisationHtml(filtered.filter(r=>r.secteur==='laverie'));
 
   // ── KPI & graphique arrêts préventifs pour l'année sélectionnée ──
   if(charts['ann-chart-arrets-evolution']){charts['ann-chart-arrets-evolution'].destroy();delete charts['ann-chart-arrets-evolution'];}
@@ -6430,21 +6442,9 @@ function generateWeeklyReport() {
     </div>`;
   }).join('');
 
-  // Réalisation par poste
-  const posteList=[...new Set(filtered.filter(r=>!EXCLUDED_POSTES.includes(r.poste)).map(r=>r.poste).filter(Boolean))].sort();
-  const realData=posteList.map(p=>{
-    const ots=filtered.filter(r=>r.poste===p), done=ots.filter(isRealise).length;
-    return {poste:p,total:ots.length,done,taux:pctN(done,ots.length)};
-  }).sort((a,b)=>b.taux-a.taux);
-  document.getElementById('realisation-poste-list').innerHTML=realData.map(d=>{
-    const col=d.taux>=80?'#059669':d.taux>=50?'#d97706':'#dc2626';
-    return `<div class="real-row">
-      <span class="real-poste">${d.poste}</span>
-      <div class="real-bar-wrap"><div class="real-bar-fill" style="width:${d.taux}%;background:${col};"></div></div>
-      <span class="real-pct" style="color:${col};">${Math.round(d.taux)}%</span>
-      <span class="real-counts">${d.done} / ${d.total}</span>
-    </div>`;
-  }).join('');
+  // Réalisation par poste — Manutention / Laverie (hebdo)
+  document.getElementById('realisation-poste-manut-list').innerHTML = buildRealisationHtml(filtered.filter(r=>r.secteur==='manutention'));
+  document.getElementById('realisation-poste-lav-list').innerHTML   = buildRealisationHtml(filtered.filter(r=>r.secteur==='laverie'));
 
   // Évolution sur les 10 dernières semaines
   const wKeys=[], wLbls=[];
