@@ -736,7 +736,12 @@ function rhBuildHtml(arrets, kpi, avis) {
   // ── Chart card barres HTML — même hauteur fixe 260px ──
   function barChartCard(barHtml,title,w) {
     w=w||'50%';
-    if(!barHtml) return '<td width="'+w+'" valign="top" style="padding:6px;"></td>';
+    if(!barHtml) return '<td width="'+w+'" valign="top" style="padding:6px;">'
+      +'<table cellpadding="0" cellspacing="0" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
+      +'<tr><td style="padding:20px 16px;text-align:center;">'
+      +'<div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">'+title+'</div>'
+      +'<div style="font-size:12px;color:#cbd5e1;">Aucune donn&#233;e disponible</div>'
+      +'</td></tr></table></td>';
     return '<td width="'+w+'" valign="top" style="padding:6px;">'
       +'<table cellpadding="0" cellspacing="0" width="100%" height="260" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;">'
       +'<tr><td height="260" valign="middle" style="padding:12px 16px;">'
@@ -846,23 +851,13 @@ function rhBuildHtml(arrets, kpi, avis) {
   +postesCard('&#9632; Laverie', kpi.postesLav)
   +'</tr></table>'
 
-  // ── Graphiques OT (type d'ordre + volume par secteur) ──
+  // ── Graphiques OT — HTML purs (zéro appel API) ──
   +(function(){
-    var typeD=kpi.typeData.slice(0,6);
     var manutD=(kpi.postesManut||[]).slice().sort(function(a,b){return b.total-a.total;}).slice(0,8);
     var lavD=(kpi.postesLav||[]).slice().sort(function(a,b){return b.total-a.total;}).slice(0,8);
-    Logger.log('rhBuildHtml charts: manutD='+manutD.length+' lavD='+lavD.length+' typeD='+typeD.length);
-    var imgManut=manutD.length?rhMakeBarImg(
-      manutD.map(function(x){return x.nom;}),
-      manutD.map(function(x){return x.total;}),
-      '#3b82f6','Volume OT par corps de m\u00e9tier - Manutention'):'';
-    var imgLav=lavD.length?rhMakeBarImg(
-      lavD.map(function(x){return x.nom;}),
-      lavD.map(function(x){return x.total;}),
-      '#10b981','Volume OT par corps de m\u00e9tier - Laverie'):'';
     return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
-      +chartCard(imgManut,'Volume OT par corps de m&#233;tier &#8212; Manutention')
-      +chartCard(imgLav,'Volume OT par corps de m&#233;tier &#8212; Laverie')
+      +barChartCard(manutD.length?rhMakeBarHtml(manutD.map(function(x){return x.nom;}),manutD.map(function(x){return x.total;}),'#3b82f6'):'','Volume OT &#8212; Manutention')
+      +barChartCard(lavD.length?rhMakeBarHtml(lavD.map(function(x){return x.nom;}),lavD.map(function(x){return x.total;}),'#10b981'):'','Volume OT &#8212; Laverie')
       +'</tr></table>';
   })()
 
@@ -896,46 +891,30 @@ function rhBuildHtml(arrets, kpi, avis) {
     +kpiCard('#ecfdf5','#059669',tApprStr('421-MEC'), 'Taux approbation M&#233;canique',  tApprSub('421-MEC'), tApprNum('421-MEC'), '25%')
     +kpiCard('#ecfdf5','#059669',tApprStr('421-INST'),'Taux approbation Installation',   tApprSub('421-INST'),tApprNum('421-INST'),'25%')
     +'</tr></table>'
-    // Graphiques ligne 1 : Avis par secteur + Avis non clôturés par corps de métier
+    // Graphiques Avis — HTML purs (zéro appel API)
     +(function(){
-      var imgSect=avis.bySecteur.length?rhMakePieImg(
-        avis.bySecteur.map(function(x){return x.label;}),
-        avis.bySecteur.map(function(x){return x.count;}),
-        'Avis par secteur'):'';
-      var imgOpen=avis.openByPoste.length?rhMakeBarImg(
-        avis.openByPoste.map(function(x){return x.label;}),
-        avis.openByPoste.map(function(x){return x.count;}),
-        '#dc2626','Avis non cl\u00f4tur\u00e9s par corps de m\u00e9tier'):'';
+      var sectH=avis.bySecteur.length?rhMakeBarHtml(avis.bySecteur.map(function(x){return x.label;}),avis.bySecteur.map(function(x){return x.count;}),'#6366f1'):'';
+      var openH=avis.openByPoste.length?rhMakeBarHtml(avis.openByPoste.map(function(x){return x.label;}),avis.openByPoste.map(function(x){return x.count;}),'#dc2626'):'';
       return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-        +chartCard(imgSect,'Avis par secteur')
-        +chartCard(imgOpen,'Avis non cl&#244;tur&#233;s par corps de m&#233;tier')
+        +barChartCard(sectH,'Avis par secteur')
+        +barChartCard(openH,'Avis non cl&#244;tur&#233;s par corps de m&#233;tier')
         +'</tr></table>';
     })()
-    // Graphiques ligne 2 : Avis par corps de métier + Avis créé par collaborateur
     +(function(){
-      var imgPoste=avis.byPoste.length?rhMakeBarImg(
-        avis.byPoste.map(function(x){return x.label;}),
-        avis.byPoste.map(function(x){return x.count;}),
-        '#7c3aed','Avis par corps de m\u00e9tier'):'';
-      var imgAuteur=avis.byAuteur&&avis.byAuteur.length?rhMakeBarImg(
-        avis.byAuteur.map(function(x){return x.label;}),
-        avis.byAuteur.map(function(x){return x.count;}),
-        '#0891b2','Avis cr\u00e9\u00e9 par collaborateur'):'';
+      var posteH=avis.byPoste.length?rhMakeBarHtml(avis.byPoste.map(function(x){return x.label;}),avis.byPoste.map(function(x){return x.count;}),'#7c3aed'):'';
+      var autH=avis.byAuteur&&avis.byAuteur.length?rhMakeBarHtml(avis.byAuteur.map(function(x){return x.label;}),avis.byAuteur.map(function(x){return x.count;}),'#0891b2'):'';
       return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:8px;"><tr>'
-        +chartCard(imgPoste,'Avis par corps de m&#233;tier')
-        +chartCard(imgAuteur,'Avis cr&#233;&#233; par collaborateur')
+        +barChartCard(posteH,'Avis par corps de m&#233;tier')
+        +barChartCard(autH,'Avis cr&#233;&#233; par collaborateur')
         +'</tr></table>';
     })()
-    // Graphique ligne 3 : Avis par installation
     +(function(){
-      var instData=avis.byInstallTop||avis.byInstall||[];
-      var imgInst=instData.length?rhMakeBarImgV(
-        instData.map(function(x){return x.label;}),
-        instData.map(function(x){return x.count;}),
-        '#0891b2','Avis par installation (top 20)'):'';
-      return imgInst?'<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
-        +chartCard(imgInst,'Avis par installation','100%')
-        +'</tr></table>':'';
+      var instData=(avis.byInstallTop||[]).slice(0,12);
+      if(!instData.length) return '';
+      var instH=rhMakeBarHtml(instData.map(function(x){return x.label;}),instData.map(function(x){return x.count;}),'#0891b2');
+      return '<table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;"><tr>'
+        +barChartCard(instH,'Avis par installation (top 12)','100%')
+        +'</tr></table>';
     })();
   })() : '')
 
