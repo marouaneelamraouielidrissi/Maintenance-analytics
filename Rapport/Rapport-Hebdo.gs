@@ -191,11 +191,12 @@ function rhGetArrets() {
     rows.push({ date:ds, install:cI>=0?r[cI].toString().trim():'', section:cS>=0?r[cS].toString().trim():'', semaine:cW>=0?r[cW].toString().trim():String(sem), annee:cA>=0?parseInt(r[cA]):monP.getFullYear(), statut:st });
   }
   rows.sort(function(a,b){return a.date.localeCompare(b.date);});
-  return { rows:rows, s0:s0, s1:s1, sem:sem, annee:monP.getFullYear() };
+  return { rows:rows, s0:s0, s1:s1, sem:sem, annee:monP.getFullYear(),
+           weekStart:rhDateStr(monP), weekEnd:rhDateStr(sunP) };
 }
 
-// ── Lecture des KPIs OT ───────────────────────────────────────
-function rhGetKpi(mo, yr) {
+// ── Lecture des KPIs OT — filtre par plage de dates (semaine) ─
+function rhGetKpi(d0, d1) {
   var ss    = SpreadsheetApp.openById(RH_OT_FILE_ID);
   var sheet = ss.getSheets()[0];
   var data  = sheet.getDataRange().getValues();
@@ -223,7 +224,8 @@ function rhGetKpi(mo, yr) {
     else if (typeof rawD==='number') d=new Date(Math.round((rawD-25569)*86400000));
     else if (rawD) d=new Date(rawD);
     else continue;
-    if (isNaN(d)||d.getFullYear()!==yr||d.getMonth()!==mo) continue;
+    var ds=rhDateStr(d);
+    if (isNaN(d)||ds<d0||ds>d1) continue;
     total++;
     var ss_=cStat>=0?r[cStat].toString():'', su=cUtil>=0?r[cUtil].toString():'', tp=cType>=0?r[cType].toString():'', pt=cPost>=0?r[cPost].toString().trim():'';
     var objTech=(r[cObjTech]||'').toString().trim().toUpperCase();
@@ -254,9 +256,8 @@ function rhGetKpi(mo, yr) {
   var postesManut=mkPostes(posteMapManut);
   var postesLav=mkPostes(posteMapLav);
 
-  var MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
   return {
-    mois:MOIS[mo]+' '+yr, mo:mo, yr:yr,
+    mois:'S'+rhWeekNum(new Date(d0))+' · '+rhFmtDate(d0)+' \u2192 '+rhFmtDate(d1),
     total:total, real:real, tauxReal:p(real,total), tauxRealStr:ps(real,total),
     lanc:lanc, lancPct:ps(lanc,total),
     crpr:crpr, crprPct:ps(crpr,total),
@@ -357,7 +358,7 @@ function rhGetPreparation(mo, yr) {
 }
 
 // ── Lecture des Avis (mois courant) ──────────────────────────
-function rhGetAvis(mo, yr) {
+function rhGetAvis(d0, d1) {
   try {
     var ss = SpreadsheetApp.openById(RH_AVIS_FILE_ID);
     // Recherche exacte d'abord, puis fuzzy
@@ -431,7 +432,8 @@ function rhGetAvis(mo, yr) {
                                                       d = new Date(rawD);
         else continue;
         if (!d || isNaN(d.getTime())) continue;
-        if (d.getFullYear() !== parseInt(yr) || d.getMonth() !== parseInt(mo)) continue;
+        var dsA = rhDateStr(d);
+        if (dsA < d0 || dsA > d1) continue;
       }
 
       // Ignorer les lignes vides
@@ -961,15 +963,13 @@ function sauvegarderDestinataires(p) {
 function envoyerRapportDepuisInterface(p) {
   try {
     if (!p.emails) return { ok: false, msg: 'Aucun destinataire.' };
-    var mo = parseInt(p.mo), yr = parseInt(p.yr);
     var arrets = rhGetArrets();
-    var kpi    = rhGetKpi(mo, yr);
-    var prep   = rhGetPreparation(mo, yr);
+    var kpi    = rhGetKpi(arrets.weekStart, arrets.weekEnd);
+    var prep   = rhGetPreparation(arrets.weekStart, arrets.weekEnd);
     if (prep) { kpi.pdrTotal=prep.pdrTotal; kpi.pdrConf=prep.pdrConf; kpi.tauxPdrConf=prep.tauxPdrConf; kpi.tauxPdrConfStr=prep.tauxPdrConfStr; kpi.otAttente=prep.otAttente; kpi.tempsMoyenStr=prep.tempsMoyenStr; }
-    var avis   = rhGetAvis(mo, yr);
+    var avis   = rhGetAvis(arrets.weekStart, arrets.weekEnd);
     var html   = rhBuildHtml(arrets, kpi, avis);
-    var MOIS   = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-    var sujet  = 'Rapport Hebdomadaire de Planification — S' + arrets.sem + ' · ' + MOIS[mo] + ' ' + yr;
+    var sujet  = 'Rapport Hebdomadaire de Planification — S' + arrets.sem + ' · ' + rhFmtDate(arrets.weekStart) + ' → ' + rhFmtDate(arrets.weekEnd);
     sendEmailRH(p.emails, sujet, html, 'Bureau Méthode Daoui - Planification', null, p.emailsCC || '');
     var props2 = PropertiesService.getScriptProperties();
     props2.setProperty('RH_EMAILS', p.emails);
@@ -1025,27 +1025,15 @@ function executerRapportPlanifie(e) {
   var props = PropertiesService.getScriptProperties();
   var cfg   = triggerId ? JSON.parse(props.getProperty('PLANIF_' + triggerId) || '{}') : {};
 
-  var mo = cfg.mo !== undefined ? parseInt(cfg.mo) : new Date().getMonth();
-  var yr = cfg.yr ? parseInt(cfg.yr) : new Date().getFullYear();
-
-  // Mode relatif (mois courant ou précédent)
-  if (cfg.moRelatif !== undefined) {
-    var now = new Date();
-    var rel = parseInt(cfg.moRelatif) || 0;
-    var d   = new Date(now.getFullYear(), now.getMonth() + rel, 1);
-    mo = d.getMonth(); yr = d.getFullYear();
-  }
-
   var emails   = cfg.emails   || props.getProperty('RH_EMAILS')    || RH_OCP_EMAIL;
   var emailsCC = cfg.emailsCC || props.getProperty('RH_EMAILS_CC') || '';
   var arrets = rhGetArrets();
-  var kpi    = rhGetKpi(mo, yr);
-  var prep   = rhGetPreparation(mo, yr);
+  var kpi    = rhGetKpi(arrets.weekStart, arrets.weekEnd);
+  var prep   = rhGetPreparation(arrets.weekStart, arrets.weekEnd);
   if (prep) { kpi.pdrTotal=prep.pdrTotal; kpi.pdrConf=prep.pdrConf; kpi.tauxPdrConf=prep.tauxPdrConf; kpi.tauxPdrConfStr=prep.tauxPdrConfStr; kpi.otAttente=prep.otAttente; kpi.tempsMoyenStr=prep.tempsMoyenStr; }
-  var avis   = rhGetAvis(mo, yr);
+  var avis   = rhGetAvis(arrets.weekStart, arrets.weekEnd);
   var html   = rhBuildHtml(arrets, kpi, avis);
-  var MOIS   = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-  var sujet  = 'Rapport Hebdomadaire de Planification — S' + arrets.sem + ' · ' + MOIS[mo] + ' ' + yr;
+  var sujet  = 'Rapport Hebdomadaire de Planification — S' + arrets.sem + ' · ' + rhFmtDate(arrets.weekStart) + ' → ' + rhFmtDate(arrets.weekEnd);
 
   sendEmailRH(emails, sujet, html, 'Bureau Méthode Daoui - Planification', null, emailsCC);
 
@@ -1092,29 +1080,24 @@ function supprimerPlanificationInterface(triggerId) {
 
 // ── Envoi instantané à m.elamraoui@ocpgroup.ma ───────────────
 function envoyerInstantane() {
-  var now    = new Date();
-  var mo     = now.getMonth(), yr = now.getFullYear();
   var arrets = rhGetArrets();
-  var kpi    = rhGetKpi(mo, yr);
-  var prep   = rhGetPreparation(mo, yr);
+  var kpi    = rhGetKpi(arrets.weekStart, arrets.weekEnd);
+  var prep   = rhGetPreparation(arrets.weekStart, arrets.weekEnd);
   if (prep) { kpi.pdrTotal=prep.pdrTotal; kpi.pdrConf=prep.pdrConf; kpi.tauxPdrConf=prep.tauxPdrConf; kpi.tauxPdrConfStr=prep.tauxPdrConfStr; kpi.otAttente=prep.otAttente; kpi.tempsMoyenStr=prep.tempsMoyenStr; }
-  var avis   = rhGetAvis(mo, yr);
+  var avis   = rhGetAvis(arrets.weekStart, arrets.weekEnd);
   var html   = rhBuildHtml(arrets, kpi, avis);
-  var MOIS   = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-  var sujet  = 'Rapport Hebdomadaire de Planification — S' + arrets.sem + ' · ' + MOIS[mo] + ' ' + yr;
+  var sujet  = 'Rapport Hebdomadaire de Planification — S' + arrets.sem + ' · ' + rhFmtDate(arrets.weekStart) + ' → ' + rhFmtDate(arrets.weekEnd);
   sendEmailRH('m.elamraoui@ocpgroup.ma', sujet, html, 'Bureau Méthode Daoui - Planification');
   Logger.log('✅ Rapport envoyé instantanément à : m.elamraoui@ocpgroup.ma');
 }
 
 // ── Fonction de test ──────────────────────────────────────────
 function testerRapportHebdo() {
-  var now    = new Date();
-  var mo     = now.getMonth(), yr = now.getFullYear();
   var arrets = rhGetArrets();
-  var kpi    = rhGetKpi(mo, yr);
-  var prep   = rhGetPreparation(mo, yr);
+  var kpi    = rhGetKpi(arrets.weekStart, arrets.weekEnd);
+  var prep   = rhGetPreparation(arrets.weekStart, arrets.weekEnd);
   if (prep) { kpi.pdrTotal=prep.pdrTotal; kpi.pdrConf=prep.pdrConf; kpi.tauxPdrConf=prep.tauxPdrConf; kpi.tauxPdrConfStr=prep.tauxPdrConfStr; kpi.otAttente=prep.otAttente; kpi.tempsMoyenStr=prep.tempsMoyenStr; }
-  var avis   = rhGetAvis(mo, yr);
+  var avis   = rhGetAvis(arrets.weekStart, arrets.weekEnd);
 
   Logger.log('Semaine : S' + arrets.sem + ' (' + arrets.s0 + ' → ' + arrets.s1 + ')');
   Logger.log('Arrêts : ' + arrets.rows.length);
