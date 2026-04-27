@@ -4159,6 +4159,12 @@ async function _autoLoadSAPdirect(msgEl) {
   }
 }
 
+// Normalisation des postes de travail : alias → poste canonique
+function normalizePoste(p) {
+  const POSTE_ALIAS = { '421-CHAU': '421-MEC' };
+  return POSTE_ALIAS[p] || p;
+}
+
 function processData(raw, sourceName) {
   allData = raw.map(row => ({
     ordre:       String(row['Ordre']||''),
@@ -4168,7 +4174,7 @@ function processData(raw, sourceName) {
     debut:       parseDate(row['Début au plus tôt']),
     fin:         parseDate(row['Fin au plus tôt']),
     statutSys:   row['Statut système']||'',
-    poste:       (row['Poste de travail']||'').trim(),
+    poste:       normalizePoste((row['Poste de travail']||'').trim()),
     statutUtil:  row['Statut utilis.']||'',
     pdrCol:      row['PDR']||row['Pièces de rechange']||row['Réservation PDR']||row['Besoin PDR']||row['N° réservation']||'',
     avis:        String(row['Avis']||row['N° avis']||''),
@@ -5146,7 +5152,7 @@ function processAvisData(raw) {
     statutSys:    row['Statut système']||'',
     statutUtil:   row['Statut utilis.']||'',
     statutABR:    row['Statut ABR']||'',
-    poste:        (row['Poste trav.']||'').trim(),
+    poste:        normalizePoste((row['Poste trav.']||'').trim()),
     installation: row['Installation']||'',
     secteur:      row['Secteur']||'',
     aPlanifier:   row['A planifier']===true||row['A planifier']==='TRUE'||row['A planifier']==='X',
