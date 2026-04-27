@@ -255,6 +255,7 @@ function rhGetKpi(d0, d1) {
   var postes=mkPostes(posteMap);
   var postesManut=mkPostes(posteMapManut);
   var postesLav=mkPostes(posteMapLav);
+  Logger.log('rhGetKpi: d0='+d0+' d1='+d1+' total='+total+' postes='+postes.length+' manut='+postesManut.length+' lav='+postesLav.length+' cObjTech='+cObjTech);
 
   return {
     mois:'S'+rhWeekNum(new Date(d0))+' · '+rhFmtDate(d0)+' \u2192 '+rhFmtDate(d1),
