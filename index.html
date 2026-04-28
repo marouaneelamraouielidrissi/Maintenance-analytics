@@ -3339,15 +3339,8 @@ td { padding: 9px 14px; vertical-align: middle; }
     </div>
 
     <!-- Volume OT par installation programmée — mensuel/hebdo -->
-    <div class="chart-card no-break" style="margin-top:10px;">
-      <div class="chart-card-hdr">
-        <div>
-          <div class="chart-card-title">Volume OT par installation programmée</div>
-          <div class="chart-card-sub">Installations du calendrier des arrêts · période sélectionnée</div>
-        </div>
-      </div>
-      <div id="ot-install-volume-table"></div>
-    </div>
+    <div class="section-label" style="margin-top:16px;">Volume OT par installation programmée</div>
+    <div id="ot-install-volume-table"></div>
 
     <!-- Modal KPIs Favoris -->
     <!-- KPIs du mois — même page que calendrier -->
@@ -3727,15 +3720,8 @@ td { padding: 9px 14px; vertical-align: middle; }
     </div>
 
     <!-- Volume OT par installation programmée — annuel -->
-    <div class="chart-card no-break" style="margin-top:10px;">
-      <div class="chart-card-hdr">
-        <div>
-          <div class="chart-card-title">Volume OT par installation programmée</div>
-          <div class="chart-card-sub">Installations du calendrier des arrêts · année sélectionnée</div>
-        </div>
-      </div>
-      <div id="ann-ot-install-volume-table"></div>
-    </div>
+    <div class="section-label" style="margin-top:16px;">Volume OT par installation programmée</div>
+    <div id="ann-ot-install-volume-table"></div>
 
     <!-- Taux de réalisation mensuel sur l'année -->
     <div class="section-label">Taux de réalisation mois par mois</div>
@@ -4760,84 +4746,105 @@ function buildInstallVolumeTable(filtered, elId) {
     }
   }
 
-  const programmedInstalls = new Set(calFiltered.map(r => r.installation).filter(Boolean));
-
-  if (!programmedInstalls.size) {
+  if (!calFiltered.length) {
     el.innerHTML = `<p style="text-align:center;color:var(--muted);font-size:12px;padding:16px 0;">Aucune installation programmée dans le calendrier des arrêts pour cette période.</p>`;
     return;
   }
 
-  // Toutes les installations programmées = colonnes (même si 0 OT)
-  const installs = [...programmedInstalls].sort();
+  // Séparer les installations par secteur (section dans ARRETS_DATA)
+  const installsBySect = { manutention: new Set(), laverie: new Set() };
+  calFiltered.forEach(r => {
+    if (!r.installation) return;
+    const s = normStr(r.section || '');
+    if (s === 'manutention') installsBySect.manutention.add(r.installation);
+    else installsBySect.laverie.add(r.installation);
+  });
 
-  // Regrouper OTs par installation (nom) × poste
-  const groups = {}; // { installation: { poste: count } }
+  // Regrouper OTs par installation × poste
+  const groups = {};
   filtered.forEach(r => {
     const install = normalizeInstallation(r.objet);
-    if (!install || !programmedInstalls.has(install)) return;
+    if (!install) return;
     const poste = r.poste || '—';
     if (!groups[install]) groups[install] = {};
     groups[install][poste] = (groups[install][poste] || 0) + 1;
   });
 
-  // Postes présents dans au moins une installation
-  const postesSet = new Set();
-  installs.forEach(inst => { if (groups[inst]) Object.keys(groups[inst]).forEach(p => postesSet.add(p)); });
-  const postes = [...postesSet].sort();
+  // Fonction de rendu d'un tableau pour un secteur donné
+  function renderSectTable(installSet) {
+    const installs = [...installSet].sort();
+    if (!installs.length) return '<p style="color:var(--muted);font-size:12px;padding:12px 0;">Aucune installation programmée.</p>';
 
-  if (!postes.length) {
-    el.innerHTML = `<p style="text-align:center;color:var(--muted);font-size:12px;padding:16px 0;">Installations programmées : ${installs.join(', ')} — aucun OT trouvé dans la période.</p>`;
-    return;
+    const postesSet = new Set();
+    installs.forEach(inst => { if (groups[inst]) Object.keys(groups[inst]).forEach(p => postesSet.add(p)); });
+    const postes = [...postesSet].sort();
+
+    const totalByInstall = {};
+    installs.forEach(inst => {
+      totalByInstall[inst] = groups[inst] ? Object.values(groups[inst]).reduce((s, v) => s + v, 0) : 0;
+    });
+
+    if (!postes.length) {
+      return `<p style="color:var(--muted);font-size:12px;padding:12px 0;">Installations : ${installs.join(', ')} — aucun OT dans la période.</p>`;
+    }
+
+    const totalByPoste = {};
+    postes.forEach(p => {
+      totalByPoste[p] = installs.reduce((s, inst) => s + ((groups[inst] && groups[inst][p]) || 0), 0);
+    });
+    const grandTotal = postes.reduce((s, p) => s + totalByPoste[p], 0);
+
+    const thS = `padding:6px 8px;text-align:center;font-weight:600;color:var(--text2);font-size:11px;`;
+    const th1 = `padding:6px 10px;text-align:left;font-weight:600;color:var(--text2);font-size:11px;`;
+    const tdS = `padding:6px 8px;text-align:center;font-size:12px;`;
+    const td1 = `padding:6px 10px;text-align:left;font-size:12px;font-weight:600;color:var(--text);`;
+
+    const thead = `<tr style="background:var(--bg);border-bottom:2px solid var(--border);">
+      <th style="${th1}">Corps de Métier</th>
+      ${installs.map(inst => `<th style="${thS}">${inst}<br><small style="color:var(--muted);font-weight:400;">${totalByInstall[inst]}</small></th>`).join('')}
+      <th style="${thS}border-left:2px solid var(--border);">Total</th>
+    </tr>`;
+
+    const tbody = postes.map(p => {
+      const cells = installs.map(inst => {
+        const v = (groups[inst] && groups[inst][p]) || 0;
+        const col = v === 0 ? '#dc2626' : v < 5 ? '#d97706' : 'var(--blue)';
+        return `<td style="${tdS}color:${col};font-weight:700;">${v === 0 ? '—' : v}</td>`;
+      }).join('');
+      return `<tr style="border-bottom:1px solid var(--border);">
+        <td style="${td1}">${p}</td>${cells}
+        <td style="${tdS}border-left:2px solid var(--border);font-weight:700;color:var(--text);">${totalByPoste[p]}</td>
+      </tr>`;
+    }).join('');
+
+    const totalRow = `<tr style="background:var(--bg);border-top:2px solid var(--border);">
+      <td style="${td1}color:var(--text2);">Total</td>
+      ${installs.map(inst => `<td style="${tdS}font-weight:700;color:var(--text);">${totalByInstall[inst]}</td>`).join('')}
+      <td style="${tdS}border-left:2px solid var(--border);font-weight:700;color:var(--blue);">${grandTotal}</td>
+    </tr>`;
+
+    return `<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead>${thead}</thead><tbody>${tbody}${totalRow}</tbody>
+    </table></div>`;
   }
 
-  // Totaux par installation et par poste
-  const totalByInstall = {};
-  installs.forEach(inst => {
-    totalByInstall[inst] = groups[inst] ? Object.values(groups[inst]).reduce((s, v) => s + v, 0) : 0;
-  });
-  const totalByPoste = {};
-  postes.forEach(p => {
-    totalByPoste[p] = installs.reduce((s, inst) => s + ((groups[inst] && groups[inst][p]) || 0), 0);
-  });
-  const grandTotal = postes.reduce((s, p) => s + totalByPoste[p], 0);
-
-  const thStyle = `padding:7px 10px;text-align:center;font-weight:600;color:var(--text2);font-size:11.5px;`;
-  const thFirst = `padding:7px 12px;text-align:left;font-weight:600;color:var(--text2);font-size:11.5px;`;
-  const tdStyle = `padding:7px 10px;text-align:center;font-size:12.5px;`;
-  const tdFirst = `padding:7px 12px;text-align:left;font-size:12.5px;font-weight:600;color:var(--text);`;
-
-  // En-tête : Corps de Métier | install1 | install2 | … | Total
-  const thead = `<tr style="background:var(--bg);border-bottom:2px solid var(--border);">
-    <th style="${thFirst}">Corps de Métier</th>
-    ${installs.map(inst => `<th style="${thStyle}">${inst}<br><small style="color:var(--muted);font-weight:400;">${totalByInstall[inst]}</small></th>`).join('')}
-    <th style="${thStyle}border-left:2px solid var(--border);">Total</th>
-  </tr>`;
-
-  // Lignes : un poste par ligne
-  const tbody = postes.map(p => {
-    const cells = installs.map(inst => {
-      const v = (groups[inst] && groups[inst][p]) || 0;
-      const col = v === 0 ? '#dc2626' : v < 5 ? '#d97706' : 'var(--blue)';
-      return `<td style="${tdStyle}color:${col};font-weight:700;">${v === 0 ? '—' : v}</td>`;
-    }).join('');
-    return `<tr style="border-bottom:1px solid var(--border);">
-      <td style="${tdFirst}">${p}</td>
-      ${cells}
-      <td style="${tdStyle}border-left:2px solid var(--border);font-weight:700;color:var(--text);">${totalByPoste[p]}</td>
-    </tr>`;
-  }).join('');
-
-  // Ligne total
-  const totalRow = `<tr style="background:var(--bg);border-top:2px solid var(--border);">
-    <td style="${tdFirst}color:var(--text2);">Total</td>
-    ${installs.map(inst => `<td style="${tdStyle}font-weight:700;color:var(--text);">${totalByInstall[inst]}</td>`).join('')}
-    <td style="${tdStyle}border-left:2px solid var(--border);font-weight:700;color:var(--blue);">${grandTotal}</td>
-  </tr>`;
-
-  el.innerHTML = `<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12.5px;">
-    <thead>${thead}</thead>
-    <tbody>${tbody}${totalRow}</tbody>
-  </table></div>`;
+  el.innerHTML = `
+    <div class="chart-grid-2 no-break" style="margin-top:0;">
+      <div class="chart-card">
+        <div class="chart-card-hdr"><div>
+          <div class="chart-card-title">Volume OT — Manutention</div>
+          <div class="chart-card-sub">Installations programmées · KL03-MA</div>
+        </div></div>
+        ${renderSectTable(installsBySect.manutention)}
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-hdr"><div>
+          <div class="chart-card-title">Volume OT — Laverie</div>
+          <div class="chart-card-sub">Installations programmées · hors KL03-MA</div>
+        </div></div>
+        ${renderSectTable(installsBySect.laverie)}
+      </div>
+    </div>`;
 }
 
 function generateReport() {
