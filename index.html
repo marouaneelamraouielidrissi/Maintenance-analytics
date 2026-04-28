@@ -3848,6 +3848,15 @@ td { padding: 9px 14px; vertical-align: middle; }
         </div>
       </div>
 
+      <!-- Taux d'approbation par poste -->
+      <div class="chart-card no-break" style="margin-top:16px;">
+        <div class="chart-card-hdr"><div>
+          <div class="chart-card-title">Taux d'approbation par Corps de Métier</div>
+          <div class="chart-card-sub" id="avis-appro-sub">AOUV / Total avis par poste — période sélectionnée</div>
+        </div></div>
+        <div id="avis-appro-list"></div>
+      </div>
+
       <!-- TABLEAU DÉTAIL AVIS OUVERTS -->
       <div class="chart-card no-break">
         <div class="chart-card-hdr"><div>
@@ -4159,7 +4168,7 @@ async function _autoLoadSAPdirect(msgEl) {
 
 // Normalisation des postes de travail : alias → poste canonique
 function normalizePoste(p) {
-  const POSTE_ALIAS = { '421-CHAU': '421-MEC', '421-GRAI': '421-MEC' };
+  const POSTE_ALIAS = { '421-CHAU': '421-MEC', '421-GRAI': '421-MEC', '421-GRAU': '421-MEC' };
   return POSTE_ALIAS[p] || p;
 }
 
@@ -5442,7 +5451,32 @@ function buildAvisCharts() {
     }
   });
 
-  // 7. Tableau détail avis AOUV — période sélectionnée
+  // 7. Taux d'approbation par poste (AOUV / total par poste)
+  const approEl = document.getElementById('avis-appro-list');
+  const approSubEl = document.getElementById('avis-appro-sub');
+  if (approSubEl) approSubEl.textContent = `AOUV / Total avis par poste — ${periodLabel}`;
+  if (approEl) {
+    const approData = AVIS_POSTES_INCLUS.map(p => {
+      const tot  = filtered.filter(r => r.poste === p).length;
+      const aouv = filtered.filter(r => r.poste === p && r.statutABR === 'AOUV').length;
+      return { poste: p, tot, aouv, taux: tot ? parseFloat((aouv/tot*100).toFixed(1)) : 0 };
+    }).filter(d => d.tot > 0).sort((a,b) => b.taux - a.taux);
+    if (!approData.length) {
+      approEl.innerHTML = '<p style="color:var(--muted);font-size:12px;padding:8px 0;">Aucune donnée.</p>';
+    } else {
+      approEl.innerHTML = approData.map(d => {
+        const col = d.taux >= 80 ? '#059669' : d.taux >= 50 ? '#d97706' : '#dc2626';
+        return `<div class="real-row">
+          <span class="real-poste">${d.poste}</span>
+          <div class="real-bar-wrap"><div class="real-bar-fill" style="width:${d.taux}%;background:${col};"></div></div>
+          <span class="real-pct" style="color:${col};">${d.taux}%</span>
+          <span class="real-counts">${d.aouv} / ${d.tot}</span>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // 8. Tableau détail avis AOUV — période sélectionnée
   const totalOpenFiltered = openFiltered.length;
   const tableSubEl = document.getElementById('avis-table-sub');
   if(tableSubEl) tableSubEl.textContent = `AOUV (${totalOpenFiltered} avis) — par corps de métier · ${periodLabel}`;
