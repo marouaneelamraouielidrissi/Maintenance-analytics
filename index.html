@@ -4627,9 +4627,10 @@ function buildPosteChart(canvasId, data) {
 
 function buildRealisationHtml(filteredData) {
   const EXCL = ['425-INCD','426-EXP','428-EXP','425-BDM'];
-  const posteList = [...new Set(filteredData.filter(r=>!EXCL.includes(r.poste)).map(r=>r.poste).filter(Boolean))].sort();
+  const isSopl = r => r.statutUtil.startsWith('SOPL') && r.statutUtil !== 'SOPL REPL';
+  const posteList = [...new Set(filteredData.filter(r=>!EXCL.includes(r.poste)&&isSopl(r)).map(r=>r.poste).filter(Boolean))].sort();
   const realData  = posteList.map(p=>{
-    const ots=filteredData.filter(r=>r.poste===p), done=ots.filter(isRealise).length;
+    const ots=filteredData.filter(r=>r.poste===p&&isSopl(r)), done=ots.filter(isRealise).length;
     return {poste:p, total:ots.length, done, taux:pctN(done,ots.length)};
   }).sort((a,b)=>b.taux-a.taux);
   if (!realData.length) return '<p style="color:var(--muted);font-size:12px;padding:8px 0;">Aucune donn\u00e9e.</p>';
