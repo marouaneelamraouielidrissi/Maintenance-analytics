@@ -3776,9 +3776,9 @@ td { padding: 9px 14px; vertical-align: middle; }
             <div class="kpi-sub">En cours (AOUV + AENC)</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-label">En Cours (AENC)</div>
-            <div class="kpi-value" style="color:var(--red);" id="avis-kpi-aenc">—</div>
-            <div class="kpi-sub">Avis en cours de traitement</div>
+            <div class="kpi-label">Taux d'approbation</div>
+            <div class="kpi-value" style="color:var(--green);" id="avis-kpi-taux-appro">—</div>
+            <div class="kpi-sub">AOUV / Total avis</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Ouverts (AOUV)</div>
@@ -4403,11 +4403,11 @@ const ALL_KPIS_DEF = [
     }
   },
   {
-    id: 'avis-aenc', label: 'Avis AENC (en cours)', icon: '🟠', color: '#dc2626', cat: 'Avis',
+    id: 'avis-taux-appro', label: "Taux d'approbation avis", icon: '✅', color: '#059669', cat: 'Avis',
     getValue() {
-      const v = document.getElementById('avis-kpi-aenc')?.textContent;
+      const v = document.getElementById('avis-kpi-taux-appro')?.textContent;
       if (!v || v === '—') return null;
-      return { value: v, sub: 'En cours de traitement' };
+      return { value: v, sub: 'AOUV / Total avis' };
     }
   },
   {
@@ -4510,7 +4510,7 @@ const KPI_CARD_MAP = {
   'avis-kpi-total':    'avis-total',
   'avis-kpi-ot':       'avis-avec-ot',
   'avis-kpi-ouverts':  'avis-ouvert',
-  'avis-kpi-aenc':     'avis-aenc',
+  'avis-kpi-taux-appro': 'avis-taux-appro',
   'avis-kpi-aouv':     'avis-aouv',
   'avis-kpi-plan':     'avis-plan',
   'kpi-caract':        'taux-caract',
@@ -5224,18 +5224,18 @@ function buildAvisCharts() {
   const total     = filtered.length;
   const avecOT    = filtered.filter(r=>r.ordre).length;
   const ouverts   = filtered.filter(r=>r.statutABR==='AOUV'||r.statutABR==='AENC').length;
-  const aenc      = filtered.filter(r=>r.statutABR==='AENC').length;
   const aouv      = filtered.filter(r=>r.statutABR==='AOUV').length;
   const aPlan     = filtered.filter(r=>r.aPlanifier).length;
   const txConv    = total ? ((avecOT/total)*100).toFixed(1)+'%' : '0.0%';
+  const txAppro   = total ? ((aouv/total)*100).toFixed(1)+'%' : '0.0%';
 
-  document.getElementById('avis-kpi-total').textContent   = total.toLocaleString('fr-FR');
-  document.getElementById('avis-kpi-ot').textContent      = avecOT.toLocaleString('fr-FR');
-  document.getElementById('avis-kpi-ot-pct').textContent  = txConv;
-  document.getElementById('avis-kpi-ouverts').textContent = ouverts.toLocaleString('fr-FR');
-  document.getElementById('avis-kpi-aenc').textContent    = aenc.toLocaleString('fr-FR');
-  document.getElementById('avis-kpi-aouv').textContent    = aouv.toLocaleString('fr-FR');
-  document.getElementById('avis-kpi-plan').textContent    = aPlan.toLocaleString('fr-FR');
+  document.getElementById('avis-kpi-total').textContent      = total.toLocaleString('fr-FR');
+  document.getElementById('avis-kpi-ot').textContent         = avecOT.toLocaleString('fr-FR');
+  document.getElementById('avis-kpi-ot-pct').textContent     = txConv;
+  document.getElementById('avis-kpi-ouverts').textContent    = ouverts.toLocaleString('fr-FR');
+  document.getElementById('avis-kpi-taux-appro').textContent = txAppro;
+  document.getElementById('avis-kpi-aouv').textContent       = aouv.toLocaleString('fr-FR');
+  document.getElementById('avis-kpi-plan').textContent       = aPlan.toLocaleString('fr-FR');
 
   // Sous-titre statut donut
   const subStatutEl = document.getElementById('avis-sub-statut');
