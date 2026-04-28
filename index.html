@@ -4207,15 +4207,46 @@ function normalizePoste(p) {
 function normalizeInstallation(objet) {
   if (!objet) return null;
   const o = objet.toString().trim();
-  for (let i = 1; i <= 7; i++) {
-    if (o.startsWith(`KL03-LA-CH0${i}`)) return `CHAINE ${i}`;
+  // Ordre : préfixes spécifiques avant préfixes génériques
+  const MAP = [
+    // Chaînes laverie
+    ['KL03-LA-CH01', 'CHAINE 1'], ['KL03-LA-CH02', 'CHAINE 2'], ['KL03-LA-CH03', 'CHAINE 3'],
+    ['KL03-LA-CH04', 'CHAINE 4'], ['KL03-LA-CH05', 'CHAINE 5'], ['KL03-LA-CH06', 'CHAINE 6'],
+    ['KL03-LA-CH07', 'CHAINE 7'],
+    // Axes tapis (KL03-LA-CMAT-* spécifiques avant le générique CMAT)
+    ['KL03-LA-CMAT-CONT16', 'AXE-T16-T17'], ['KL03-LA-CMAT-CONT17', 'AXE-T16-T17'],
+    ['KL03-LA-CMAT-JOYT16', 'AXE-T16-T17'], ['KL03-LA-CMAT-JOYT17', 'AXE-T16-T17'],
+    ['KL03-LA-CMAT-CONT20', 'AXE-T20-T21-T22-T23'], ['KL03-LA-CMAT-CONT21', 'AXE-T20-T21-T22-T23'],
+    ['KL03-LA-CMAT-CONT22', 'AXE-T20-T21-T22-T23'], ['KL03-LA-CMAT-CONT23', 'AXE-T20-T21-T22-T23'],
+    ['KL03-LA-CMAT-JOYT22', 'AXE-T20-T21-T22-T23'],
+    ['KL03-LA-CMAT-CONT26', 'AXE-T26-T27'], ['KL03-LA-CMAT-CONT27', 'AXE-T26-T27'],
+    ['KL03-LA-CMAT-JOYT27', 'AXE-T26-T27'],
+    ['KL03-LA-CMAT',  'MAT'],           // générique après spécifiques
+    ['KL03-LA-LAVE',  'CIRCUIT LAVE'],
+    ['KL03-LA-ALIM',  'COMMUN'],
+    // Axes pellets manutention (KL03-MA-PELW-* spécifiques)
+    ['KL03-MA-PELW-COLS10', 'COMMUN'],
+    ['KL03-MA-PELW-COLS11', 'ALIMENTATION'], ['KL03-MA-PELW-CONLS6', 'ALIMENTATION'],
+    ['KL03-MA-PELW-CONLS7', 'ALIMENTATION'], ['KL03-MA-PELW-CONLS8', 'ALIMENTATION'],
+    ['KL03-MA-PELW-CONLS9', 'ALIMENTATION'],
+    ['KL03-MA-PELW-CONH3A', 'AXE-H3'], ['KL03-MA-PELW-CONVH3', 'AXE-H3'],
+    ['KL03-MA-PELW-CONH3P', 'AXE-H3'], ['KL03-MA-PELW-EXTRE3', 'AXE-H3'],
+    ['KL03-MA-PELW-RPEL03', 'AXE-H3'], ['KL03-MA-PELW-TRMIE3', 'AXE-H3'],
+    ['KL03-MA-PELW-CONH5A', 'AXE-H5'], ['KL03-MA-PELW-CONH5P', 'AXE-H5'],
+    ['KL03-MA-PELW-EXTRE5', 'AXE-H5'], ['KL03-MA-PELW-RPEL05', 'AXE-H5'],
+    ['KL03-MA-PELW-CONVH5', 'AXE-H5'], ['KL03-MA-PELW-TRMIE5', 'AXE-H5'],
+    ['KL03-MA-PELW-CONVH4', 'AXE-H4'], ['KL03-MA-PELW-STH004', 'AXE-H4'],
+    ['KL03-MA-PELW-CONVH6', 'AXE-H6'], ['KL03-MA-PELW-STH006', 'AXE-H6'],
+    // Manutention divers
+    ['KL03-MA-LISC', 'LSC'], ['KL03-MA-CAT1', 'CAR T1'], ['KL03-MA-CAT2', 'CAR T2'],
+    ['KL03-MA-LITS', 'LITS'],
+    // Autres
+    ['KL03-AD', 'ADAPTATION'], ['KL03-DE', 'DECANTEURS'],
+    ['KL03-F1', 'UF1'],        ['KL03-F2', 'UF2'],
+  ];
+  for (const [prefix, name] of MAP) {
+    if (o.startsWith(prefix)) return name;
   }
-  if (o.startsWith('KL03-MA-LISC')) return 'LSC';
-  if (o.startsWith('KL03-MA-CAT1')) return 'CAR T1';
-  if (o.startsWith('KL03-MA-CAT2')) return 'CAR T2';
-  if (o.startsWith('KL03-LA-CMAT')) return 'MAT';
-  if (o.startsWith('KL03-AD'))      return 'ADAPTATION';
-  if (o.startsWith('KL03-DE'))      return 'DECANTEURS';
   return null;
 }
 
