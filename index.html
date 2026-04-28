@@ -4808,8 +4808,9 @@ function buildInstallVolumeTable(filtered, elId) {
   // Lignes : un poste par ligne
   const tbody = postes.map(p => {
     const cells = installs.map(inst => {
-      const v = groups[inst][p] || 0;
-      return `<td style="${tdStyle}${v ? 'color:var(--blue);font-weight:700;' : 'color:var(--muted);'}">${v || '—'}</td>`;
+      const v = (groups[inst] && groups[inst][p]) || 0;
+      const col = v === 0 ? '#dc2626' : v < 5 ? '#d97706' : 'var(--blue)';
+      return `<td style="${tdStyle}color:${col};font-weight:700;">${v}</td>`;
     }).join('');
     return `<tr style="border-bottom:1px solid var(--border);">
       <td style="${tdFirst}">${p}</td>
