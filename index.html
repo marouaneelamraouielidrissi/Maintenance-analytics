@@ -2107,6 +2107,14 @@ td { padding: 9px 14px; vertical-align: middle; }
   <!-- Filtres -->
   <div class="pc-filters" id="pc-filters" style="display:none;">
     <div class="pc-filter-group">
+      <label>Secteur</label>
+      <select class="pc-select" id="pf-secteur" onchange="applyOTFilters()">
+        <option value="">Tous</option>
+        <option value="manutention">Manutention</option>
+        <option value="laverie">Laverie</option>
+      </select>
+    </div>
+    <div class="pc-filter-group">
       <label>Poste de travail</label>
       <select class="pc-select" id="pf-poste" onchange="applyOTFilters()">
         <option value="">Tous</option>
@@ -8406,6 +8414,7 @@ function populateOTFilters(rows) {
 }
 
 function applyOTFilters() {
+  const secteur    = document.getElementById('pf-secteur')?.value || '';
   const poste      = document.getElementById('pf-poste').value;
   const type       = document.getElementById('pf-type').value;
   const date       = document.getElementById('pf-date').value;
@@ -8415,6 +8424,7 @@ function applyOTFilters() {
   const sfVal      = sfValEl ? sfValEl.value.trim().toLowerCase() : '';
 
   const filtered = currentWeekOT.filter(row => {
+    if (secteur && normStr(row.secteur) !== secteur) return false;
     if (poste && row.poste !== poste) return false;
     if (type  && row.type  !== type)  return false;
     if (date  && localDateStr(row.debut) !== date) return false;
@@ -8426,6 +8436,8 @@ function applyOTFilters() {
 }
 
 function resetOTFilters() {
+  const secEl = document.getElementById('pf-secteur');
+  if (secEl) secEl.value = '';
   document.getElementById('pf-poste').value = '';
   document.getElementById('pf-type').value  = '';
   document.getElementById('pf-date').value  = '';
