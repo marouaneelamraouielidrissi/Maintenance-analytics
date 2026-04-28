@@ -4703,26 +4703,21 @@ function buildInstallVolumeTable(filtered, elId) {
   const el = document.getElementById(elId);
   if (!el) return;
 
-  // Installations programmées dans le calendrier des arrêts pour la période
+  // Installations programmées dans ARRETS_DATA pour la période (chargé au démarrage)
   let calFiltered = [];
-  if (typeof _caData !== 'undefined' && _caData.length) {
+  if (typeof ARRETS_DATA !== 'undefined' && ARRETS_DATA.length) {
     if (currentMode === 'month') {
       const mo = parseInt(document.getElementById('month-select').value);
       const yr = parseInt(document.getElementById('year-select').value);
-      const prefix = `${yr}-${String(mo + 1).padStart(2, '0')}`;
-      calFiltered = _caData.filter(r => r.date && r.date.startsWith(prefix));
+      calFiltered = ARRETS_DATA.filter(r => r.annee === yr && new Date(r.date).getMonth() === mo);
     } else if (currentMode === 'year') {
       const yr = parseInt(document.getElementById('year-only-select').value);
-      calFiltered = _caData.filter(r => r.date && r.date.startsWith(`${yr}-`));
+      calFiltered = ARRETS_DATA.filter(r => r.annee === yr);
     } else if (currentMode === 'week') {
       const wVal = document.getElementById('week-select').value;
       const [wyStr, wkStr] = wVal.split('-W');
       const wYear = parseInt(wyStr), wNum = parseInt(wkStr);
-      calFiltered = _caData.filter(r => {
-        if (!r.date) return false;
-        const d = new Date(r.date);
-        return getISOWeek(d) === wNum && getISOWeekYear(d) === wYear;
-      });
+      calFiltered = ARRETS_DATA.filter(r => r.annee === wYear && parseInt(r.semaine) === wNum);
     }
   }
 
