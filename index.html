@@ -4966,7 +4966,7 @@ function generateReport() {
   // Réalisation par poste — Manutention (KL03-MA) / Laverie
   document.getElementById('realisation-poste-manut-list').innerHTML = buildRealisationHtml(filtered.filter(r=>r.secteur==='manutention'));
   document.getElementById('realisation-poste-lav-list').innerHTML   = buildRealisationHtml(filtered.filter(r=>r.secteur==='laverie'));
-  buildInstallVolumeTable(filtered, 'ot-install-volume-table');
+  try { buildInstallVolumeTable(filtered, 'ot-install-volume-table'); } catch(e) { console.error('buildInstallVolumeTable error:', e); }
 
   // Charts multi-mois
   const mKeys=[...new Set(getBaseData().filter(r=>r.debut).map(r=>{const d=r.debut;return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}))].sort();
@@ -5093,7 +5093,7 @@ function generateAnnualReport() {
   // Réalisation par poste — Manutention / Laverie (annuel)
   document.getElementById('ann-realisation-poste-manut-list').innerHTML = buildRealisationHtml(filtered.filter(r=>r.secteur==='manutention'));
   document.getElementById('ann-realisation-poste-lav-list').innerHTML   = buildRealisationHtml(filtered.filter(r=>r.secteur==='laverie'));
-  buildInstallVolumeTable(filtered, 'ann-ot-install-volume-table');
+  try { buildInstallVolumeTable(filtered, 'ann-ot-install-volume-table'); } catch(e) { console.error('buildInstallVolumeTable error:', e); }
 
   // ── KPI & graphique arrêts préventifs pour l'année sélectionnée ──
   if(charts['ann-chart-arrets-evolution']){charts['ann-chart-arrets-evolution'].destroy();delete charts['ann-chart-arrets-evolution'];}
@@ -6663,7 +6663,7 @@ function generateWeeklyReport() {
   // Réalisation par poste — Manutention / Laverie (hebdo)
   document.getElementById('realisation-poste-manut-list').innerHTML = buildRealisationHtml(filtered.filter(r=>r.secteur==='manutention'));
   document.getElementById('realisation-poste-lav-list').innerHTML   = buildRealisationHtml(filtered.filter(r=>r.secteur==='laverie'));
-  buildInstallVolumeTable(filtered, 'ot-install-volume-table');
+  try { buildInstallVolumeTable(filtered, 'ot-install-volume-table'); } catch(e) { console.error('buildInstallVolumeTable error:', e); }
 
   // Évolution sur les 10 dernières semaines
   const wKeys=[], wLbls=[];
