@@ -4717,7 +4717,7 @@ function buildInstallVolumeTable(filtered, elId) {
       const wVal = document.getElementById('week-select').value;
       const [wyStr, wkStr] = wVal.split('-W');
       const wYear = parseInt(wyStr), wNum = parseInt(wkStr);
-      calFiltered = ARRETS_DATA.filter(r => r.annee === wYear && parseInt(r.semaine) === wNum);
+      calFiltered = ARRETS_DATA.filter(r => r.annee === wYear && parseInt(r.semaine.toString().replace(/^S/i,'')) === wNum);
     }
   }
 
