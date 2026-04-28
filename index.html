@@ -4161,7 +4161,7 @@ async function _autoLoadSAPdirect(msgEl) {
 
 // Normalisation des postes de travail : alias → poste canonique
 function normalizePoste(p) {
-  const POSTE_ALIAS = { '421-CHAU': '421-MEC' };
+  const POSTE_ALIAS = { '421-CHAU': '421-MEC', '421-GRAI': '421-MEC' };
   return POSTE_ALIAS[p] || p;
 }
 
@@ -4614,7 +4614,7 @@ function parseFR(s)   { const[d,m,y]=s.split('/'); return new Date(`${y}-${m}-${
 function destroyCharts(){ Object.values(charts).forEach(c=>c.destroy()); charts={}; }
 
 function buildPosteChart(canvasId, data) {
-  const EXCL_P = ['425-INCD','426-EXP','428-EXP','421-GRAI','425-BDM'];
+  const EXCL_P = ['425-INCD','426-EXP','428-EXP','425-BDM'];
   const pC={};
   data.filter(r =>
     !EXCL_P.includes(r.poste) &&
@@ -4626,7 +4626,7 @@ function buildPosteChart(canvasId, data) {
 }
 
 function buildRealisationHtml(filteredData) {
-  const EXCL = ['425-INCD','426-EXP','428-EXP','421-GRAI','425-BDM'];
+  const EXCL = ['425-INCD','426-EXP','428-EXP','425-BDM'];
   const posteList = [...new Set(filteredData.filter(r=>!EXCL.includes(r.poste)).map(r=>r.poste).filter(Boolean))].sort();
   const realData  = posteList.map(p=>{
     const ots=filteredData.filter(r=>r.poste===p), done=ots.filter(isRealise).length;
@@ -4802,7 +4802,7 @@ function generateAnnualReport() {
   const yr = parseInt(document.getElementById('year-only-select').value);
   const filtered = getBaseData().filter(r=>r.debut&&r.debut.getFullYear()===yr);
   const total    = filtered.length;
-  const EXCLUDED_POSTES = ['425-INCD','426-EXP','428-EXP','421-GRAI','425-BDM'];
+  const EXCLUDED_POSTES = ['425-INCD','426-EXP','428-EXP','425-BDM'];
 
   const realise    = filtered.filter(isRealise).length;
   const lancOnly   = filtered.filter(r=>r.statutSys.includes('LANC')&&!r.statutSys.includes('CONF')&&!r.statutSys.includes('TCLO')).length;
@@ -5554,7 +5554,7 @@ function generatePrintableReport() {
   const now = new Date();
   const dateGen = now.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})
                +' '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  const EXCLUDED_POSTES = ['425-INCD','426-EXP','428-EXP','421-GRAI','425-BDM'];
+  const EXCLUDED_POSTES = ['425-INCD','426-EXP','428-EXP','425-BDM'];
 
   // ── Helpers SVG inline ──
   function tagColor(v) { return v>=80?'tag-green':v>=50?'tag-amber':'tag-red'; }
@@ -6037,12 +6037,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
     <div class="card">
       <div class="chart-title">Volume OT — Manutention</div>
       <div class="chart-sub">Obj. technique commence par KL03-MA — ${periodLabel}</div>
-      <div style="margin-top:8px;">${(()=>{const m={};filtered.filter(r=>r.secteur==='manutention'&&r.poste&&!['425-INCD','426-EXP','428-EXP','421-GRAI','425-BDM'].includes(r.poste)).forEach(r=>{m[r.poste]=(m[r.poste]||0)+1;});const s=Object.entries(m).sort((a,b)=>b[1]-a[1]);const mx=s[0]?.[1]||1;return s.slice(0,6).map(([p,v])=>`<div class="bar-row"><span class="bar-label">${p}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/mx*100).toFixed(1)}%;background:rgba(29,78,216,0.75);"></div></div><span class="bar-cnt">${v}</span></div>`).join('');})()}</div>
+      <div style="margin-top:8px;">${(()=>{const m={};filtered.filter(r=>r.secteur==='manutention'&&r.poste&&!['425-INCD','426-EXP','428-EXP','425-BDM'].includes(r.poste)).forEach(r=>{m[r.poste]=(m[r.poste]||0)+1;});const s=Object.entries(m).sort((a,b)=>b[1]-a[1]);const mx=s[0]?.[1]||1;return s.slice(0,6).map(([p,v])=>`<div class="bar-row"><span class="bar-label">${p}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/mx*100).toFixed(1)}%;background:rgba(29,78,216,0.75);"></div></div><span class="bar-cnt">${v}</span></div>`).join('');})()}</div>
     </div>
     <div class="card">
       <div class="chart-title">Volume OT — Laverie</div>
       <div class="chart-sub">Obj. technique différent de KL03-MA — ${periodLabel}</div>
-      <div style="margin-top:8px;">${(()=>{const m={};filtered.filter(r=>r.secteur==='laverie'&&r.poste&&!['425-INCD','426-EXP','428-EXP','421-GRAI','425-BDM'].includes(r.poste)).forEach(r=>{m[r.poste]=(m[r.poste]||0)+1;});const s=Object.entries(m).sort((a,b)=>b[1]-a[1]);const mx=s[0]?.[1]||1;return s.slice(0,6).map(([p,v])=>`<div class="bar-row"><span class="bar-label">${p}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/mx*100).toFixed(1)}%;background:rgba(16,185,129,0.75);"></div></div><span class="bar-cnt">${v}</span></div>`).join('');})()}</div>
+      <div style="margin-top:8px;">${(()=>{const m={};filtered.filter(r=>r.secteur==='laverie'&&r.poste&&!['425-INCD','426-EXP','428-EXP','425-BDM'].includes(r.poste)).forEach(r=>{m[r.poste]=(m[r.poste]||0)+1;});const s=Object.entries(m).sort((a,b)=>b[1]-a[1]);const mx=s[0]?.[1]||1;return s.slice(0,6).map(([p,v])=>`<div class="bar-row"><span class="bar-label">${p}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/mx*100).toFixed(1)}%;background:rgba(16,185,129,0.75);"></div></div><span class="bar-cnt">${v}</span></div>`).join('');})()}</div>
     </div>
   </div>
   <div class="page-num">2 / ${totalPages}</div>
@@ -6320,7 +6320,7 @@ function generateWeeklyReport() {
     r.debut && getISOWeek(r.debut) === wNum && getISOWeekYear(r.debut) === wYear
   );
   const total     = filtered.length;
-  const EXCLUDED_POSTES = ['425-INCD','426-EXP','428-EXP','421-GRAI','425-BDM'];
+  const EXCLUDED_POSTES = ['425-INCD','426-EXP','428-EXP','425-BDM'];
 
   const realise   = filtered.filter(isRealise).length;
   const lancOnly  = filtered.filter(r=>r.statutSys.includes('LANC')&&!r.statutSys.includes('CONF')&&!r.statutSys.includes('TCLO')).length;
