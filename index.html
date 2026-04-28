@@ -4728,14 +4728,16 @@ function buildInstallVolumeTable(filtered, elId) {
     return;
   }
 
-  // Regrouper OTs par installation × poste
-  const groups = {};
+  // Garder uniquement les OTs dont l'objet appartient à une installation programmée
+  // Colonnes = Obj. technique (r.objet), Lignes = corps de métier (r.poste)
+  const groups = {}; // { objet: { poste: count } }
   filtered.forEach(r => {
+    if (!r.objet) return;
     const install = normalizeInstallation(r.objet);
     if (!install || !programmedInstalls.has(install)) return;
     const poste = r.poste || '—';
-    if (!groups[install]) groups[install] = {};
-    groups[install][poste] = (groups[install][poste] || 0) + 1;
+    if (!groups[r.objet]) groups[r.objet] = { _install: install };
+    groups[r.objet][poste] = (groups[r.objet][poste] || 0) + 1;
   });
 
   if (!Object.keys(groups).length) {
@@ -4743,41 +4745,64 @@ function buildInstallVolumeTable(filtered, elId) {
     return;
   }
 
-  // Installations (colonnes) triées, postes (lignes) triés
-  const installs = Object.keys(groups).sort();
+  // Obj. technique (colonnes) groupés par installation, postes (lignes) triés
+  const objets = Object.keys(groups).sort();
   const postesSet = new Set();
-  installs.forEach(inst => Object.keys(groups[inst]).forEach(p => postesSet.add(p)));
+  objets.forEach(obj => Object.keys(groups[obj]).filter(k => k !== '_install').forEach(p => postesSet.add(p)));
   const postes = [...postesSet].sort();
 
-  // Totaux par installation et par poste
-  const totalByInstall = {};
-  installs.forEach(inst => {
-    totalByInstall[inst] = Object.values(groups[inst]).reduce((s, v) => s + v, 0);
+  // Totaux par objet et par poste
+  const totalByObj = {};
+  objets.forEach(obj => {
+    totalByObj[obj] = Object.entries(groups[obj]).filter(([k]) => k !== '_install').reduce((s, [, v]) => s + v, 0);
   });
   const totalByPoste = {};
   postes.forEach(p => {
-    totalByPoste[p] = installs.reduce((s, inst) => s + (groups[inst][p] || 0), 0);
+    totalByPoste[p] = objets.reduce((s, obj) => s + (groups[obj][p] || 0), 0);
   });
   const grandTotal = postes.reduce((s, p) => s + totalByPoste[p], 0);
 
-  const thStyle = `padding:7px 10px;text-align:center;font-weight:600;color:var(--text2);font-size:11.5px;`;
-  const thFirst = `padding:7px 12px;text-align:left;font-weight:600;color:var(--text2);font-size:11.5px;`;
-  const tdStyle = `padding:7px 10px;text-align:center;font-size:12.5px;`;
-  const tdFirst = `padding:7px 12px;text-align:left;font-size:12.5px;font-weight:600;color:var(--text);`;
+  const thStyle = `padding:6px 8px;text-align:center;font-weight:600;color:var(--text2);font-size:11px;white-space:nowrap;`;
+  const thFirst = `padding:6px 12px;text-align:left;font-weight:600;color:var(--text2);font-size:11.5px;`;
+  const tdStyle = `padding:6px 8px;text-align:center;font-size:12px;`;
+  const tdFirst = `padding:6px 12px;text-align:left;font-size:12px;font-weight:600;color:var(--text);`;
 
-  // En-tête : Corps de Métier | install1 | install2 | … | Total
-  let thead = `<tr style="background:var(--bg);border-bottom:2px solid var(--border);">
-    <th style="${thFirst}">Corps de Métier</th>
-    ${installs.map(inst => `<th style="${thStyle}">${inst}<br><small style="color:var(--muted);font-weight:400;">${totalByInstall[inst]}</small></th>`).join('')}
-    <th style="${thStyle}border-left:2px solid var(--border);">Total</th>
-  </tr>`;
+  // Ligne 1 en-tête : installation groupée (rowspan si plusieurs objets par installation)
+  const installGroups = {};
+  objets.forEach(obj => {
+    const inst = groups[obj]._install;
+    if (!installGroups[inst]) installGroups[inst] = [];
+    installGroups[inst].push(obj);
+  });
+  // Trier les installations selon l'ordre d'apparition dans objets
+  const installOrder = [...new Set(objets.map(obj => groups[obj]._install))];
 
-  // Lignes : un poste par ligne
+  let theadRow1 = `<th style="${thFirst}" rowspan="2">Corps de Métier</th>`;
+  installOrder.forEach(inst => {
+    const span = installGroups[inst].length;
+    const instTotal = installGroups[inst].reduce((s, obj) => s + totalByObj[obj], 0);
+    theadRow1 += `<th style="${thStyle}border-left:2px solid var(--border);background:var(--blue-lt);color:var(--blue);" colspan="${span}">${inst}<br><small style="font-weight:400;">${instTotal} OT</small></th>`;
+  });
+  theadRow1 += `<th style="${thStyle}border-left:2px solid var(--border);" rowspan="2">Total</th>`;
+
+  let theadRow2 = '';
+  installOrder.forEach((inst, iIdx) => {
+    installGroups[inst].forEach((obj, oIdx) => {
+      const borderL = oIdx === 0 ? 'border-left:2px solid var(--border);' : '';
+      theadRow2 += `<th style="${thStyle}${borderL}font-weight:500;">${obj}<br><small style="color:var(--muted);font-weight:400;">${totalByObj[obj]}</small></th>`;
+    });
+  });
+
+  // Lignes
   let tbody = postes.map(p => {
-    const cells = installs.map(inst => {
-      const v = groups[inst][p] || 0;
-      return `<td style="${tdStyle}${v ? 'color:var(--blue);font-weight:700;' : 'color:var(--muted);'}">${v || '—'}</td>`;
-    }).join('');
+    let cells = '';
+    installOrder.forEach((inst, iIdx) => {
+      installGroups[inst].forEach((obj, oIdx) => {
+        const v = groups[obj][p] || 0;
+        const borderL = oIdx === 0 ? 'border-left:2px solid var(--border);' : '';
+        cells += `<td style="${tdStyle}${borderL}${v ? 'color:var(--blue);font-weight:700;' : 'color:var(--muted);'}">${v || '—'}</td>`;
+      });
+    });
     return `<tr style="border-bottom:1px solid var(--border);">
       <td style="${tdFirst}">${p}</td>
       ${cells}
@@ -4786,14 +4811,24 @@ function buildInstallVolumeTable(filtered, elId) {
   }).join('');
 
   // Ligne total
+  let totalCells = '';
+  installOrder.forEach((inst, iIdx) => {
+    installGroups[inst].forEach((obj, oIdx) => {
+      const borderL = oIdx === 0 ? 'border-left:2px solid var(--border);' : '';
+      totalCells += `<td style="${tdStyle}${borderL}font-weight:700;color:var(--text);">${totalByObj[obj]}</td>`;
+    });
+  });
   const totalRow = `<tr style="background:var(--bg);border-top:2px solid var(--border);">
     <td style="${tdFirst}color:var(--text2);">Total</td>
-    ${installs.map(inst => `<td style="${tdStyle}font-weight:700;color:var(--text);">${totalByInstall[inst]}</td>`).join('')}
+    ${totalCells}
     <td style="${tdStyle}border-left:2px solid var(--border);font-weight:700;color:var(--blue);">${grandTotal}</td>
   </tr>`;
 
-  el.innerHTML = `<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12.5px;">
-    <thead>${thead}</thead>
+  el.innerHTML = `<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12px;">
+    <thead>
+      <tr style="background:var(--bg);border-bottom:1px solid var(--border);">${theadRow1}</tr>
+      <tr style="background:var(--bg);border-bottom:2px solid var(--border);">${theadRow2}</tr>
+    </thead>
     <tbody>${tbody}${totalRow}</tbody>
   </table></div>`;
 }
