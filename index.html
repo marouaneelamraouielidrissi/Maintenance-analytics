@@ -4619,7 +4619,7 @@ function buildPosteChart(canvasId, data) {
   data.filter(r =>
     !EXCL_P.includes(r.poste) &&
     (r.statutSys.startsWith('LANC') || r.statutSys.startsWith('TCLO') || r.statutSys.startsWith('CLOT')) &&
-    !(r.statutUtil.startsWith('SOPL') && r.statutUtil !== 'SOPL REPL')
+    (r.statutUtil.startsWith('SOPL') && r.statutUtil !== 'SOPL REPL')
   ).forEach(r=>{if(r.poste)pC[r.poste]=(pC[r.poste]||0)+1;});
   const pS=Object.entries(pC).sort((a,b)=>b[1]-a[1]);
   buildHBar(canvasId, pS.map(e=>e[0]), pS.map(e=>e[1]));
