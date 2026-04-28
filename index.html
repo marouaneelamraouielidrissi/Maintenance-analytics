@@ -5176,20 +5176,30 @@ function buildAvisCharts() {
   document.getElementById('avis-no-data').style.display  = 'none';
   document.getElementById('avis-content').style.display  = '';
 
-  // ── Filtrage selon mode (mois ou année) ──
+  // ── Filtrage selon mode — utilise dateDebut (toujours présent) ──
   let filtered, periodLabel, evolTitle, evolSub, isMonthMode;
+  const avisDate = r => r.dateDebut || r.creeLe;
 
   if (currentMode === 'month') {
     const mo = parseInt(document.getElementById('month-select').value);
     const yr = parseInt(document.getElementById('year-select').value);
-    filtered = avisData.filter(r => r.creeLe && r.creeLe.getMonth()===mo && r.creeLe.getFullYear()===yr);
+    filtered = avisData.filter(r => { const d=avisDate(r); return d && d.getMonth()===mo && d.getFullYear()===yr; });
     periodLabel = `${MONTHS_FR[mo]} ${yr}`;
     isMonthMode = true;
-    evolTitle = `Avis créés en ${MONTHS_FR[mo]} ${yr} — par jour`;
+    evolTitle = `Avis — ${MONTHS_FR[mo]} ${yr} — par jour`;
+    evolSub   = `Volume quotidien · distinction par statut`;
+  } else if (currentMode === 'week') {
+    const wVal = document.getElementById('week-select').value;
+    const [wyStr, wkStr] = wVal.split('-W');
+    const wYear = parseInt(wyStr), wNum = parseInt(wkStr);
+    filtered = avisData.filter(r => { const d=avisDate(r); return d && getISOWeek(d)===wNum && getISOWeekYear(d)===wYear; });
+    periodLabel = `Semaine ${wNum} ${wYear}`;
+    isMonthMode = true;
+    evolTitle = `Avis — Semaine ${wNum} ${wYear} — par jour`;
     evolSub   = `Volume quotidien · distinction par statut`;
   } else {
     const yr = parseInt(document.getElementById('year-only-select').value);
-    filtered = avisData.filter(r => r.creeLe && r.creeLe.getFullYear()===yr);
+    filtered = avisData.filter(r => { const d=avisDate(r); return d && d.getFullYear()===yr; });
     periodLabel = `Année ${yr}`;
     isMonthMode = false;
     evolTitle = `Évolution mensuelle des Avis — ${yr}`;
