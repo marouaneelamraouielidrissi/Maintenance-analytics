@@ -4770,23 +4770,20 @@ function buildInstallVolumeTable(filtered, elId) {
     groups[install][poste] = (groups[install][poste] || 0) + 1;
   });
 
+  // Postes de travail fixes (toujours affichés, même sans OT)
+  const POSTES_FIXES = ['421-MEC', '421-INST', '423-ELEC', '423-REG'];
+
   // Fonction de rendu d'un tableau pour un secteur donné
   function renderSectTable(installSet) {
     const installs = [...installSet].sort();
     if (!installs.length) return '<p style="color:var(--muted);font-size:12px;padding:12px 0;">Aucune installation programmée.</p>';
 
-    const postesSet = new Set();
-    installs.forEach(inst => { if (groups[inst]) Object.keys(groups[inst]).forEach(p => postesSet.add(p)); });
-    const postes = [...postesSet].sort();
+    const postes = POSTES_FIXES;
 
     const totalByInstall = {};
     installs.forEach(inst => {
       totalByInstall[inst] = groups[inst] ? Object.values(groups[inst]).reduce((s, v) => s + v, 0) : 0;
     });
-
-    if (!postes.length) {
-      return `<p style="color:var(--muted);font-size:12px;padding:12px 0;">Installations : ${installs.join(', ')} — aucun OT dans la période.</p>`;
-    }
 
     const totalByPoste = {};
     postes.forEach(p => {
