@@ -4743,31 +4743,59 @@ function buildInstallVolumeTable(filtered, elId) {
     return;
   }
 
-  // Construire les lignes avec rowspan pour l'installation
-  let rows = '';
-  Object.keys(groups).sort().forEach(install => {
-    const postes = Object.entries(groups[install]).sort((a, b) => b[1] - a[1]);
-    const total  = postes.reduce((s, [, v]) => s + v, 0);
-    postes.forEach(([poste, count], i) => {
-      rows += `<tr style="border-bottom:1px solid var(--border);">
-        ${i === 0 ? `<td style="padding:8px 12px;font-weight:600;color:var(--text);vertical-align:middle;border-right:1px solid var(--border);" rowspan="${postes.length}">
-          ${install}<br><small style="color:var(--muted);font-weight:400;">Total : ${total}</small></td>` : ''}
-        <td style="padding:8px 12px;color:var(--text2);">${poste}</td>
-        <td style="padding:8px 12px;text-align:center;font-weight:700;color:var(--blue);">${count}</td>
-      </tr>`;
-    });
-  });
+  // Installations (colonnes) triées, postes (lignes) triés
+  const installs = Object.keys(groups).sort();
+  const postesSet = new Set();
+  installs.forEach(inst => Object.keys(groups[inst]).forEach(p => postesSet.add(p)));
+  const postes = [...postesSet].sort();
 
-  el.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:12.5px;">
-    <thead>
-      <tr style="background:var(--bg);border-bottom:2px solid var(--border);">
-        <th style="padding:8px 12px;text-align:left;font-weight:600;color:var(--text2);">Installation</th>
-        <th style="padding:8px 12px;text-align:left;font-weight:600;color:var(--text2);">Corps de Métier</th>
-        <th style="padding:8px 12px;text-align:center;font-weight:600;color:var(--text2);">Nb OT</th>
-      </tr>
-    </thead>
-    <tbody>${rows}</tbody>
-  </table>`;
+  // Totaux par installation et par poste
+  const totalByInstall = {};
+  installs.forEach(inst => {
+    totalByInstall[inst] = Object.values(groups[inst]).reduce((s, v) => s + v, 0);
+  });
+  const totalByPoste = {};
+  postes.forEach(p => {
+    totalByPoste[p] = installs.reduce((s, inst) => s + (groups[inst][p] || 0), 0);
+  });
+  const grandTotal = postes.reduce((s, p) => s + totalByPoste[p], 0);
+
+  const thStyle = `padding:7px 10px;text-align:center;font-weight:600;color:var(--text2);font-size:11.5px;`;
+  const thFirst = `padding:7px 12px;text-align:left;font-weight:600;color:var(--text2);font-size:11.5px;`;
+  const tdStyle = `padding:7px 10px;text-align:center;font-size:12.5px;`;
+  const tdFirst = `padding:7px 12px;text-align:left;font-size:12.5px;font-weight:600;color:var(--text);`;
+
+  // En-tête : Corps de Métier | install1 | install2 | … | Total
+  let thead = `<tr style="background:var(--bg);border-bottom:2px solid var(--border);">
+    <th style="${thFirst}">Corps de Métier</th>
+    ${installs.map(inst => `<th style="${thStyle}">${inst}<br><small style="color:var(--muted);font-weight:400;">${totalByInstall[inst]}</small></th>`).join('')}
+    <th style="${thStyle}border-left:2px solid var(--border);">Total</th>
+  </tr>`;
+
+  // Lignes : un poste par ligne
+  let tbody = postes.map(p => {
+    const cells = installs.map(inst => {
+      const v = groups[inst][p] || 0;
+      return `<td style="${tdStyle}${v ? 'color:var(--blue);font-weight:700;' : 'color:var(--muted);'}">${v || '—'}</td>`;
+    }).join('');
+    return `<tr style="border-bottom:1px solid var(--border);">
+      <td style="${tdFirst}">${p}</td>
+      ${cells}
+      <td style="${tdStyle}border-left:2px solid var(--border);font-weight:700;color:var(--text);">${totalByPoste[p]}</td>
+    </tr>`;
+  }).join('');
+
+  // Ligne total
+  const totalRow = `<tr style="background:var(--bg);border-top:2px solid var(--border);">
+    <td style="${tdFirst}color:var(--text2);">Total</td>
+    ${installs.map(inst => `<td style="${tdStyle}font-weight:700;color:var(--text);">${totalByInstall[inst]}</td>`).join('')}
+    <td style="${tdStyle}border-left:2px solid var(--border);font-weight:700;color:var(--blue);">${grandTotal}</td>
+  </tr>`;
+
+  el.innerHTML = `<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+    <thead>${thead}</thead>
+    <tbody>${tbody}${totalRow}</tbody>
+  </table></div>`;
 }
 
 function generateReport() {
