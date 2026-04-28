@@ -4797,7 +4797,7 @@ function buildInstallVolumeTable(filtered, elId) {
   });
   const totalByPoste = {};
   postes.forEach(p => {
-    totalByPoste[p] = installs.reduce((s, inst) => s + (groups[inst][p] || 0), 0);
+    totalByPoste[p] = installs.reduce((s, inst) => s + ((groups[inst] && groups[inst][p]) || 0), 0);
   });
   const grandTotal = postes.reduce((s, p) => s + totalByPoste[p], 0);
 
