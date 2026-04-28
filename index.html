@@ -3842,7 +3842,7 @@ td { padding: 9px 14px; vertical-align: middle; }
         <div class="chart-card">
           <div class="chart-card-hdr"><div>
             <div class="chart-card-title">Avis Non Clôturés par Corps de Métier</div>
-            <div class="chart-card-sub">AOUV + AENC répartis par poste de travail</div>
+            <div class="chart-card-sub">Avis ouverts (AOUV) répartis par poste de travail — période sélectionnée</div>
           </div></div>
           <div style="height:220px;"><canvas id="chart-avis-open-secteur"></canvas></div>
         </div>
@@ -3860,9 +3860,7 @@ td { padding: 9px 14px; vertical-align: middle; }
               <tr style="background:var(--bg);border-bottom:2px solid var(--border);">
                 <th style="padding:10px 14px;text-align:left;font-weight:600;color:var(--text2);">Corps de Métier</th>
                 <th style="padding:10px 14px;text-align:center;font-weight:600;color:var(--amber);">AOUV</th>
-                <th style="padding:10px 14px;text-align:center;font-weight:600;color:var(--red);">AENC</th>
-                <th style="padding:10px 14px;text-align:center;font-weight:600;color:var(--text);">Total</th>
-                <th style="padding:10px 14px;text-align:left;font-weight:600;color:var(--text2);">Part des ouverts</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:600;color:var(--text2);">Part</th>
               </tr>
             </thead>
             <tbody id="avis-table-body"></tbody>
@@ -5374,28 +5372,21 @@ function buildAvisCharts() {
     }
   });
 
-  // 6. Avis non clôturés par poste — uniquement les 5 postes autorisés, sur la totalité des données
-  const openRows    = avisData.filter(r=>r.statutABR==='AOUV'||r.statutABR==='AENC');
-  const openFiltered = openRows.filter(r=>AVIS_POSTES_INCLUS.includes(r.poste));
+  // 6. Avis AOUV par poste — filtrés sur la période sélectionnée
+  const openFiltered = filtered.filter(r=>r.statutABR==='AOUV' && AVIS_POSTES_INCLUS.includes(r.poste));
   const openByPoste = {};
-  // Initialiser tous les postes à 0 pour garder l'ordre fixe
-  AVIS_POSTES_INCLUS.forEach(p=>{ openByPoste[p]={aouv:0,aenc:0}; });
-  openFiltered.forEach(r=>{
-    if(r.statutABR==='AOUV') openByPoste[r.poste].aouv++;
-    else                     openByPoste[r.poste].aenc++;
-  });
-  // Trier par total décroissant, exclure les postes à zéro
+  AVIS_POSTES_INCLUS.forEach(p=>{ openByPoste[p]=0; });
+  openFiltered.forEach(r=>{ openByPoste[r.poste]++; });
   const openSorted = Object.entries(openByPoste)
-    .filter(([,v])=>v.aouv+v.aenc>0)
-    .sort((a,b)=>(b[1].aouv+b[1].aenc)-(a[1].aouv+a[1].aenc));
+    .filter(([,v])=>v>0)
+    .sort((a,b)=>b[1]-a[1]);
 
   charts['chart-avis-open-secteur'] = new Chart(document.getElementById('chart-avis-open-secteur').getContext('2d'),{
     type:'bar',
     data:{
       labels: openSorted.map(e=>e[0]),
       datasets:[
-        {label:'AOUV (Ouvert)',   data:openSorted.map(e=>e[1].aouv), backgroundColor:'rgba(217,119,6,0.78)',  borderRadius:4, borderSkipped:false},
-        {label:'AENC (En cours)', data:openSorted.map(e=>e[1].aenc), backgroundColor:'rgba(220,38,38,0.78)',  borderRadius:4, borderSkipped:false},
+        {label:'AOUV (Ouvert)', data:openSorted.map(e=>e[1]), backgroundColor:'rgba(217,119,6,0.78)', borderRadius:4, borderSkipped:false},
       ]
     },
     options:{
@@ -5406,8 +5397,8 @@ function buildAvisCharts() {
       },
       plugins:{
         ...CD.plugins,
-        legend:{display:true,position:'top',labels:{color:'#4a5568',font:{family:'Inter',size:11},usePointStyle:true,pointStyleWidth:8,padding:16}},
-        tooltip:{...CD.plugins.tooltip,callbacks:{label:ctx=>` ${ctx.dataset.label} : ${ctx.parsed.y} avis`}}
+        legend:{display:false},
+        tooltip:{...CD.plugins.tooltip,callbacks:{label:ctx=>` AOUV : ${ctx.parsed.y} avis`}}
       },
       animation:{onComplete:function(){
         const chart=this,ctx=chart.ctx;
@@ -5423,39 +5414,31 @@ function buildAvisCharts() {
     }
   });
 
-  // 7. Tableau détail avis non clôturés — uniquement les 5 postes autorisés
+  // 7. Tableau détail avis AOUV — période sélectionnée
   const totalOpenFiltered = openFiltered.length;
   const tableSubEl = document.getElementById('avis-table-sub');
-  if(tableSubEl) tableSubEl.textContent = `AOUV + AENC (${totalOpenFiltered} avis) — par corps de métier`;
+  if(tableSubEl) tableSubEl.textContent = `AOUV (${totalOpenFiltered} avis) — par corps de métier · ${periodLabel}`;
   const tbody = document.getElementById('avis-table-body');
   if(tbody){
-    const rows = openSorted.map(([poste,{aouv,aenc}])=>{
-      const tot  = aouv+aenc;
-      const pct  = totalOpenFiltered ? ((tot/totalOpenFiltered)*100).toFixed(1) : '0.0';
+    const rows = openSorted.map(([poste, count])=>{
+      const pct  = totalOpenFiltered ? ((count/totalOpenFiltered)*100).toFixed(1) : '0.0';
       const barW = Math.max(parseFloat(pct), 0.5);
-      const aoucBadge = aouv ? `<span style="background:var(--amber-lt);color:var(--amber);border-radius:4px;padding:2px 10px;font-weight:700;">${aouv}</span>` : `<span style="background:var(--slate-lt);color:var(--slate);border-radius:4px;padding:2px 10px;font-weight:700;">0</span>`;
-      const aencBadge = aenc ? `<span style="background:var(--red-lt);color:var(--red);border-radius:4px;padding:2px 10px;font-weight:700;">${aenc}</span>` : `<span style="background:var(--slate-lt);color:var(--slate);border-radius:4px;padding:2px 10px;font-weight:700;">0</span>`;
+      const badge = count ? `<span style="background:var(--amber-lt);color:var(--amber);border-radius:4px;padding:2px 10px;font-weight:700;">${count}</span>` : `<span style="background:var(--slate-lt);color:var(--slate);border-radius:4px;padding:2px 10px;font-weight:700;">0</span>`;
       return `<tr style="border-bottom:1px solid var(--border2);">
         <td style="padding:10px 14px;font-weight:600;">${poste}</td>
-        <td style="padding:10px 14px;text-align:center;">${aoucBadge}</td>
-        <td style="padding:10px 14px;text-align:center;">${aencBadge}</td>
-        <td style="padding:10px 14px;text-align:center;font-weight:700;">${tot}</td>
+        <td style="padding:10px 14px;text-align:center;">${badge}</td>
         <td style="padding:10px 14px;">
           <div style="display:flex;align-items:center;gap:8px;">
-            <div style="flex:1;background:var(--border2);border-radius:4px;height:6px;"><div style="width:${barW}%;background:var(--purple);border-radius:4px;height:100%;"></div></div>
+            <div style="flex:1;background:var(--border2);border-radius:4px;height:6px;"><div style="width:${barW}%;background:var(--amber);border-radius:4px;height:100%;"></div></div>
             <span style="font-family:var(--mono);font-size:11px;">${pct}%</span>
           </div>
         </td>
       </tr>`;
     });
-    const totAOUV = openFiltered.filter(r=>r.statutABR==='AOUV').length;
-    const totAENC = openFiltered.filter(r=>r.statutABR==='AENC').length;
     rows.push(`<tr style="background:var(--bg);font-weight:700;">
       <td style="padding:10px 14px;">TOTAL</td>
-      <td style="padding:10px 14px;text-align:center;color:var(--amber);">${totAOUV}</td>
-      <td style="padding:10px 14px;text-align:center;color:var(--red);">${totAENC}</td>
-      <td style="padding:10px 14px;text-align:center;">${totalOpenFiltered}</td>
-      <td style="padding:10px 14px;color:var(--muted);font-size:11px;">${avisData.length ? ((totalOpenFiltered/avisData.length)*100).toFixed(1) : '0.0'}% des avis totaux</td>
+      <td style="padding:10px 14px;text-align:center;color:var(--amber);">${totalOpenFiltered}</td>
+      <td style="padding:10px 14px;color:var(--muted);font-size:11px;">${filtered.length ? ((totalOpenFiltered/filtered.length)*100).toFixed(1) : '0.0'}% des avis de la période</td>
     </tr>`);
     tbody.innerHTML = rows.join('');
   }
