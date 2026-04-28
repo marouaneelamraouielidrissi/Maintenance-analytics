@@ -3848,13 +3848,23 @@ td { padding: 9px 14px; vertical-align: middle; }
         </div>
       </div>
 
-      <!-- Taux d'approbation par poste -->
-      <div class="chart-card no-break" style="margin-top:16px;">
-        <div class="chart-card-hdr"><div>
-          <div class="chart-card-title">Taux d'approbation par Corps de Métier</div>
-          <div class="chart-card-sub" id="avis-appro-sub">AOUV / Total avis par poste — période sélectionnée</div>
-        </div></div>
-        <div id="avis-appro-list"></div>
+      <!-- Taux d'approbation par poste — Manutention / Laverie -->
+      <div class="section-label" style="margin-top:16px;">Taux d'approbation par Corps de Métier</div>
+      <div class="chart-grid-2 no-break">
+        <div class="chart-card">
+          <div class="chart-card-hdr"><div>
+            <div class="chart-card-title">Taux d'approbation — Manutention</div>
+            <div class="chart-card-sub" id="avis-appro-manut-sub">AOUV / Total · KL03-MA — période sélectionnée</div>
+          </div></div>
+          <div id="avis-appro-manut-list"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-hdr"><div>
+            <div class="chart-card-title">Taux d'approbation — Laverie</div>
+            <div class="chart-card-sub" id="avis-appro-lav-sub">AOUV / Total · hors KL03-MA — période sélectionnée</div>
+          </div></div>
+          <div id="avis-appro-lav-list"></div>
+        </div>
       </div>
 
       <!-- TABLEAU DÉTAIL AVIS OUVERTS -->
@@ -5451,30 +5461,30 @@ function buildAvisCharts() {
     }
   });
 
-  // 7. Taux d'approbation par poste (AOUV / total par poste)
-  const approEl = document.getElementById('avis-appro-list');
-  const approSubEl = document.getElementById('avis-appro-sub');
-  if (approSubEl) approSubEl.textContent = `AOUV / Total avis par poste — ${periodLabel}`;
-  if (approEl) {
+  // 7. Taux d'approbation par poste — Manutention / Laverie
+  function buildApproHtml(data, subElId, subText) {
+    const subEl = document.getElementById(subElId);
+    if (subEl) subEl.textContent = `${subText} — ${periodLabel}`;
     const approData = AVIS_POSTES_INCLUS.map(p => {
-      const tot  = filtered.filter(r => r.poste === p).length;
-      const aouv = filtered.filter(r => r.poste === p && r.statutABR === 'AOUV').length;
+      const tot  = data.filter(r => r.poste === p).length;
+      const aouv = data.filter(r => r.poste === p && r.statutABR === 'AOUV').length;
       return { poste: p, tot, aouv, taux: tot ? parseFloat((aouv/tot*100).toFixed(1)) : 0 };
     }).filter(d => d.tot > 0).sort((a,b) => b.taux - a.taux);
-    if (!approData.length) {
-      approEl.innerHTML = '<p style="color:var(--muted);font-size:12px;padding:8px 0;">Aucune donnée.</p>';
-    } else {
-      approEl.innerHTML = approData.map(d => {
-        const col = d.taux >= 80 ? '#059669' : d.taux >= 50 ? '#d97706' : '#dc2626';
-        return `<div class="real-row">
-          <span class="real-poste">${d.poste}</span>
-          <div class="real-bar-wrap"><div class="real-bar-fill" style="width:${d.taux}%;background:${col};"></div></div>
-          <span class="real-pct" style="color:${col};">${d.taux}%</span>
-          <span class="real-counts">${d.aouv} / ${d.tot}</span>
-        </div>`;
-      }).join('');
-    }
+    if (!approData.length) return '<p style="color:var(--muted);font-size:12px;padding:8px 0;">Aucune donnée.</p>';
+    return approData.map(d => {
+      const col = d.taux >= 80 ? '#059669' : d.taux >= 50 ? '#d97706' : '#dc2626';
+      return `<div class="real-row">
+        <span class="real-poste">${d.poste}</span>
+        <div class="real-bar-wrap"><div class="real-bar-fill" style="width:${d.taux}%;background:${col};"></div></div>
+        <span class="real-pct" style="color:${col};">${d.taux}%</span>
+        <span class="real-counts">${d.aouv} / ${d.tot}</span>
+      </div>`;
+    }).join('');
   }
+  const manutEl = document.getElementById('avis-appro-manut-list');
+  const lavEl   = document.getElementById('avis-appro-lav-list');
+  if (manutEl) manutEl.innerHTML = buildApproHtml(filtered.filter(r=>normStr(r.secteur)==='manutention'), 'avis-appro-manut-sub', 'AOUV / Total · KL03-MA');
+  if (lavEl)   lavEl.innerHTML   = buildApproHtml(filtered.filter(r=>normStr(r.secteur)==='laverie'),    'avis-appro-lav-sub',  'AOUV / Total · hors KL03-MA');
 
   // 8. Tableau détail avis AOUV — période sélectionnée
   const totalOpenFiltered = openFiltered.length;
