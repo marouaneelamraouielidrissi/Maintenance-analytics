@@ -4627,7 +4627,7 @@ function buildPosteChart(canvasId, data) {
 
 function buildRealisationHtml(filteredData) {
   const EXCL = ['425-INCD','426-EXP','428-EXP','425-BDM'];
-  const isSopl = r => r.statutUtil.startsWith('SOPL') && r.statutUtil !== 'SOPL REPL';
+  const isSopl = r => r.statutUtil.includes('SOPL');
   const posteList = [...new Set(filteredData.filter(r=>!EXCL.includes(r.poste)&&isSopl(r)).map(r=>r.poste).filter(Boolean))].sort();
   const realData  = posteList.map(p=>{
     const ots=filteredData.filter(r=>r.poste===p&&isSopl(r)), done=ots.filter(isRealise).length;
