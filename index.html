@@ -3386,8 +3386,8 @@ td { padding: 9px 14px; vertical-align: middle; }
             <div class="kpi-icon-box red"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
           </div>
           <div class="kpi-value" id="kpi-retard">—</div>
-          <div class="kpi-label">Non lancés</div>
-          <div class="kpi-sub">En attente de planification</div>
+          <div class="kpi-label">OT CRPR</div>
+          <div class="kpi-sub">En cours de préparation</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-card-top"><div class="kpi-icon-box amber"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div></div>
@@ -3835,9 +3835,9 @@ td { padding: 9px 14px; vertical-align: middle; }
             <div class="kpi-sub">Avis ouverts non traités</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-label">À Planifier</div>
-            <div class="kpi-value" style="color:var(--blue);" id="avis-kpi-plan">—</div>
-            <div class="kpi-sub">Demandes en attente</div>
+            <div class="kpi-label">En Cours (AENC)</div>
+            <div class="kpi-value" style="color:var(--red);" id="avis-kpi-plan">—</div>
+            <div class="kpi-sub">Avis en cours de traitement</div>
           </div>
         </div>
       </div>
@@ -4818,7 +4818,7 @@ function buildInstallVolumeTable(filtered, elId) {
     const cells = installs.map(inst => {
       const v = (groups[inst] && groups[inst][p]) || 0;
       const col = v === 0 ? '#dc2626' : v < 5 ? '#d97706' : 'var(--blue)';
-      return `<td style="${tdStyle}color:${col};font-weight:700;">${v}</td>`;
+      return `<td style="${tdStyle}color:${col};font-weight:700;">${v === 0 ? '—' : v}</td>`;
     }).join('');
     return `<tr style="border-bottom:1px solid var(--border);">
       <td style="${tdFirst}">${p}</td>
@@ -5424,7 +5424,7 @@ function buildAvisCharts() {
   const avecOT    = filtered.filter(r=>r.ordre).length;
   const ouverts   = filtered.filter(r=>r.statutABR==='AOUV'||r.statutABR==='AENC').length;
   const aouv      = filtered.filter(r=>r.statutABR==='AOUV').length;
-  const aPlan     = filtered.filter(r=>r.aPlanifier).length;
+  const aenc      = filtered.filter(r=>r.statutABR==='AENC').length;
   const txConv    = total ? ((avecOT/total)*100).toFixed(1)+'%' : '0.0%';
   const txAppro   = total ? ((aouv/total)*100).toFixed(1)+'%' : '0.0%';
 
@@ -5434,7 +5434,7 @@ function buildAvisCharts() {
   document.getElementById('avis-kpi-ouverts').textContent    = ouverts.toLocaleString('fr-FR');
   document.getElementById('avis-kpi-taux-appro').textContent = txAppro;
   document.getElementById('avis-kpi-aouv').textContent       = aouv.toLocaleString('fr-FR');
-  document.getElementById('avis-kpi-plan').textContent       = aPlan.toLocaleString('fr-FR');
+  document.getElementById('avis-kpi-plan').textContent       = aenc.toLocaleString('fr-FR');
 
   // Sous-titre statut donut
   const subStatutEl = document.getElementById('avis-sub-statut');
