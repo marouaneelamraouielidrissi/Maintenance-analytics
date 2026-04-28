@@ -4759,6 +4759,9 @@ function buildInstallVolumeTable(filtered, elId) {
     return;
   }
 
+  // Toutes les installations programmées = colonnes (même si 0 OT)
+  const installs = [...programmedInstalls].sort();
+
   // Regrouper OTs par installation (nom) × poste
   const groups = {}; // { installation: { poste: count } }
   filtered.forEach(r => {
@@ -4769,21 +4772,20 @@ function buildInstallVolumeTable(filtered, elId) {
     groups[install][poste] = (groups[install][poste] || 0) + 1;
   });
 
-  if (!Object.keys(groups).length) {
-    el.innerHTML = `<p style="text-align:center;color:var(--muted);font-size:12px;padding:16px 0;">Aucun OT trouvé pour les installations programmées dans cette période.</p>`;
+  // Postes présents dans au moins une installation
+  const postesSet = new Set();
+  installs.forEach(inst => { if (groups[inst]) Object.keys(groups[inst]).forEach(p => postesSet.add(p)); });
+  const postes = [...postesSet].sort();
+
+  if (!postes.length) {
+    el.innerHTML = `<p style="text-align:center;color:var(--muted);font-size:12px;padding:16px 0;">Installations programmées : ${installs.join(', ')} — aucun OT trouvé dans la période.</p>`;
     return;
   }
-
-  // Installations (colonnes) triées, postes (lignes) triés
-  const installs = Object.keys(groups).sort();
-  const postesSet = new Set();
-  installs.forEach(inst => Object.keys(groups[inst]).forEach(p => postesSet.add(p)));
-  const postes = [...postesSet].sort();
 
   // Totaux par installation et par poste
   const totalByInstall = {};
   installs.forEach(inst => {
-    totalByInstall[inst] = Object.values(groups[inst]).reduce((s, v) => s + v, 0);
+    totalByInstall[inst] = groups[inst] ? Object.values(groups[inst]).reduce((s, v) => s + v, 0) : 0;
   });
   const totalByPoste = {};
   postes.forEach(p => {
