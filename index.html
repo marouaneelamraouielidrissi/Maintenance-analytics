@@ -5372,8 +5372,26 @@ function buildAvisCharts() {
     }
   });
 
-  // 6. Avis AOUV par poste — filtrés sur la période sélectionnée
-  const openFiltered = filtered.filter(r=>r.statutABR==='AOUV' && AVIS_POSTES_INCLUS.includes(r.poste));
+  // 6. Avis AOUV par poste — filtrés sur la période sélectionnée via dateDebut
+  const openFiltered = avisData.filter(r => {
+    if (r.statutABR !== 'AOUV') return false;
+    if (!AVIS_POSTES_INCLUS.includes(r.poste)) return false;
+    const dt = r.dateDebut || r.creeLe;
+    if (!dt) return false;
+    if (currentMode === 'month') {
+      const mo = parseInt(document.getElementById('month-select').value);
+      const yr = parseInt(document.getElementById('year-select').value);
+      return dt.getMonth()===mo && dt.getFullYear()===yr;
+    } else if (currentMode === 'year') {
+      const yr = parseInt(document.getElementById('year-only-select').value);
+      return dt.getFullYear()===yr;
+    } else if (currentMode === 'week') {
+      const wVal = document.getElementById('week-select').value;
+      const [wyStr, wkStr] = wVal.split('-W');
+      return getISOWeek(dt)===parseInt(wkStr) && getISOWeekYear(dt)===parseInt(wyStr);
+    }
+    return true;
+  });
   const openByPoste = {};
   AVIS_POSTES_INCLUS.forEach(p=>{ openByPoste[p]=0; });
   openFiltered.forEach(r=>{ openByPoste[r.poste]++; });
